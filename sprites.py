@@ -3184,7 +3184,7 @@ class Bullet(pg.sprite.Sprite):
         if self.enemy:
             self.groups = game.all_sprites, game.bullets, game.enemy_bullets
         else:
-            self.groups = game.all_sprites, game.bulletscc
+            self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.game.group.add(self)
