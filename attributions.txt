@@ -1,0 +1,102 @@
+Special thanks to KidsCanCode
+I used his tutorials as a starting point this game.
+# Souces: Tilemap Demo, Shmup, and Jumpy
+
+Thanks to Kenny for providing the game art I used in early demos:
+"topdown shooter" art by Kenny.nl
+Weapon pickup by: Guns by Gary <http://fossilrecords.net/> licensed under CC-BY-SA 3.0 <http://creativecommons.org/licenses/by-sa/3.0/>
+
+Music:
+Nautilus:
+https://opengameart.org/content/nautilus
+bells https://opengameart.org/content/day-1-cinematic-transition-sound
+Title screen music by Yubatake, https://opengameart.org/content/wendale-abbey
+https://opengameart.org/content/blackmoor-tides-epic-pirate-battle-theme
+DarkWinds, FoxieEpic
+https://opengameart.org/content/orchestral-epic-fantasy-music
+
+See music credits file for others
+
+textures
+https://www.wildtextures.com/
+http://www.cadhatch.com/seamless-textures/4588167680
+https://naldzgraphics.net/free-seamless-sand-textures/
+
+Sprite sheets created using:
+https://www.codeandweb.com/free-sprite-sheet-packer
+
+trees:
+https://www.kisspng.com/  #only for personal use you'll have to replace these to sell
+https://www.kisspng.com/png-tree-dill-shrub-tree-top-view-714759/
+https://www.kisspng.com/png-tree-architecture-texture-mapping-tree-plan-752709/
+https://www.kisspng.com/png-tree-stock-photography-royalty-free-tree-top-view-714773/
+https://www.kisspng.com/png-willow-tree-arecaceae-palm-tree-83780/
+https://www.kisspng.com/png-tree-plan-file-viewer-tree-top-view-714763/
+https://www.kisspng.com/png-tree-rendering-tree-top-view-717787/
+https://www.kisspng.com/png-tree-plant-shrub-tree-top-view-714760/
+https://www.kisspng.com/png-tree-bucida-buceras-plant-tile-terminalia-ivorensi-752715/
+https://www.kisspng.com/png-tree-plan-shrub-plan-714084/
+https://www.kisspng.com/png-portable-network-graphics-shrub-plants-clip-art-tr-6386223/
+https://www.kisspng.com/png-tree-pine-2268246/
+https://www.kisspng.com/png-tree-shrub-red-berberis-thunbergii-plant-tree-top-848182/
+https://www.kisspng.com/png-tree-branch-snag-clip-art-tree-top-view-714781/
+https://www.kisspng.com/png-shrub-leaf-branching-tree-top-view-5414802/
+
+stairs, armor, weapons, and various other assets:
+modified from:
+https://thetrove.net/Assets/
+
+animals and various other sprites were created from images modified from:
+https://thetrove.net/Assets/
+https://thetrove.net/Assets/Map%20Assets/Creatures/Animals/
+
+rocks:
+kisspng.com
+
+modern roads modified from:
+https://opengameart.org/content/road-tile-textures
+
+metal roofing texture:
+https://retrostylegames.com/portfolio/free-seamless-bronze-copper-metal-roof-texture/
+
+other textures:
+http://texturelib.com/#!/category/?path=/Textures/roof
+
+Sounds:
+http://en.soundeffect-lab.info/sound/battle/
+http://soundbible.com/tags-splash.html
+
+Potions:
+https://opengameart.org/content/12-pixie-dust-flasks
+https://opengameart.org/content/12-potion-flacons
+https://opengameart.org/content/flasks-and-potions
+
+robots/mech suit thingys
+https://opengameart.org/content/top-down-sci-fi-shooter-characters-20
+
+fire animation:
+https://opengameart.org/content/fire-fx-burning-fire-animation
+
+explosion animation:
+https://opengameart.org/content/explosion-4
+
+fireball animation:
+https://opengameart.org/content/animated-fireball
+
+compass image modified from:
+https://opengameart.org/content/windrose-with-fleur-de-lis
+https://opengameart.org/content/north-and-southalpha-chanel
+
+portal images:
+https://www.hypergridbusiness.com/2014/10/how-to-make-an-animated-portal-texture/
+
+fonts:
+see fonts folder
+https://www.1001freefonts.com/eagle-lake.font
+https://www.1001freefonts.com/uncial-antiqua.font
+https://fontlibrary.org/
+
+Wyrvin image:
+https://www.freepngimg.com/png/27255-flying-dragon-transparent
+
+

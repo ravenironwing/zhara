@@ -1,0 +1,291 @@
+###############################################
+OpenGameArt.org automatically generated credits file notice:
+
+THIS FILE IS FOR INFORMATIONAL PURPOSES ONLY.  NO WARRANTY OF ANY KIND IS EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL OPENGAMEART.ORG BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE USE OF THIS FILE OR THE INFORMATION IN IT.
+
+In plain English:  This credits file is automatically generated to the best of our ability, but it remains YOUR RESPONSIBILITY as a game developer to ensure that the art you use is attributed properly.  That is, we can't be held liable even if all of the information in this file is completely wrong.   In addition, some of the art listed in this file may have SPECIAL ATTRIBUTION INSTRUCTIONS that ask that you credit the artist in a particular way, rather than a verbatim copyright notice.  In those cases, you will probably need to hand-edit this file to comply with their instructions.  In some older art, attribution instructions may be included in the art description itself.  Please check the art page to be sure.
+
+We recommend that you delete this notice when you're sure the information here is correct and the attribution instructions are properly followed.  If you aren't the game developer and you're seeing this notice here in the credits, it probably means that the developer hasn't properly verified the attribution information contained herein even though it said they were supposed to do it right on the page where they downloaded this file.  
+###############################################
+
+Title:
+    The Road Ahead
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/the-road-ahead
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * The Road Ahead.mp3
+
+----------------------------------------
+
+Title:
+    Heartland Vista
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/heartland-vista
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Heartland Vista.mp3
+
+----------------------------------------
+
+Title:
+    Legion&#039;s Rally
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/legions-rally
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Legion's Rally.mp3
+
+----------------------------------------
+
+Title:
+    The Forgotten Age
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/the-forgotten-age
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * The Forgotten Age.mp3
+
+----------------------------------------
+
+Title:
+    Emerald Paradise
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/emerald-paradise
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Emerald Paradise.mp3
+
+----------------------------------------
+
+Title:
+    Last Haven
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/last-haven
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Last Haven.mp3
+
+----------------------------------------
+
+Title:
+    Light from the Shadows
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/light-from-the-shadows
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Light from the Shadows.mp3
+
+----------------------------------------
+
+Title:
+    Turn of the Tide
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/turn-of-the-tide
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Turn of the Tide.mp3
+
+----------------------------------------
+
+Title:
+    Cloudforest Awakening
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/cloudforest-awakening
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Cloudforest Awakening.mp3
+
+----------------------------------------
+
+Title:
+    Eternal Renewal
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/eternal-renewal
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Eternal Renewal.mp3
+
+----------------------------------------
+
+Title:
+    Domain of the Specter
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/domain-of-the-specter
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Domain of the Specter.mp3
+
+----------------------------------------
+
+Title:
+    Tales and Tidings
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/tales-and-tidings
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Tales and Tidings.mp3
+
+----------------------------------------
+
+Title:
+    Vanguard&#039;s Assault
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/vanguards-assault
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Vanguard's Assault.mp3
+
+----------------------------------------
+
+Title:
+    Dawn Reflection
+
+Author:
+    Improbable Cadence
+
+URL:
+    https://opengameart.org/content/dawn-reflection
+
+License(s):
+    * CC-BY 3.0 ( http://creativecommons.org/licenses/by/3.0/legalcode )
+
+Copyright/Attribution Notice:
+    Includes music from Oblivion Symphonic Variations, by Li-Hsin Huang, licensed under https://creativecommons.org/licenses/by/4.0/
+
+File(s):
+    * Dawn Reflection.mp3
+
+----------------------------------------
+
+
