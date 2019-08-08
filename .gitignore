@@ -1,0 +1,11 @@
+# Don't track content of these folders
+__pycache__/
+image_templates/
+
+# Ignore these file types
+*.sav
+*.xcf
+
+
+
+

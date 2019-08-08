@@ -1,19 +1,21 @@
 Setup:
 To Play this game you must first have the following installed:
 Python 3.5 or higher
-Pygame (if you experience intermittent fatal errors make sure you are running from the python consol or IDLE3).
-This game has been tested on pygame 2.0.0dev3 and a bunch of the older versions.
+Pygame (if you experience intermittent fatal errors make sure you are running from the python consol or IDLE3 as this game uses a lot of memory [about 1GB in some parts]).
+
+This game has been tested on pygame 2.0.0dev3 and a bunch of the older versions. I reccommend pygame2 as it runs a LOT faster.
 
 You also need the following libraries:
 pytmx
+pyscroll
 To install run these commands in the command prompt/terminal:
-	pip install pytmx
-
+  pip3 install pygame 2.0.0dev3
+	pip3 install pytmx
+  pip3 install pyscroll
 Game Play:
-Run main.py to play (open in IDLE3 [right click "open with Idle3" press F5 to run or use another IDE, or the python consol)
+Run main.py to play (open in IDLE3 [right click "open with Idle3" press F5 to run or use another IDE, or use the python consol)
 
 ﻿Controlls:
-
 W - forward
 S - backwards
 A - rotate left
@@ -40,7 +42,7 @@ TAB - Melee attack
 SPACE - Jump
 LSHIFT - run
 Escape - to quit  game while in  menu (currently the only way to end the game when in full screen)
-ALT + ENTER - toggle fullscreen mode
+ALT + ENTER - toggle fullscreen mode [Fullscreen may have issues on your particular hardware, so it is off be default]
 
 
 Mouse:
@@ -54,4 +56,11 @@ E - enter vehicle
 X - exit vehicle/dismount animal
 Z/C - rotate turret
 U - toggle mini map view in airship.
+
+Ctrl + S - Saves your game. Each save is given a timestamp and organized by the character's race
+Ctrl + L - Loads saved games (it's a bit buggy right now, so I reccommend just pressing C at the start instead of loading while in game).
+
+#Notes
+Npc animations were created using position_editor.py. This file is not needed to run the game.
+
 
