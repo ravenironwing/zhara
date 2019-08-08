@@ -2,6 +2,10 @@
 __pycache__/
 image_templates/
 
+# Ignore these files
+.gitignore
+.goutputstream-ABF01Z
+
 # Ignore these file types
 *.sav
 *.xcf
