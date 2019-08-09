@@ -902,7 +902,7 @@ class Game:
 
         # This section creates walls based off of which tile is used in the map rather than having to create wall objects
         if 'ant_tunnel' in self.map.filename:
-            wall_tile = self.map.tmxdata.register_gid(537) # the # is the tile number in the tmx file, but it is mapped differently into pytmx. This looks up the pytmx global id (gid) for the tile.
+            wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 2) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
             for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
                 Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
 

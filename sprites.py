@@ -2787,24 +2787,16 @@ class Animal(pg.sprite.Sprite):
         self.kind = ANIMALS[species]
         self.name = self.kind['name']
         self.protected = self.kind['protected']
-        if 'horse' in self.name:
+        if 'flying' in self.kind.keys():
+            self.flying = self.kind['flying']
+        else:
+            self.flying = False
+        if self.flying:
+            self._layer = SKY_LAYER
+            self.in_flying_vehicle = True
+        elif 'horse' in self.name:
             self._layer = PLAYER_LAYER
             self.in_flying_vehicle = False
-        elif 'fly' in self.name:
-            self._layer = SKY_LAYER
-            self.in_flying_vehicle = True
-        elif 'moth' in self.name:
-            self._layer = SKY_LAYER
-            self.in_flying_vehicle = True
-        elif 'bird' in self.name:
-            self._layer = SKY_LAYER
-            self.in_flying_vehicle = True
-        elif 'bat' in self.name:
-            self._layer = SKY_LAYER
-            self.in_flying_vehicle = True
-        elif 'wyvern' in self.name:
-            self._layer = SKY_LAYER
-            self.in_flying_vehicle = True
         else:
             self._layer = ITEMS_LAYER
         if self.kind['grabable']:
@@ -2823,10 +2815,6 @@ class Animal(pg.sprite.Sprite):
         self.health = self.kind['health']
         self.maxhealth = self.kind['health']
         self.mountable = self.kind['mountable']
-        if 'flying' in self.kind.keys():
-            self.flying = self.kind['flying']
-        else:
-            self.flying = False
         self.occupied = False
         self.run_speed = self.kind['run speed'] * (randrange(7, 10)/10)
         self.walk_speed = self.kind['walk speed'] * (randrange(7, 10)/10)
