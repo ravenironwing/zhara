@@ -1,5 +1,5 @@
 Intro:
-Legends of Zhara is a 2D open world action RPG that utilizes many game play aspects of modern 3D rpgs.
+Legends of Zhara is a 2D open world action RPG that utilizes many game play aspects of modern 3D RPGs.
 The world is about 12 kilometers accross if it were to scale. It is made from over 17000 64 by 64 tile maps. 
 It has been called by some "2D Skyrim with guns" 
 Here are a few of the features: lots of different playable races with different abilities and starting locations, quests, weapon/armor forging, enchanting, alchemy, spell casting, hunting, cooking, followers, dual weilding, minning ore, chopping down dead trees, ridding horses and other large animals, vehicles (tank, airship, boat, etc.), complex NPCs, stores (buying/selling), looting, chests, lock picking, sleeping, using toilets, you can transform into a dragon and breathe fire, etc.
@@ -68,6 +68,7 @@ Ctrl + S - Saves your game. Each save is given a timestamp and organized by the 
 Ctrl + L - Loads saved games (it's a bit buggy right now, so I reccommend just pressing C at the start instead of loading while in game).
 
 #Notes
+The word map is set with the north pole at the center and the south pole wrapped around it (because it is a sphere mapped to a flat surface). This allows you to travel around the world. Since north is towards the center there is a compass on the HUD minimap to show you which way north is.
 Npc animations were created using position_editor.py. This file is not needed to run the game.
 
 
