@@ -417,10 +417,11 @@ class Npc_Design_Menu(Character_Design_Menu):
         self.character.kind['gender'] = self.character.equipped['gender']
         self.character.kind['race'] = self.character.equipped['race']
         tkinter_menu = Npc_Info_Designer(self, self.character)
-        file = open("npcs.py", "a")
-        file.write("\n")
-        file.write("PEOPLE[\'" + self.character.species + "\'] = " + str(self.character.kind))
-        file.close()
+        if self.character.kind['name'] != 'generic': # This makes it so it doesn't write unfinished NPCs
+            file = open("npcs.py", "a")
+            file.write("\n")
+            file.write("PEOPLE[\'" + self.character.species + "\'] = " + str(self.character.kind))
+            file.close()
         if not self.running:
             self.game.quit()
         else:
