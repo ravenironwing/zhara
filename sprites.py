@@ -2163,6 +2163,11 @@ class Npc(pg.sprite.Sprite):
         self.melee_playing = False
         self.last_melee = 0
         self.last_melee_sound = 0
+        # State vars
+        self.last_weapon = None
+        self.last_weapon2 = None
+        self.current_weapon = None
+        self.current_weapon2 = None
         #NPC specific data:
         self.species = kind
         try:  # This makes it so you can load a saved game even if there were new NPCs added.
@@ -2594,6 +2599,54 @@ class Npc(pg.sprite.Sprite):
         self.health += amount
         if self.health > self.max_health:
             self.health = self.max_health
+
+    def use_item(self):
+        if self.equipped['items'] != None:
+            if 'spell' in ITEMS[self.equipped['items']]:
+                self.inventory['magic'].append(ITEMS[self.equipped['items']]['spell'])
+                self.game.effects_sounds['page turn'].play()
+                self.game.effects_sounds[ITEMS[self.equipped['items']]['sound']].play()
+            if 'ammo' in ITEMS[self.equipped['items']]:
+                self.ammo[ITEMS[self.equipped['items']]['type']] += ITEMS[self.equipped['items']]['ammo']
+                self.pre_reload()
+            if 'magica' in ITEMS[self.equipped['items']]:
+                self.add_magica(ITEMS[self.equipped['items']]['magica'])
+            if 'health' in ITEMS[self.equipped['items']]:
+                self.add_health(ITEMS[self.equipped['items']]['health'])
+            if 'stamina' in ITEMS[self.equipped['items']]:
+                self.add_stamina(ITEMS[self.equipped['items']]['stamina'])
+            if 'change race' in ITEMS[self.equipped['items']]:
+                self.equipped['race'] = ITEMS[self.equipped['items']]['change race']
+                self.body.update_animations()
+            if 'change sex' in ITEMS[self.equipped['items']]:
+                self.equipped['gender'] = ITEMS[self.equipped['items']]['change sex']
+                if self.equipped['gender'] == 'female':
+                    random_dress_top = choice(DRESS_TOPS_LIST)
+                    random_dress_skirt = choice(DRESS_BOTTOMS_LIST)
+                    random_hair = choice(LONG_HAIR_LIST)
+                    self.inventory['tops'].append(random_dress_top)
+                    self.inventory['bottoms'].append(random_dress_skirt)
+                    self.inventory['hair'].append(random_hair)
+                    self.equipped['tops'] = random_dress_top
+                    self.equipped['bottoms'] = random_dress_skirt
+                    self.equipped['hair'] = random_hair
+                else:
+                    random_hair = choice(SHORT_HAIR_LIST)
+                    self.inventory['tops'].append('tshirt M')
+                    self.inventory['bottoms'].append('jeans M')
+                    self.inventory['hair'].append(random_hair)
+                    self.equipped['tops'] = 'tshirt M'
+                    self.equipped['bottoms'] = 'jeans M'
+                    self.equipped['hair'] = random_hair
+                self.human_body.update_animations()
+                self.dragon_body.update_animations()
+            if 'potion' in self.equipped['items']:
+                self.inventory['items'].append('empty bottle')  # lets you keep the bottle to use for creating new potions.
+            if 'fuel' in self.equipped['items']:
+                self.inventory['items'].append('empty barrel')
+            self.inventory['items'].remove(self.equipped['items'])
+            if self.equipped['items'] not in self.inventory['items']:  # This lets you keep equipping items of the same kind. This way you can use multiple heath potions in a row for example.
+                self.equipped['items'] = None
 
     def cast_spell(self):
         if self.inventory['magic'][0] != None:

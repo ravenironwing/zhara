@@ -13,6 +13,7 @@ from textwrap import wrap
 import copy
 from dialogue import *
 import re
+from npc_design import Npc_Info_Designer
 
 vec = pg.math.Vector2
 
@@ -62,8 +63,9 @@ class Picture(pg.sprite.Sprite):
 
 
 class Menu():  # used as the parent class for other menus.
-    def __init__(self, game):
+    def __init__(self, game, character = 'player'):
         self.game = game
+        self.running = True
         self.menu_sprites = pg.sprite.Group()
         self.menu_heading_sprites = pg.sprite.Group()
         self.item_sprites = pg.sprite.Group()
@@ -155,6 +157,10 @@ class Menu():  # used as the parent class for other menus.
         self.clicked_sprites = []
         self.printable_stat_list = []
 
+    def clear_pictures(self):
+        for item in self.item_pictures:
+            item.kill()
+
     def draw_text(self, text, font_name, size, color, x, y, align="topleft"):
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
@@ -221,8 +227,12 @@ class Menu():  # used as the parent class for other menus.
 
 
 class Character_Design_Menu(Menu):
-    def __init__(self, game):
+    def __init__(self, game, character = 'player'):
         super().__init__(game)
+        if character == 'player':
+            self.character = self.game.player
+        else:
+            self.character = character
         self.exit_keys = [pg.K_e]  # The keys used to enter/exit the menu.
         self.heading_list = ['Gender', 'Race', 'Hair']  # This is the list of headings
 
@@ -259,31 +269,42 @@ class Character_Design_Menu(Menu):
                         self.selected_item = item
                         self.item_selected = True
                         self.display_item_info(item)
-                        self.game.player.equipped[self.item_type] = item.text
+                        self.character.equipped[self.item_type] = item.text
                         self.list_items()
                 # This if and else block sets up default inventory based on gender
-                if self.game.player.equipped['gender'] == 'other':
-                    self.game.player.inventory = copy.deepcopy(DEFAULT_INVENTORIES['female' + ' ' + self.game.player.equipped['race']])
+                if self.character == self.game.player:
+                    if self.character.equipped['gender'] == 'other':
+                        self.character.inventory = copy.deepcopy(DEFAULT_INVENTORIES['female' + ' ' + self.character.equipped['race']])
+                    else:
+                        self.character.inventory = copy.deepcopy(DEFAULT_INVENTORIES[self.character.equipped['gender'] + ' ' + self.character.equipped['race']])
+                    for kind in ITEM_TYPE_LIST:
+                        if kind != 'hair':
+                            self.character.equipped[kind] = self.character.inventory[kind][0]
                 else:
-                    self.game.player.inventory = copy.deepcopy(DEFAULT_INVENTORIES[self.game.player.equipped['gender'] + ' ' + self.game.player.equipped['race']])
-                for kind in ITEM_TYPE_LIST:
-                    if kind != 'hair':
-                        self.game.player.equipped[kind] = self.game.player.inventory[kind][0]
+                    if self.character.equipped['race'] in list(RACE.keys()):
+                        temp_inventory = None
+                        if self.character.equipped['gender'] == 'other':
+                            temp_inventory = copy.deepcopy(DEFAULT_INVENTORIES['female' + ' ' + self.character.equipped['race']])
+                        else:
+                            temp_inventory = copy.deepcopy(DEFAULT_INVENTORIES[self.character.equipped['gender'] + ' ' + self.character.equipped['race']])
+                        for kind in ITEM_TYPE_LIST:
+                            if kind != 'hair':
+                                self.character.equipped[kind] = temp_inventory[kind][0]
                 # Makes sure you are not wearing hair that does not fit your race.
-                if self.game.player.equipped['hair'] not in RACE_HAIR[self.game.player.equipped['race']]:
-                    self.game.player.equipped['hair'] = None
-                self.game.player.body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
-                character_image = self.game.player.body.body_surface
+                if self.character.equipped['hair'] not in RACE_HAIR[self.character.equipped['race']]:
+                    self.character.equipped['hair'] = None
+                self.character.body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
+                character_image = self.character.body.body_surface
                 character_preview = Picture(self.game, self, character_image, int(self.game.screen_width * (3 / 4)), self.game.screen_height - 200)
 
 
     def list_items(self):
         self.clear_menu()
         i = 0
-        for item in self.game.player.inventory[self.item_type]:
+        for item in self.character.inventory[self.item_type]:
             if (self.item_type == 'race') and ('dragon' in item):
                 pass
-            elif (self.item_type == 'hair') and (item in RACE_HAIR[self.game.player.equipped['race']]):
+            elif (self.item_type == 'hair') and (item in RACE_HAIR[self.character.equipped['race']]):
                 item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * i + 75, "topleft")
                 self.item_sprites.add(item_name)
                 i += 1
@@ -343,32 +364,75 @@ class Character_Design_Menu(Menu):
 
     def update_external_variables(self):
         # This code calculates the player's armor rating
-        self.game.player.inventory['hair'] = [self.game.player.equipped['hair']] # Removes all other hairstyles from inventory.
-        for item in self.game.player.equipped:
-            if self.game.player.equipped[item] != None:
+        self.character.inventory['hair'] = [self.character.equipped['hair']] # Removes all other hairstyles from inventory.
+        for item in self.character.equipped:
+            if self.character.equipped[item] != None:
                 if '2' in item:
                     temp_item = item.replace('2', '')
                 else:
                     temp_item = item
-                if 'armor' in eval(temp_item.upper())[self.game.player.equipped[item]]:
-                    self.game.player.stats['armor'] += eval(item.upper())[self.game.player.equipped[item]]['armor']
-        self.game.player.calculate_weight()
-        self.game.player.last_weapon = self.game.player.equipped['weapons']  # This string is used to keep track of what the player's last weapon was for equipping and unequipping toggling weapons and keeping track of bullets from old weapons
-        self.game.player.current_weapon = self.game.player.equipped['weapons']  # weapon you had for autoequipping when your weapon is sheathed.
-        self.game.player.last_weapon2 = self.game.player.equipped['weapons2']  # This string is used to keep track of what the player's last weapon was for equipping and unequipping toggling weapons and keeping track of bullets from old weapons
-        self.game.player.current_weapon2 = self.game.player.equipped['weapons2']
-        self.game.player.race = self.game.player.equipped['race']
+                if 'armor' in eval(temp_item.upper())[self.character.equipped[item]]:
+                    self.character.stats['armor'] += eval(item.upper())[self.character.equipped[item]]['armor']
+        self.character.calculate_weight()
+        self.character.last_weapon = self.character.equipped['weapons']  # This string is used to keep track of what the player's last weapon was for equipping and unequipping toggling weapons and keeping track of bullets from old weapons
+        self.character.current_weapon = self.character.equipped['weapons']  # weapon you had for autoequipping when your weapon is sheathed.
+        self.character.last_weapon2 = self.character.equipped['weapons2']  # This string is used to keep track of what the player's last weapon was for equipping and unequipping toggling weapons and keeping track of bullets from old weapons
+        self.character.current_weapon2 = self.character.equipped['weapons2']
+        self.character.race = self.character.equipped['race']
         self.game.in_character_menu = False
         self.game.in_menu = False
-        check_equip(self.game.player)
-        self.game.player.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
-        self.game.player.dragon_body.update_animations()
-        self.game.player.pre_reload()
-        self.game.player.stats = RACE[self.game.player.race]['start_stats'] # Gives player different stats based on selected race.
+        check_equip(self.character)
+        self.character.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
+        self.character.dragon_body.update_animations()
+        self.character.pre_reload()
+        self.character.stats = RACE[self.character.race]['start_stats'] # Gives player different stats based on selected race.
+
+class Npc_Design_Menu(Character_Design_Menu):
+    def __init__(self, game, character = 'player'):
+        super().__init__(game, character)
+
+    def display_item_info(self, item):
+        if self.item_type != 'race':
+            image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
+            item_image = eval(image_path)
+            picture = Picture(self.game, self, item_image, int(self.game.screen_width * (3/4)), 150)
+
+    def update_external_variables(self):
+        inv_menu = Inventory_Menu(self.game, self.character)
+        inv_menu.update()
+        self.save()
+        self.game.in_npc_menu = False
+        self.game.in_menu = False
+        self.game.generic_npc.kill()
+
+    def save(self):
+        inv_list = ['weapons', 'weapons2', 'tops', 'bottoms', 'hats', 'hair', 'shoes', 'gloves', 'items', 'magic']
+        temp_inv = {}
+        for kind in inv_list:
+            temp_list = []
+            temp_list.append(self.character.equipped[kind])
+            temp_inv[kind] = temp_list
+        self.character.kind['inventory'] = temp_inv
+        self.character.kind['inventory']['gold'] = 0
+        self.character.kind['gender'] = self.character.equipped['gender']
+        self.character.kind['race'] = self.character.equipped['race']
+        tkinter_menu = Npc_Info_Designer(self, self.character)
+        file = open("npcs.py", "a")
+        file.write("\n")
+        file.write("PEOPLE[\'" + self.character.species + "\'] = " + str(self.character.kind))
+        file.close()
+        if not self.running:
+            self.game.quit()
+        else:
+            self.update()
 
 class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for other menus.
-    def __init__(self, game):
-        super().__init__(game)
+    def __init__(self, game, character = 'player'):
+        super().__init__(game, character)
+        if character == 'player':
+            self.character = self.game.player
+        else:
+            self.character = character
         # These items are changed for inherrited menus.
         self.exit_keys = [pg.K_i, pg.K_e] # The keys used to enter/exit the menu.
         self.spacing = 20 # Spacing between headings
@@ -386,95 +450,96 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
 
     def use_item(self):
         if self.item_type == 'items':
-            self.game.player.equipped['items'] = self.selected_item.text
-            self.game.player.use_item()
+            self.character.equipped['items'] = self.selected_item.text
+            if self.character == self.game.player:
+                self.character.use_item()
             self.selected_item = None
             self.list_items()
 
     def drop_item(self):
         # Unequips item if you drop one you are equipping and don't have another one.
         number_of_each = 0
-        for i, item in enumerate(self.game.player.inventory[self.item_type]):
+        for i, item in enumerate(self.character.inventory[self.item_type]):
             if item == self.selected_item.text:
                 number_of_each += 1
         if number_of_each == 1:
-            if self.game.player.equipped[self.item_type] == self.selected_item.text:
-                self.game.player.equipped[self.item_type] = None
-            elif self.game.player.equipped['weapons2'] == self.selected_item.text: # Unequips dropped secondary weapon.
-                self.game.player.equipped['weapons2'] = None
+            if self.character.equipped[self.item_type] == self.selected_item.text:
+                self.character.equipped[self.item_type] = None
+            elif self.character.equipped['weapons2'] == self.selected_item.text: # Unequips dropped secondary weapon.
+                self.character.equipped['weapons2'] = None
         # Removes dropped item from inventory
-        for i, item in enumerate(self.game.player.inventory[self.item_type]):
+        for i, item in enumerate(self.character.inventory[self.item_type]):
             if item == self.selected_item.text:
-                dropped_item = Dropped_Item(self.game, self.game.player.pos + vec(randrange(-50, 50), randrange(-100, 100)), self.item_type, item, self.game.previous_map)
-                self.game.player.inventory[self.item_type][i] = None
+                dropped_item = Dropped_Item(self.game, self.character.pos + vec(randrange(-50, 50), randrange(-100, 100)), self.item_type, item, self.game.previous_map)
+                self.character.inventory[self.item_type][i] = None
                 self.selected_item.text = 'None'  # Makes it so it doesn't drop more than one of the same item.
-        remove_nones(self.game.player.inventory[self.item_type])
+        remove_nones(self.character.inventory[self.item_type])
         self.list_items()
 
     def right_equip(self, item):
-        if self.game.player.equipped[self.item_type] == item.text:  # Unequipping
+        if self.character.equipped[self.item_type] == item.text:  # Unequipping
             if self.item_type == 'weapons':
-                self.game.player.last_weapon = item.text
-            self.game.player.equipped[self.item_type] = None
+                self.character.last_weapon = item.text
+            self.character.equipped[self.item_type] = None
         else:
             if self.item_type == 'weapons':  # Equipping
-                if self.game.player.equipped['weapons2'] == item.text:
-                    if self.game.player.inventory['weapons'].count(item.text) > 1:
-                        self.game.player.last_weapon = self.game.player.equipped['weapons']  # Used to keep track of bullets fired from unequipped weapons
-                        self.game.player.equipped[self.item_type] = item.text
+                if self.character.equipped['weapons2'] == item.text:
+                    if self.character.inventory['weapons'].count(item.text) > 1:
+                        self.character.last_weapon = self.character.equipped['weapons']  # Used to keep track of bullets fired from unequipped weapons
+                        self.character.equipped[self.item_type] = item.text
                 else:
-                    self.game.player.last_weapon = self.game.player.equipped['weapons']  # Used to keep track of bullets fired from unequipped weapons
-                    self.game.player.equipped[self.item_type] = item.text
+                    self.character.last_weapon = self.character.equipped['weapons']  # Used to keep track of bullets fired from unequipped weapons
+                    self.character.equipped[self.item_type] = item.text
             else:
-                if self.game.player.equipped['gender'] == 'female' and 'M' in item.text: # This changes male tops and bottoms to fit female bodies (so the boobs and butts don't stick out)
+                if self.character.equipped['gender'] == 'female' and 'M' in item.text: # This changes male tops and bottoms to fit female bodies (so the boobs and butts don't stick out)
                     temp_item = item.text.replace('M', 'F')
-                    self.game.player.equipped[self.item_type] = temp_item
+                    self.character.equipped[self.item_type] = temp_item
                 else:
-                    self.game.player.equipped[self.item_type] = item.text
+                    self.character.equipped[self.item_type] = item.text
 
 
     def left_equip(self, item):
         if self.item_type == 'weapons':
-            if self.game.player.equipped['weapons'] == item.text:
-                if self.game.player.inventory['weapons'].count(item.text) > 1:
-                    if self.game.player.equipped['weapons2'] == item.text:
-                        self.game.player.last_weapon2 = item.text  # Used to keep track of bullets fired from unequipped weapons
-                        self.game.player.equipped['weapons2'] = None
+            if self.character.equipped['weapons'] == item.text:
+                if self.character.inventory['weapons'].count(item.text) > 1:
+                    if self.character.equipped['weapons2'] == item.text:
+                        self.character.last_weapon2 = item.text  # Used to keep track of bullets fired from unequipped weapons
+                        self.character.equipped['weapons2'] = None
                     else:
-                        self.game.player.last_weapon2 = self.game.player.equipped['weapons2']  # Used to keep track of bullets fired from unequipped weapons
-                        self.game.player.equipped['weapons2'] = item.text
+                        self.character.last_weapon2 = self.character.equipped['weapons2']  # Used to keep track of bullets fired from unequipped weapons
+                        self.character.equipped['weapons2'] = item.text
             else:
-                if self.game.player.equipped['weapons2'] == item.text:
-                    self.game.player.last_weapon2 = item.text  # Used to keep track of bullets fired from unequipped weapons
-                    self.game.player.equipped['weapons2'] = None
+                if self.character.equipped['weapons2'] == item.text:
+                    self.character.last_weapon2 = item.text  # Used to keep track of bullets fired from unequipped weapons
+                    self.character.equipped['weapons2'] = None
                 else:
-                    self.game.player.last_weapon2 = self.game.player.equipped['weapons2']  # Used to keep track of bullets fired from unequipped weapons
-                    self.game.player.equipped['weapons2'] = item.text
+                    self.character.last_weapon2 = self.character.equipped['weapons2']  # Used to keep track of bullets fired from unequipped weapons
+                    self.character.equipped['weapons2'] = item.text
 
     def list_items(self):
-        remove_nones(self.game.player.inventory[self.item_type]) # Makes sure to remove empty slots in inventory.
+        remove_nones(self.character.inventory[self.item_type]) # Makes sure to remove empty slots in inventory.
         self.clear_menu()
-        self.counter = Counter(self.game.player.inventory[self.item_type])
+        self.counter = Counter(self.character.inventory[self.item_type])
         displayed_list = [] # Keeps track of which items have been displayed
 
         row = 0
         x_row = 50
         max_width = 0
-        for item in self.game.player.inventory[self.item_type]:
+        for item in self.character.inventory[self.item_type]:
             if item not in displayed_list:
                 if 30 * row + 75 > (self.game.screen_height - 195):
                     row = 0
                     x_row += max_width + 10
                 item_name = Text(self, item, default_font, 20, WHITE, x_row, 30 * row + 75, "topleft")
                 self.item_sprites.add(item_name)
-                if self.game.player.equipped[self.item_type] != None and self.game.player.equipped[self.item_type] == item:
+                if self.character.equipped[self.item_type] != None and self.character.equipped[self.item_type] == item:
                     if self.item_type == 'weapons':
                         equipped_text = Text(self, "(R)", default_font, 20, WHITE, item_name.rect.right + 25, 30 * row + 75, "topleft")
                         self.item_tags_sprites.add(equipped_text)
                     else:
                         equipped_text = Text(self, "(E)", default_font, 20, WHITE, item_name.rect.right + 25, 30 * row + 75, "topleft")
                         self.item_tags_sprites.add(equipped_text)
-                if self.game.player.equipped['weapons2'] != None and self.game.player.equipped['weapons2'] == item:
+                if self.character.equipped['weapons2'] != None and self.character.equipped['weapons2'] == item:
                     left_equipped_text = Text(self, "(L)", default_font, 20, WHITE, item_name.rect.left - 32, 30 * row + 75, "topleft")
                     self.item_tags_sprites.add(left_equipped_text)
                 if self.counter[item] > 1:
@@ -486,17 +551,18 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                 row += 1
 
         # Calculates the player's armor rating
-        self.game.player.stats['armor'] = 0
-        for item in self.game.player.equipped:
-            if self.game.player.equipped[item] != None:
-                if '2' in item:
-                    temp_item = item.replace('2', '')
-                else:
-                    temp_item = item
-                if 'armor' in eval(temp_item.upper())[self.game.player.equipped[item]]:
-                    self.game.player.stats['armor'] += eval(temp_item.upper())[self.game.player.equipped[item]]['armor']
+        if self.character == self.game.player:
+            self.character.stats['armor'] = 0
+            for item in self.character.equipped:
+                if self.character.equipped[item] != None:
+                    if '2' in item:
+                        temp_item = item.replace('2', '')
+                    else:
+                        temp_item = item
+                    if 'armor' in eval(temp_item.upper())[self.character.equipped[item]]:
+                        self.character.stats['armor'] += eval(temp_item.upper())[self.character.equipped[item]]['armor']
 
-        self.game.player.calculate_weight()
+            self.character.calculate_weight()
 
     def display_item_info(self, item):
         item_dictionary = globals()[self.item_type.upper()] #converts the item_type string into the correct dictionary to get the item stats from
@@ -519,27 +585,29 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                         self.printable_stat_list.append(item_stats)
                         i += 1
 
+
     def update_external_variables(self):
-        if self.game.player.in_vehicle:
-            if not self.game.player.vehicle.mountable:
-                self.game.player.vehicle.reequip()
+        if self.character.in_vehicle:
+            if not self.character.vehicle.mountable:
+                self.character.vehicle.reequip()
         self.game.in_inventory_menu = False
         self.game.in_menu = False
-        self.game.player.current_weapon = self.game.player.equipped['weapons']
-        self.game.player.current_weapon2 = self.game.player.equipped['weapons2']
-        if self.game.player.swimming:
-            if self.game.player.in_vehicle:
-                if not self.game.player.vehicle.mountable:
-                    self.game.player.vehicle.reequip()
+        self.character.current_weapon = self.character.equipped['weapons']
+        self.character.current_weapon2 = self.character.equipped['weapons2']
+        if self.character.swimming:
+            if self.character.in_vehicle:
+                if not self.character.vehicle.mountable:
+                    self.character.vehicle.reequip()
             else:
-                toggle_equip(self.game.player, True)
-        check_equip(self.game.player)
-        self.game.player.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
-        self.game.player.dragon_body.update_animations()
-        self.game.player.calculate_fire_power()
-        self.game.player.calculate_perks()
-        # Reloads
-        self.game.player.pre_reload()
+                toggle_equip(self.character, True)
+        check_equip(self.character)
+        self.character.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
+        self.character.dragon_body.update_animations()
+        if self.character == self.game.player:
+            self.character.calculate_fire_power()
+            self.character.calculate_perks()
+            # Reloads
+            self.character.pre_reload()
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
 
 
@@ -553,6 +621,12 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         pg.draw.rect(self.game.screen, WHITE, description_rect, 2)
         pg.draw.rect(self.game.screen, BLACK, list_rect_fill)
         pg.draw.rect(self.game.screen, BLACK, description_rect_fill)
+        # Used for NPC designing menu
+        if self.character != self.game.player:
+            self.clear_pictures()
+            self.character.body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
+            character_image = self.character.body.body_surface
+            character_preview = Picture(self.game, self, character_image, int(self.game.screen_width * (3 / 4)), self.game.screen_height - 200)
         if not self.selected_item == None:
             if self.item_selected:
                 selected_rect = pg.Rect(self.selected_item.rect.x - 4, self.selected_item.rect.y, self.selected_item.rect.width + 8, self.selected_item.size + 2)
@@ -563,8 +637,9 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         if self.item_selected:
             for i, item_stat in enumerate(self.printable_stat_list):
                 self.draw_text(item_stat, default_font, 20, WHITE, self.game.screen_width / 2 + 50, self.game.screen_height / 3 + 30 * i, "topleft")
-        self.draw_text(str(self.game.player.inventory['gold']) + " gold in inventory.", default_font, 25, WHITE, 20, self.game.screen_height - 120, "topleft")
-        self.draw_text("Armor Rating: " + str(self.game.player.stats['armor']) + "   Carry Weight: " + str(self.game.player.stats['weight']) + "  Max Carry Weight: " + str(self.game.player.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
+        self.draw_text(str(self.character.inventory['gold']) + " gold in inventory.", default_font, 25, WHITE, 20, self.game.screen_height - 120, "topleft")
+        if self.character == self.game.player:
+            self.draw_text("Armor Rating: " + str(self.character.stats['armor']) + "   Carry Weight: " + str(self.character.stats['weight']) + "  Max Carry Weight: " + str(self.character.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
         self.draw_text("Right Click: Equip/Unequip   Left Click: Equip second weapon/View Item    B: use Items    X: drop selected item    E: Exit Menu   ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 

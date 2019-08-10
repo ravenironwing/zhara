@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="32" nextobjectid="113">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="32" nextobjectid="114">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1127,5 +1127,6 @@
   <object id="108" name="blackwraith" x="5187.21" y="6129.7" width="57.5758" height="60.6061"/>
   <object id="109" name="blackwraith" x="4587.21" y="3993.7" width="57.5758" height="60.6061"/>
   <object id="110" name="blackwraith" x="4073.88" y="1905.7" width="57.5758" height="60.6061"/>
+  <object id="113" name="demon priest" x="3988" y="932" width="80" height="88"/>
  </objectgroup>
 </map>

@@ -573,6 +573,8 @@ class Game:
         self.title_image = pg.transform.scale(self.title_image, (self.screen_width, self.screen_height))
 
         self.continued_game = False
+        self.in_load_menu = False
+        self.in_npc_menu = False
         waiting = True
         i = 0
         while waiting:
@@ -589,12 +591,20 @@ class Game:
                     pg.quit()
                     sys.exit()
                 if event.type == pg.KEYDOWN:
-                    waiting = False
                     if event.key == pg.K_c:
+                        waiting = False
                         self.in_load_menu = True
                         self.continued_game = True
-                    else:
-                        self.in_load_menu = False
+                    elif event.key == pg.K_n:  # Enters the NPC creation tool
+                        if event.mod & pg.KMOD_CTRL:
+                            waiting = False
+                            self.in_npc_menu = True
+                        else:
+                            waiting = False
+
+                    elif event.key != pg.K_n:
+                        if not event.mod & pg.KMOD_CTRL:
+                            waiting = False
 
             pg.display.flip()
             i += 1
@@ -691,6 +701,11 @@ class Game:
         if self.new_game:
             self.in_character_menu = True
         self.character_menu = Character_Design_Menu(self)
+        self.generic_npc = Npc(self, 0, 0, map, 'generic')  # Spawns a generic villager npc to be modified
+        self.npc_menu = Npc_Design_Menu(self, self.generic_npc)
+        if self.in_npc_menu:
+            self.npc_menu.update()
+        self.generic_npc.kill()
         if not self.continued_game:
             self.character_menu.update()
         self.in_character_menu = False
@@ -1797,6 +1812,8 @@ class Game:
             self.stats_menu.update()
         if self.in_character_menu:
             self.character_menu.update()
+        if self.in_npc_menu:
+            self.npc_menu.update()
         if self.in_loot_menu:
             self.loot_menu.update()
         if self.in_lock_menu:

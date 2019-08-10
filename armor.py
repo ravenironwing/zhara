@@ -1,3 +1,5 @@
+from race_info import *
+
 HATS = {}
 HATS['steel crown'] = {'armor': 10, 'image': 0, 'weight': 0.3, 'materials': {'steel ingot': 2}, 'upgrade': {'steel ingot': 1, 'green crystal': 1}, 'value': 100}
 HATS['grey baseball hat'] = {'armor': 1, 'image': 1, 'weight': 0.1, 'upgrade': {'leather': 1}, 'value': 10}
@@ -111,12 +113,12 @@ HAIR['white beard'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'wei
                                 'image': 41}
 
 # Makes a dictionary containing the hairstyles appropriate for each race.
-temp_race_list = ['demon', 'osidine', 'shaktele', 'elf', 'lacertolian', 'miewdra', 'immortui', 'mechanima', 'blackwraith', 'whitewraith', 'skeleton']
+#temp_race_list = ['demon', 'osidine', 'shaktele', 'elf', 'lacertolian', 'miewdra', 'immortui', 'mechanima', 'blackwraith', 'whitewraith', 'skeleton']
 RACE_HAIR = {}
-for race in temp_race_list:
+for race in RACE_TYPE_LIST:
     RACE_HAIR[race] = []
 for item in HAIR:
-    for race in temp_race_list:
+    for race in RACE_TYPE_LIST:
         if race in HAIR[item]['races']:
             RACE_HAIR[race].append(item)
 

@@ -69,6 +69,9 @@ Ctrl + L - Loads saved games (it's a bit buggy right now, so I reccommend just p
 
 #Notes
 The word map is set with the north pole at the center and the south pole wrapped around it (because it is a sphere mapped to a flat surface). This allows you to travel around the world. Since north is towards the center there is a compass on the HUD minimap to show you which way north is.
+
 Npc animations were created using position_editor.py. This file is not needed to run the game.
 
+You can access the NPC creation tool by pressing Ctrl N at the title screen
+NPCs are automatically added to npc.py and can be added into new Tiled maps
 

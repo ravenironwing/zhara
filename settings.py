@@ -7,6 +7,7 @@ from magic import *
 from interactables import *
 from items import *
 from chests import *
+from race_info import *
 
 vec = pg.math.Vector2
 
@@ -168,7 +169,6 @@ WING2_OFFSET = (-15, -21)
 PORTAL_CODES = {'1234': [107, 34, 32, 26], '4132': [53, 75, 31, 5], '3421': [27, 40, 5, 33], '2143': [89, 49, 32, 32], '1342': [126, 22, 32, 32], '1243': [146, 43, 32, 32], '2413': [65, 20, 32, 32],  '4321': [38, 27, 32, 42], '3124': [85, 96, 32, 32]}
 
 # Player body image settings
-RACE_TYPE_LIST = ['icegolem', 'golem', 'goblin', 'demon', 'vadashay', 'osidine', 'shaktele', 'elf', 'lacertolian', 'miewdra', 'immortui', 'mechanima', 'blackwraith', 'whitewraith', 'skeleton', 'osidinedragon', 'shakteledragon', 'elfdragon', 'lacertoliandragon', 'miewdradragon', 'immortuidragon', 'mechanimadragon', 'blackwraithdragon', 'whitewraithdragon', 'skeletondragon']
 gender_list = ['male', 'female']
 HUMANOID_IMAGES = {}
 for kind in RACE_TYPE_LIST:
@@ -420,7 +420,7 @@ RACE['mechanima'] = {'armor': 35, 'image': 5, 'start map': (126, 21), 'start pos
 #RACE['blackwraith'] = {'armor': 0, 'image': 8, 'start map': (53, 75), 'start pos': (45, 5),
 #                       'start_stats': {'health': 300, 'max health': 300, 'stamina': 150, 'max stamina': 150, 'magica': 150, 'max magica': 150, 'weight': 0, 'max weight': 50, 'strength': 0.2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
 #                        'description': 'Black wraiths are disembodied practitioners of dark magic. They are immune to unenchanted melee weapons, bullets, and can walk through walls when not carrying any weight.'}
-RACE['whitewraith'] = {'armor': 0, 'image': 7, 'start map': (53, 75), 'start pos': (11, 60),
+RACE['whitewraith'] = {'armor': 0, 'image': 7, 'start map': (59, 64), 'start pos': (40, 38),
                        'start_stats': {'health': 200, 'max health': 200, 'stamina': 160, 'max stamina': 160, 'magica': 220, 'max magica': 220, 'weight': 0, 'max weight': 50, 'strength': 0.1, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2.5, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
                         'description': 'White wraiths are disembodied practitioners of white magic. They are immune to unenchanted melee weapons, bullets, and can walk through walls when not carrying any weight.'}
 RACE['skeleton'] = {'armor': 12, 'image': 6, 'start map': (27, 40), 'start pos': (32, 30),
@@ -436,7 +436,6 @@ RACE['mechanimadragon'] = {'armor': 40, 'image': 5}
 #RACE['blackwraithdragon'] = {'armor': 40, 'image': 8}
 RACE['whitewraithdragon'] = {'armor': 40, 'image': 7}
 RACE['skeletondragon'] = {'armor': 40, 'image': 6}
-
 
 DEFAULT_INVENTORIES = {}
 DEFAULT_INVENTORIES['male osidine'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': ['leather armor M'], 'bottoms': ['leather leggings M'], 'gloves': [None], 'shoes': ['black combat'], 'gold': 25, 'items': [None], 'magic': [None]}
@@ -457,23 +456,6 @@ DEFAULT_INVENTORIES['male whitewraith'] = {'gender': list(GENDER.keys()), 'race'
 DEFAULT_INVENTORIES['female whitewraith'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
 DEFAULT_INVENTORIES['male skeleton'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
 DEFAULT_INVENTORIES['female skeleton'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
-
-
-#DEFAULT_INVENTORIES['male blackwraith'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
-#DEFAULT_INVENTORIES['female blackwraith'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
-
-#DEFAULT_INVENTORIES['male osidinedragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': ['leather leggings M'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['female osidinedragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': ['red dress top'], 'bottoms': ['leather leggings F'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['male lacertoliandragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': ['leather leggings M'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['female lacertoliandragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': ['red dress top'], 'bottoms': ['leather leggings F'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['male elfdragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': ['leather leggings M'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['female elfdragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': ['red dress top'], 'bottoms': ['leather leggings F'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['male miewdradragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': ['leather leggings M'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['female miewdradragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': ['red dress top'], 'bottoms': ['leather leggings F'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['male immortuidragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': ['leather leggings M'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['female immortuidragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': ['red dress top'], 'bottoms': ['leather leggings F'], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['male mechanimadragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
-#DEFAULT_INVENTORIES['female mechanimadragon'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['sword'], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None]}
 
 ENCHANTMENTS = {}
 ENCHANTMENTS['explosive'] = {'materials':{'gun powder':1, 'black crystal':1}, 'equip kind': ['weapons'], 'image': 3}

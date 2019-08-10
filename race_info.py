@@ -1,0 +1,1 @@
+RACE_TYPE_LIST = ['icegolem', 'golem', 'goblin', 'demon', 'vadashay', 'osidine', 'shaktele', 'elf', 'lacertolian', 'miewdra', 'immortui', 'mechanima', 'blackwraith', 'whitewraith', 'skeleton', 'osidinedragon', 'shakteledragon', 'elfdragon', 'lacertoliandragon', 'miewdradragon', 'immortuidragon', 'mechanimadragon', 'blackwraithdragon', 'whitewraithdragon', 'skeletondragon']

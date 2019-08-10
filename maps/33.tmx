@@ -1277,7 +1277,7 @@
   <object id="172" name="mini gun" x="2322" y="7798" width="64" height="62"/>
   <object id="196" name="shaktelevillager" x="4509.09" y="5069.7" width="60.6061" height="57.5758"/>
   <object id="197" name="shaktelevillager" x="3361.91" y="5514.67" width="60.6061" height="57.5758"/>
-  <object id="198" name="shaktelevillager" x="4560.61" y="3795.45" width="60.6061" height="57.5758"/>
+  <object id="198" name="sandy" x="4560.61" y="3795.45" width="60.6061" height="57.5758"/>
   <object id="199" name="shaktelevillager" x="3563.64" y="6177.27" width="60.6061" height="57.5758"/>
   <object id="200" name="shaktele blacksmith" x="7446.06" y="3959.81" width="60.6061" height="57.5758"/>
   <object id="221" name="shakteleguard" x="4592" y="6262.67" width="57.3333" height="56"/>
