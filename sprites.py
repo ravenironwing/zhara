@@ -183,11 +183,34 @@ def random_inventory_item(container, temp_inventory):
                 else:
                     container.inventory[item_type][i] = temp_inventory[item_type][i]
 
-def change_clothing(character):
+def change_clothing(character, best = False):
     # Adds items to equipped list
-    remove_nones(character.inventory['tops'], character.inventory['bottoms'], character.inventory['hair'], character.inventory['weapons'])
-    for item in ITEM_TYPE_LIST:
-        character.equipped[item] = choice(character.inventory[item])
+    remove_nones(character.inventory['tops'], character.inventory['bottoms'], character.inventory['hair'], character.inventory['weapons'], character.inventory['shoes'], character.inventory['gloves'], character.inventory['hats'])
+    for item_type in ITEM_TYPE_LIST:
+        if not best:
+            character.equipped[item_type] = choice(character.inventory[item_type])
+        if best: # Changest into clothes with best ratings
+            stat = 0
+            best_item = None
+            for item in character.inventory[item_type]:
+                if item != None:
+                    if item_type == 'weapons':
+                        if WEAPONS[item]['gun']:
+                            if WEAPONS[item]['damage'] > stat:
+                                stat = WEAPONS[item]['damage']
+                                best_item = item
+                        elif WEAPONS[item]['melee damage'] > stat:
+                            stat = WEAPONS[item]['melee damage']
+                            best_item = item
+                    elif item_type in ['tops', 'bottoms', 'gloves', 'shoes', 'hats']:
+                        if eval(item_type.upper())[item]['armor'] > stat:
+                            stat = eval(item_type.upper())[item]['armor']
+                            best_item = item
+                    else:
+                        best_item = choice(character.inventory[item_type])
+                else:
+                    best_item = None
+            character.equipped[item_type] = best_item
     character.set_gun_vars()
 
 def remove_nones(*my_lists):
@@ -290,6 +313,7 @@ class Vehicle(pg.sprite.Sprite):
         self._layer = self.data['layer']
         self.mountable = self.data['mountable']
         self.veh_acc = self.data['acceleration']
+        self.aggression = "vehicle"
         if 'fuel' in self.data.keys():
             self.fuel = self.data['fuel']
         else:
@@ -924,6 +948,7 @@ class Player(pg.sprite.Sprite):
         else:
             self.immaterial = False
         self.provoked = False
+        self.aggression = 'player'
 
     @property
     def swimming(self):
@@ -2340,7 +2365,7 @@ class Npc(pg.sprite.Sprite):
             self.offensive = True
             player_dist = self.game.player.pos - self.pos
             player_dist = player_dist.length()
-            for mob in self.game.mobs:
+            for mob in self.game.moving_targets:
                 if mob != self:
                     if mob.aggression != 'awd':
                         dist = self.pos - mob.pos
@@ -2651,15 +2676,20 @@ class Npc(pg.sprite.Sprite):
     def cast_spell(self):
         if self.inventory['magic'][0] != None:
             self.equipped['magic'] = choice(self.inventory['magic'])
-            self.game.effects_sounds[MAGIC[self.equipped['magic']]['sound']].play()
-            Spell_Animation(self.game, self.equipped['magic'], self.pos, self.rot, self.vel)
             if 'healing' in MAGIC[self.equipped['magic']]:
-                self.add_health(MAGIC[self.equipped['magic']]['healing'])
-            if 'fireballs' in MAGIC[self.equipped['magic']]:
-                balls = MAGIC[self.equipped['magic']]['fireballs']
-                damage = MAGIC[self.equipped['magic']]['damage']
-                for i in range(0, balls):
-                    Fireball(self, self.game, self.pos, self.rot + (36 * i), damage, 30, 1300, 500, self.vel, 'fire', True, self.in_flying_vehicle)
+                if self.health < (self.max_health - 15):
+                    self.add_health(MAGIC[self.equipped['magic']]['healing'])
+                    self.game.effects_sounds[MAGIC[self.equipped['magic']]['sound']].play()
+                    Spell_Animation(self.game, self.equipped['magic'], self.pos, self.rot, self.vel)
+
+            else:
+                self.game.effects_sounds[MAGIC[self.equipped['magic']]['sound']].play()
+                Spell_Animation(self.game, self.equipped['magic'], self.pos, self.rot, self.vel)
+                if 'fireballs' in MAGIC[self.equipped['magic']]:
+                    balls = MAGIC[self.equipped['magic']]['fireballs']
+                    damage = MAGIC[self.equipped['magic']]['damage']
+                    for i in range(0, balls):
+                        Fireball(self, self.game, self.pos, self.rot + (36 * i), damage, 30, 1300, 500, self.vel, 'fire', True, self.in_flying_vehicle)
 
     def death(self):
         if self in self.game.companions:

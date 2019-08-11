@@ -1057,7 +1057,7 @@ class Game:
 
 
         # Generates random animals/Npcs on maps that don't have existing animals on them. The type of animal depends on the maptype object in the tmx file.
-        if len(self.mobs.sprites()) - len(self.companions.sprites()) == 0:
+        if (len(self.mobs) - len(self.companions)) < 4:
             if self.map_type != None:
                 for i in range(0, randrange(10, 30)):
                     animal = choice(list(eval(self.map_type.upper() + '_ANIMALS')))
@@ -1564,7 +1564,8 @@ class Game:
         for hit in hits:
             if 'dead' in hit.item and 'fish' in hit.item:
                 if hit.dropped_fish:
-                    animal_name = ANIMALS[hit.item[5:]]
+                    animal_dict = ANIMALS[hit.item[5:]]
+                    animal_name = animal_dict['name']
                     Animal(self, hit.pos.x, hit.pos.y, hit.map, animal_name)
                     hit.kill()
             elif not hit.floats:

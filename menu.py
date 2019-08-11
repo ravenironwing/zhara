@@ -14,6 +14,7 @@ import copy
 from dialogue import *
 import re
 from npc_design import Npc_Info_Designer
+from math import ceil
 
 vec = pg.math.Vector2
 
@@ -418,10 +419,11 @@ class Npc_Design_Menu(Character_Design_Menu):
         self.character.kind['race'] = self.character.equipped['race']
         tkinter_menu = Npc_Info_Designer(self, self.character)
         if self.character.kind['name'] != 'generic': # This makes it so it doesn't write unfinished NPCs
-            file = open("npcs.py", "a")
-            file.write("\n")
-            file.write("PEOPLE[\'" + self.character.species + "\'] = " + str(self.character.kind))
-            file.close()
+            if self.character.kind['name'] != "":
+                file = open("npcs.py", "a")
+                file.write("\n")
+                file.write("PEOPLE[\'" + self.character.species + "\'] = " + str(self.character.kind))
+                file.close()
         if not self.running:
             self.game.quit()
         else:
@@ -1778,7 +1780,9 @@ class Dialogue_Menu():
     def __init__(self, game, hit):
         self.game = game
         self.menu_sprites = pg.sprite.Group()
-        self.wrap_factor = int(self.game.screen_width / 31)
+        # These next two numbers keep the text in the display window. They may need some tweeking for different resolutions.
+        self.wrap_factor = int(ceil((self.game.screen_width * 2/5)/ 13))
+        self.number_of_lines = int(ceil((self.game.screen_height * 1/7) / 35))
         self.item_selected = False
         self.selected_item = None
         self.exit_keys = [pg.K_e, pg.K_i]  # The keys used to enter/exit the menu.
@@ -1806,7 +1810,7 @@ class Dialogue_Menu():
                         self.quest = self.hit.kind['quest'] = self.game.quests[self.quest]['next quest']
                         self.hit.talk_counter = 0
                         self.format_text()
-                    elif not self.game.quests[self.quest]['rewarded']:
+                    if not self.game.quests[self.quest]['rewarded']:
                         self.game.quests[self.quest]['rewarded'] = True
                         self.game.effects_sounds['fanfare'].play()
                         self.format_response(self.game.quests[self.quest]['reward text'])
@@ -1865,39 +1869,41 @@ class Dialogue_Menu():
                 self.clicked_sprites = [s for s in self.menu_sprites if s.rect.collidepoint(pos)]
                 for choice in self.menu_sprites:
                     if choice in self.clicked_sprites:
-                        if choice.text == 'Yes':
-                            self.accept_quest()
-                        if choice.text == 'No':
-                            self.deny_quest()
+                        if self.YN:
+                            if choice.text == 'Yes':
+                                self.accept_quest()
+                            if choice.text == 'No':
+                                self.deny_quest()
 
     def add_reward(self, reward):
-        for item_type in range(0, 8):
-            for item in reward[ITEM_TYPE_LIST[item_type]]:
-                if item != None:
-                    self.game.player.inventory[ITEM_TYPE_LIST[item_type]].append(item)
-        self.game.player.inventory['gold'] += reward['gold']
+        for item in reward:
+            for kind in ITEM_TYPE_LIST:
+                if item in eval(kind.upper()):
+                    self.game.player.inventory[kind].append(item)
+            if 'gold' in item:
+                gold = int(item.replace('gold', ''))
+                self.game.player.inventory['gold'] += gold
 
     def accept_quest(self):
         if self.quest != None:
             if self.player_has_item:
                 self.take_item()
-                if not self.game.quests[self.quest]['rewarded']:
-                    self.game.quests[self.quest]['rewarded'] = True
-                    self.game.quests[self.quest]['completed'] = True
-                    self.game.effects_sounds['fanfare'].play()
-                    self.response_text = self.game.quests[self.quest]['reward text']
-                    self.response_text.append(self.game.quests[self.quest]['completed text'][0])
-                    self.format_response()
-                    self.add_reward(self.game.quests[self.quest]['reward'])
-                    self.clear_menu()
-                    self.YN = False
-                    self.inventory_check = False
-                    self.needed_item = None
-                    self.player_has_item = False
-                    self.hit.kind['dialogue'] = self.game.quests[self.quest]['next dialogue']
-                    self.quest = self.hit.kind['quest'] = self.game.quests[self.quest]['next quest']
-                    if 'autoexcept' in self.game.quests[self.quest]:
-                        if self.game.quests[self.quest]['autoexcept']:
+                self.game.quests[self.quest]['rewarded'] = True
+                self.game.effects_sounds['fanfare'].play()
+                self.response_text = self.game.quests[self.quest]['reward text']
+                self.response_text.append(self.game.quests[self.quest]['completed text'][0])
+                self.format_response()
+                self.add_reward(self.game.quests[self.quest]['reward'])
+                self.clear_menu()
+                self.YN = False
+                self.inventory_check = False
+                self.needed_item = None
+                self.player_has_item = False
+                self.hit.kind['dialogue'] = self.game.quests[self.quest]['next dialogue']
+                self.quest = self.hit.kind['quest'] = self.game.quests[self.quest]['next quest']
+                if self.quest != None:
+                    if 'autoaccept' in self.game.quests[self.quest]:
+                        if self.game.quests[self.quest]['autoaccept']:
                             self.game.quests[self.quest]['accepted'] = True
             else:
                 self.game.quests[self.quest]['accepted'] = True
@@ -1905,6 +1911,11 @@ class Dialogue_Menu():
                 self.format_response()
                 self.clear_menu()
                 self.YN = False
+                if self.quest != None:
+                    if 'autocomplete' in self.game.quests[self.quest]:
+                        if self.game.quests[self.quest]['autocomplete']:
+                            self.game.quests[self.quest]['completed'] = True
+                            self.action()
 
     def deny_quest(self):
         if self.quest != None:
@@ -1921,29 +1932,43 @@ class Dialogue_Menu():
                 self.YN = False
 
     def take_item(self):
-        if 'gold:' not in self.needed_item:
+        self.player_has_item = False
+        self.inventory_check = False
+        if 'gold' not in self.needed_item:
             for item_type in ITEM_TYPE_LIST:
                 for i, item in enumerate(self.game.player.inventory[item_type]):
                     if item != None:
                         if self.needed_item in item:
                             self.hit.inventory[item_type].append(item) # Adds item to NPCs inventory
                             self.hit.kind['inventory'][item_type].append(item) # Adds the item to NPCs dictionary file so it loads when you leave the map and come back.
-                            change_clothing(self.hit)
+                            change_clothing(self.hit, True)
                             self.hit.body.update_animations()
                             self.game.player.inventory[item_type][i] = None # Removes item from player's inventory
                             remove_nones(self.game.player.inventory[item_type])
-            self.game.quests[self.quest]['completed'] = True
-            if 'action' in self.game.quests[self.quest]:
-                self.action()
+
+        else:
+            gold = int(self.needed_item.replace('gold', ''))
+            if gold < self.game.player.inventory['gold']:
+                self.game.player.inventory['gold'] -= gold
+                self.hit.inventory['gold'] += gold
+        self.game.quests[self.quest]['completed'] = True
+        if 'action' in self.game.quests[self.quest]:
+            self.action()
+
 
     def check_inventory(self):
-        if 'gold:' not in self.needed_item:
+        if 'gold' not in self.needed_item:
             for item_type in ITEM_TYPE_LIST:
                 for item in self.game.player.inventory[item_type]:
                     if item != None:
                         if self.needed_item in item:
                             self.player_has_item = True
                             return True
+        else:
+            gold = int(self.needed_item.replace('gold', ''))
+            if gold < self.game.player.inventory['gold']:
+                self.player_has_item = True
+                return True
 
     def action(self):
         if self.game.quests[self.quest]['action'] == 'companion':
@@ -1965,28 +1990,32 @@ class Dialogue_Menu():
         for item in self.menu_sprites:
             item.kill()
 
-    def format_response(self, text = None):
+    def format_response(self, text = None): # Used for formatting quest responses.
         if text != None:
             self.response_text = text
         self.text_data = []
         self.text_screen = 0
         for x in self.response_text:
-            description = wrap(x, self.wrap_factor)
-            self.text_data.append(description)
+            self.divide_lines(x)
 
-    def format_text(self):
-        # This part wraps the descriptions of the character races. So they are displayed in paragraph form.
+    def format_text(self): # Used for formatting dialogue.
+        # This part wraps text, so it is displayed in paragraph form.
         if 'random' not in self.hit.kind['dialogue']:
             for x in eval(self.hit.kind['dialogue']):
-                description = wrap(x, self.wrap_factor)
-                self.text_data.append(description)
+                self.divide_lines(x)
+
         else: # This part is used for characters with a randomized dialogue.
             dialogue = self.hit.kind['dialogue'].replace('random ', '')
             randomized_list = copy.copy(eval(dialogue))
             shuffle(randomized_list)
             for x in randomized_list:
-                description = wrap(x, self.wrap_factor)
-                self.text_data.append(description)
+                self.divide_lines(x)
+
+    def divide_lines(self, x): # This is used to split long dialogue into separate screens.
+        description = wrap(x, self.wrap_factor)
+        chunks = [description[z:z + self.number_of_lines] for z in range(0, len(description), self.number_of_lines)]
+        for y in chunks:
+            self.text_data.append(y)
 
     def draw_text(self, text, font_name, size, color, x, y, align="topleft"):
         font = pg.font.Font(font_name, size)
