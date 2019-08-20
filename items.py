@@ -3,7 +3,10 @@ from chests import *
 # Items
 ITEMS = {}
 # First aid
-ITEMS['first aid kit'] = {'health': 50, 'stamina': 50, 'image': 1, 'weight': 1.5}
+ITEMS['first aid kit'] = {'health': 50, 'stamina': 50, 'image': 1, 'weight': 1.5, 'value': 150}
+
+# Jewelry
+ITEMS['Zhara Talisman'] = {'image': 134, 'weight': 0}
 
 # Potions
 ITEMS['potion of minor healing'] = {'alchemy': True, 'health': 20, 'image': 4, 'weight': 0.5, 'materials': {'dead pink moth':1, 'empty bottle':1}, 'value': 50}
@@ -22,11 +25,15 @@ ITEMS['potion of masculinization'] = {'alchemy': True, 'change sex': 'male', 'im
 # Tools
 ITEMS['lock pick'] = {'image': 11, 'weight': 0.2, 'value': 120}
 
+# Craftable
+ITEMS['fire pit'] = {'craftable': True, 'image': 135, 'weight': 23, 'materials': {'cut wood':4, 'ordinary rock':10}, 'random drop': 100}
+
+
 # Containers/bowls
 ITEMS['large plate'] = {'image': 34, 'weight': 0.5, 'value': 2}
 ITEMS['plate'] = {'image': 37, 'weight': 0.3, 'value': 1}
-ITEMS['jar'] = {'image': 63, 'weight': 0.3, 'value': 50, 'value': 2}
-ITEMS['empty bottle'] = {'image': 64, 'weight': 0.2, 'value': 10}
+ITEMS['jar'] = {'image': 63, 'weight': 0.3, 'value': 50, 'value': 2, 'random drop': 60}
+ITEMS['empty bottle'] = {'image': 64, 'weight': 0.2, 'value': 10, 'random drop': 25}
 #ITEMS['empty blue bottle'] = {'image': 65, 'weight': 0.2}
 ITEMS['pedestal and mortar'] = {'image': 60, 'weight': 1, 'value': 200}
 ITEMS['coffee pot'] = {'image': 108, 'weight': 1, 'value': 5}
@@ -35,9 +42,9 @@ ITEMS['empty barrel'] = {'image': 131, 'weight': 10, 'value': 100}
 # Misc items
 ITEMS['candle burner'] = {'image': 61, 'weight': 1, 'value': 250}
 ITEMS['candle'] = {'image': 62, 'weight': 0.3, 'value': 25}
-ITEMS['brick'] = {'image': 97, 'weight': 1, 'value': 0}
+ITEMS['brick'] = {'image': 97, 'weight': 1, 'value': 0, 'random drop': 60}
 ITEMS['chop sticks'] = {'image': 106, 'weight': 0.1, 'value': 1}
-ITEMS['ordinary rock'] = {'image': 115, 'weight': 1.5, 'value': 0}
+ITEMS['ordinary rock'] = {'image': 115, 'weight': 1.5, 'value': 0, 'random drop': 2}
 ITEMS['airship fuel'] = {'alchemy': True, 'image': 130, 'weight': 25, 'materials': {'empty barrel':1, 'whale oil':3, 'distilled alcohol':5}, 'value': 2000}
 ITEMS['horse bridle'] = {'image': 132, 'weight': 1, 'value': 300}
 
@@ -59,10 +66,10 @@ ITEMS['chicken soup'] = {'image': 81, 'health': 110, 'stamina': 100, 'weight': 1
 ITEMS['baked potato'] = {'image': 83, 'health': 12, 'stamina': 15, 'weight': 0.2, 'materials': {'potato':1}, 'food': True, 'value': 7}
 ITEMS['french bread'] = {'image': 36, 'health': 10, 'stamina': 10, 'weight': 0.6, 'food': True, 'value': 6}
 ITEMS['potato'] = {'image': 82, 'health': 2, 'weight': 0.2, 'food': True, 'value': 1}
-ITEMS['garlic'] = {'image': 76, 'health': 5, 'stamina': 1, 'weight': 0.1, 'food': True, 'value': 2}
-ITEMS['oregano'] = {'image': 77, 'health': 2, 'weight': 0.1, 'food': True, 'value': 2}
-ITEMS['sage'] = {'image': 79, 'health': 1, 'weight': 0.1, 'food': True, 'value': 3}
-ITEMS['rosemary'] = {'image': 80, 'stamina': 4, 'weight': 0.1, 'food': True, 'value': 4}
+ITEMS['garlic'] = {'image': 76, 'health': 5, 'stamina': 1, 'weight': 0.1, 'food': True, 'value': 2, 'random drop': 30}
+ITEMS['oregano'] = {'image': 77, 'health': 2, 'weight': 0.1, 'food': True, 'value': 2, 'random drop': 50}
+ITEMS['sage'] = {'image': 79, 'health': 1, 'weight': 0.1, 'food': True, 'value': 3, 'random drop': 40}
+ITEMS['rosemary'] = {'image': 80, 'stamina': 4, 'weight': 0.1, 'food': True, 'value': 4, 'random drop': 45}
 ITEMS['carrot'] = {'image': 98, 'health': 2, 'stamina': 2, 'weight': 0.1, 'food': True, 'value': 1}
 ITEMS['california roll'] = {'image': 103, 'health': 10, 'stamina': 3, 'weight': 0.1, 'food': True, 'value': 35}
 ITEMS['salmon sushi'] = {'image': 104, 'health': 12, 'stamina': 4, 'weight': 0.1, 'food': True, 'value': 40}
@@ -93,20 +100,20 @@ ITEMS['dead rabbit'] = {'image': 14, 'weight': 5, 'value': 12}
 ITEMS['dead chicken'] = {'image': 15, 'weight': 4, 'value': 20}
 ITEMS['dead hawk'] = {'image': 109, 'weight': 3, 'value': 15}
 ITEMS['dead goldfish'] = {'image': 16, 'weight': 0.8, 'value': 1}
-ITEMS['dead brown bird'] = {'image': 91, 'weight': 0.4, 'value': 1}
-ITEMS['dead garden lizard'] = {'image': 107, 'weight': 0.2, 'value': 5}
+ITEMS['dead brown bird'] = {'image': 91, 'weight': 0.4, 'value': 1, 'random drop': 46}
+ITEMS['dead garden lizard'] = {'image': 107, 'weight': 0.2, 'value': 5, 'random drop': 34}
 
 # Alchemy materials
-ITEMS['yarrow'] = {'image': 78, 'health': 2, 'weight': 0.1, 'value': 5}
+ITEMS['yarrow'] = {'image': 78, 'health': 2, 'weight': 0.1, 'value': 5, 'random drop': 36}
 ITEMS['ant exoskeleton shell'] = {'image': 46, 'weight': 6, 'value': 250}
-ITEMS['giant ant eggs'] = {'image': 47, 'weight': 1, 'value': 90}
-ITEMS['spider egg sack'] = {'image': 133, 'weight': 1, 'value': 250}
+ITEMS['giant ant eggs'] = {'image': 47, 'weight': 1, 'value': 90, 'random drop': 60}
+ITEMS['spider egg sack'] = {'image': 133, 'weight': 1, 'value': 250, 'random drop': 80}
 ITEMS['zombie extract'] = {'change race': 'immortui', 'image': 10, 'weight': 0.5, 'value': 34}
 ITEMS['spider venom'] = {'health': -30, 'image': 9, 'weight': 0.5, 'value': 20}
 ITEMS['dragon spit'] = {'image': 2, 'weight': 0.5, 'value': 1000}
-ITEMS['sulphur'] = {'image': 73, 'weight': 0.5, 'value': 45}
-ITEMS['charcoal'] = {'image': 74, 'weight': 0.2, 'value': 20}
-ITEMS['potassium nitrate crystals'] = {'image': 75, 'weight': 0.3, 'value': 54}
+ITEMS['sulphur'] = {'image': 73, 'weight': 0.5, 'value': 45, 'random drop': 65}
+ITEMS['charcoal'] = {'image': 74, 'weight': 0.2, 'value': 20, 'random drop': 35}
+ITEMS['potassium nitrate crystals'] = {'image': 75, 'weight': 0.3, 'value': 54, 'random drop': 78}
 ITEMS['squid tentacle'] = {'image': 101, 'weight': 2, 'value': 28}
 ITEMS['squid eye'] = {'image': 102, 'weight': 0.5, 'value': 65}
 ITEMS['squid ink'] = {'health': 5, 'image': 10, 'weight': 0.5, 'value': 25}
@@ -117,7 +124,7 @@ ITEMS['sea turtle shell'] = {'image': 112, 'weight': 200, 'value': 300}
 ITEMS['turtle shell plate'] = {'image': 113, 'weight': 3, 'value': 150}
 ITEMS['demon dust'] = {'image': 121, 'weight': 0.1, 'value': 52}
 ITEMS['ectoplasm'] = {'image': 122, 'weight': 0.1, 'value': 52}
-ITEMS['clay'] = {'image': 123, 'weight': 1, 'value': 30}
+ITEMS['clay'] = {'image': 123, 'weight': 1, 'value': 30, 'random drop': 20}
 
 # Forging Materials (some are also used for enchanting)
 ITEMS['steel pipe'] = {'image': 84, 'weight': 2, 'materials': {'steel ingot': 1}, 'forgeable': True, 'value': 50}
@@ -151,7 +158,7 @@ ITEMS['olive wood block'] = {'material': 'wood', 'image': 27, 'weight': 2.1, 'va
 ITEMS['rosewood block'] = {'material': 'wood', 'image': 28, 'weight': 1.8, 'value': 80}
 ITEMS['wood block'] = {'material': 'wood', 'image': 27, 'weight': 2.1, 'value': 10}
 ITEMS['flint block'] = {'material': 'stone', 'image': 29, 'weight': 3.5, 'value': 5}
-ITEMS['flint stone'] = {'material': 'stone', 'image': 30, 'weight': 1, 'value': 2}
+ITEMS['flint stone'] = {'material': 'stone', 'image': 30, 'weight': 1, 'value': 2, 'random drop': 14}
 ITEMS['leather'] = {'material': 'fabric', 'image': 43, 'weight': 0.7, 'value': 20}
 ITEMS['leather strips'] = {'material': 'fabric', 'image': 51, 'weight': 0.4, 'value': 20}
 ITEMS['iron ore'] = {'material': 'metal', 'image': 0, 'weight': 5, 'value': 5}

@@ -247,11 +247,11 @@ class Turret(pg.sprite.Sprite):
     def __init__(self, game, mother):
         self.mother = mother
         self._layer = BULLET_LAYER
-        self.groups = game.all_sprites, game.turrets
+        self.groups = game.turrets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.game.group.add(self)
-        self.image_orig = game.player_tur
+        self.image_orig = self.game.player_tur
         self.image = self.image_orig.copy()
         self.rect = self.image.get_rect()
         #self.rect = self.rect.inflate(100, 100)
@@ -531,6 +531,8 @@ class Vehicle(pg.sprite.Sprite):
                             companion.pos = companion.rect.center = companion.talk_rect.center = self.driver.pos + offset_vec
             collide(self)
             self.get_keys() # this needs to be last in this method to avoid executing the rest of the update section if you exit
+            if self.turret != None:
+                self.turret.update()
 
 
 class Character(pg.sprite.Sprite):
@@ -890,6 +892,7 @@ class Player(pg.sprite.Sprite):
         self.last_throw = 0
         # Player state variables
         self.dragon = False
+        self.transformable = False
         self.weapon_hand = 'weapons'
         self.jumping = False
         self.jump_count = 0
@@ -1180,16 +1183,17 @@ class Player(pg.sprite.Sprite):
         self.stats['casting'] += 0.5
         if not self.dragon:
             if 'dragon' not in self.equipped['race']:
-                self.equipped['race'] = self.race + 'dragon'
-                explosion = Explosion(self.game, self)
-                self.human_body.remove(self.game.all_sprites)
-                self.dragon_body.add(self.game.all_sprites)
-                self.game.group.add(self.dragon_body)
-                self.game.group.remove(self.human_body)
-                self.body = self.dragon_body
-                self.body.update()
-                self.stats['magica'] -= 10
-                self.dragon = True
+                if self.transformable:
+                    self.equipped['race'] = self.race + 'dragon'
+                    explosion = Explosion(self.game, self)
+                    self.human_body.remove(self.game.all_sprites)
+                    self.dragon_body.add(self.game.all_sprites)
+                    self.game.group.add(self.dragon_body)
+                    self.game.group.remove(self.human_body)
+                    self.body = self.dragon_body
+                    self.body.update()
+                    self.stats['magica'] -= 10
+                    self.dragon = True
         else:
             self.equipped['race'] = self.race
             explosion = Explosion(self.game, self)
@@ -2867,7 +2871,7 @@ class Animal(pg.sprite.Sprite):
     def __init__(self, game, x, y, map, species):
         self.game = game
         self.species = self.race = species
-        self.kind = ANIMALS[species]
+        self.kind = self.cat = ANIMALS[species]
         self.name = self.kind['name']
         self.protected = self.kind['protected']
         if 'flying' in self.kind.keys():
@@ -2878,7 +2882,7 @@ class Animal(pg.sprite.Sprite):
             self._layer = SKY_LAYER
             self.in_flying_vehicle = True
         elif 'horse' in self.name:
-            self._layer = PLAYER_LAYER
+            self._layer = BULLET_LAYER
             self.in_flying_vehicle = False
         else:
             self._layer = ITEMS_LAYER
@@ -2888,6 +2892,7 @@ class Animal(pg.sprite.Sprite):
             self.groups = game.all_sprites, game.mobs, game.animals, game.moving_targets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game.group.add(self)
+        self.original_layer = self._layer
         self.map = map
         self.aggression = self.kind['aggression']
         self.touch_damage = self.kind['touch damage']
@@ -3010,7 +3015,7 @@ class Animal(pg.sprite.Sprite):
             self.unmount()
 
     def mount(self, driver):
-        self.game.all_sprites.change_layer(self, MOB_LAYER)
+        self.game.group.change_layer(self, MOB_LAYER)
         self.frame = 0
         self.occupied = True
         self.knockback = 0
@@ -3030,7 +3035,7 @@ class Animal(pg.sprite.Sprite):
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you mount them.
 
     def unmount(self):
-        self.game.all_sprites.change_layer(self, PLAYER_LAYER)
+        self.game.group.change_layer(self, self.original_layer)
         self.occupied = False
         self.knockback = self.kind['knockback']
         self.driver.in_vehicle = False
@@ -3355,7 +3360,10 @@ class MuzzleFlash(pg.sprite.Sprite):
 
 class Dropped_Item(pg.sprite.Sprite):
     def __init__(self, game, pos, type, item, map, rot = None, random_spread = False):
-        self._layer = ITEMS_LAYER
+        if 'plate' in item:
+            self._layer = WALL_LAYER
+        else:
+            self._layer = ITEMS_LAYER
         self.groups = game.all_sprites, game.dropped_items, game.detectables
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -3365,6 +3373,7 @@ class Dropped_Item(pg.sprite.Sprite):
         self.item = self.name = item
         self.rot = rot
         self.dropped_fish = False
+        self.lit = False
         self.floats = False
         self.random_spread = random_spread
         self.pos = pos
@@ -3377,10 +3386,10 @@ class Dropped_Item(pg.sprite.Sprite):
             self.image =  pg.transform.rotate(eval(image_path), randrange(0, 360))
         else:
             self.image = pg.transform.rotate(eval(image_path), self.rot)
-        self.rect = self.image.get_rect()
+        self.rect = self.hit_rect = self.image.get_rect()
         if self.random_spread:
             self.pos = self.pos + (randrange(-50, 50), randrange(-50, 50))
-        self.rect.center = self.pos
+        self.rect.center = self.hit_rect.center = self.pos
 
         count = 0
         for i in FLOAT_LIST:

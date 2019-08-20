@@ -28,6 +28,9 @@ LIZ_DLG = ['How can I help you?', 'I sell all kinds of ingredients.', 'Have a lo
 JAZ_DLG = ["Hi there. I'd love to go on an epic quest, but this leather armor of mine just isn't good enough. Could you please make me some turtle plate armor?YN"]
 JAZ_DLG2 = ["This armor you made for me is amazing. Now I'm all set for my epic quest.", "Actually, now that I think about it I have no idea how to go on an epic quest. I see you are an adventurer. May I join you?YN"]
 JAZ_DLG3 = ["Lead the way my friend", "I'll fight for you as long as I'm living.", "Let's find some monsters to kill."]
-
+ZHAWAY_DLG = ["SAMERACE Hello young soul. You are a newcomer to this world. The passage of time in the spirit realm we came from is not the same as it is here. Most of us remember nothing of our time there or our former lives here, but if you have returned to this world that must mean that you have unfinished business here. I am the oldest of our spirit brethren and I have relearnt much during my time here. We are the remnants of the souls of the ancient ones who protected the Yaizhavay after the fall of Zhara, the sky realm. The demon armies must have overpowered us at some point. I don't quite remember. I spent some time traveling this island and found an anchient Zharan temple to the southeast. It was surrounded by demons and evil spirits. A temple of Zhara ought not to be so desecrated. Will you venture there and destroy the spirits that infest it?YN", "DIFFRACE Traveler, you have no business here amongst the spirits."]
+ZHAWAY_DLG2 = ["Now that the Temple of Zhara has been cleaned and the talisman restored to us there is once again hope for this land.", "I wish you the best of luck in your journey friend."]
 JAMAL_DLG = ["You look like you could use some help. If you pay me 1000 gold then I'll be your body guard. What do you say?YN"]
 JAMAL_DLG2 = ["Nice doing buisiness with you."]
+HAGITHA_DLG = ["I'm not in the mood to talk to the likes of you. Unless you are willing to find me some gold ore. Are you? YN"]
+HAGITHA_DLG2 = ["Hello friend. Find any gold lately?"]

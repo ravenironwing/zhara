@@ -590,6 +590,10 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
 
 
     def update_external_variables(self):
+        if 'Zhara Talisman' in self.game.player.inventory['items']: # Only lets you transform into a dragon if you have the Zhara Talisman
+            self.game.player.transformable = True
+        else:
+            self.game.player.transformable = False
         if self.character.in_vehicle:
             if not self.character.vehicle.mountable:
                 self.character.vehicle.reequip()
@@ -1146,6 +1150,8 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             self.heading_list = ['Items']
         elif self.kind == 'enchanter':
             self.heading_list = ['Enchantments', 'Weapons', 'Hats', 'Tops', 'Bottoms', 'Shoes', 'Gloves']  # This is the list of headings
+        elif self.kind == 'crafting':
+            self.heading_list = ['Weapons', 'Hats', 'Tops', 'Bottoms', 'Shoes', 'Gloves', 'Items']
         self.clicked_sprites = []
         self.items_numbered = {}
         self.item_counter = Counter(self.game.player.inventory['items'])
@@ -1453,6 +1459,18 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
                 else:
                     self.not_enough_text = True
 
+            elif self.kind == 'crafting':
+                sound = 'anvil'
+                enough = self.check_materials(self.selected_item.text)
+
+                if enough:
+                    # Subtracts used materials from inventory
+                    self.remove_materials()
+                    self.game.player.inventory[self.item_type].append(self.selected_item.text) # adds forged item to inventory
+                    task_accomplished = True
+                else:
+                    self.not_enough_text = True
+
             else:
                 sound = 'anvil'
             if task_accomplished:
@@ -1562,7 +1580,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             item_dict = eval(self.item_type.upper())
             for item in item_dict:
                 if item != None:
-                    if 'LV' not in item:    # no upgraded items show invforge
+                    if 'LV' not in item:    # no upgraded items show in forge
                         if 'materials' in item_dict[item]:
                             if self.check_materials(item):
                                 if self.item_type == 'items':
@@ -1598,6 +1616,19 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
                                 item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
                                 self.item_sprites.add(item_name)
                                 row += 1
+
+        elif self.kind == 'crafting':
+            row = 0
+            item_dict = eval(self.item_type.upper())
+            for item in item_dict:
+                if item != None:
+                    if 'LV' not in item:    # no upgraded items show in crafting
+                        if 'materials' in item_dict[item]:
+                            if self.check_materials(item):
+                                if 'craftable' in item_dict[item]:
+                                    item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
+                                    self.item_sprites.add(item_name)
+                                    row += 1
 
         elif self.kind == 'smelter':
             row = 0
@@ -1796,6 +1827,7 @@ class Dialogue_Menu():
         self.inventory_check = False
         self.needed_item = None
         self.player_has_item = False
+        self.gifted = False
         self.name = self.hit.kind['name']
         if 'quest' in self.hit.kind.keys():
             self.quest = self.hit.kind['quest']
@@ -1880,8 +1912,8 @@ class Dialogue_Menu():
             for kind in ITEM_TYPE_LIST:
                 if item in eval(kind.upper()):
                     self.game.player.inventory[kind].append(item)
-            if 'gold' in item:
-                gold = int(item.replace('gold', ''))
+            if 'gold:' in item:
+                gold = int(item.replace('gold:', ''))
                 self.game.player.inventory['gold'] += gold
 
     def accept_quest(self):
@@ -1934,7 +1966,7 @@ class Dialogue_Menu():
     def take_item(self):
         self.player_has_item = False
         self.inventory_check = False
-        if 'gold' not in self.needed_item:
+        if 'gold:c' not in self.needed_item:
             for item_type in ITEM_TYPE_LIST:
                 for i, item in enumerate(self.game.player.inventory[item_type]):
                     if item != None:
@@ -1947,7 +1979,7 @@ class Dialogue_Menu():
                             remove_nones(self.game.player.inventory[item_type])
 
         else:
-            gold = int(self.needed_item.replace('gold', ''))
+            gold = int(self.needed_item.replace('gold:', ''))
             if gold < self.game.player.inventory['gold']:
                 self.game.player.inventory['gold'] -= gold
                 self.hit.inventory['gold'] += gold
@@ -1957,7 +1989,7 @@ class Dialogue_Menu():
 
 
     def check_inventory(self):
-        if 'gold' not in self.needed_item:
+        if 'gold:' not in self.needed_item:
             for item_type in ITEM_TYPE_LIST:
                 for item in self.game.player.inventory[item_type]:
                     if item != None:
@@ -1965,7 +1997,7 @@ class Dialogue_Menu():
                             self.player_has_item = True
                             return True
         else:
-            gold = int(self.needed_item.replace('gold', ''))
+            gold = int(self.needed_item.replace('gold:', ''))
             if gold < self.game.player.inventory['gold']:
                 self.player_has_item = True
                 return True
@@ -1996,20 +2028,47 @@ class Dialogue_Menu():
         self.text_data = []
         self.text_screen = 0
         for x in self.response_text:
-            self.divide_lines(x)
+            if 'SAMERACE' in x:
+                if self.game.player.race == self.hit.kind['race']:
+                    x = x.replace('SAMERACE', '')
+                    self.divide_lines(x)
+            elif 'DIFFRACE' in x:
+                if self.game.player.race != self.hit.kind['race']:
+                    x = x.replace('DIFFRACE', '')
+                    self.divide_lines(x)
+            else:
+                self.divide_lines(x)
 
     def format_text(self): # Used for formatting dialogue.
         # This part wraps text, so it is displayed in paragraph form.
         if 'random' not in self.hit.kind['dialogue']:
             for x in eval(self.hit.kind['dialogue']):
-                self.divide_lines(x)
+                if 'SAMERACE' in x:
+                    if self.game.player.race == self.hit.kind['race']:
+                        x = x.replace('SAMERACE', '')
+                        self.divide_lines(x)
+                elif 'DIFFRACE' in x:
+                    if self.game.player.race != self.hit.kind['race']:
+                        x = x.replace('DIFFRACE', '')
+                        self.divide_lines(x)
+                else:
+                    self.divide_lines(x)
 
         else: # This part is used for characters with a randomized dialogue.
             dialogue = self.hit.kind['dialogue'].replace('random ', '')
             randomized_list = copy.copy(eval(dialogue))
             shuffle(randomized_list)
             for x in randomized_list:
-                self.divide_lines(x)
+                if 'SAMERACE' in x:
+                    if self.game.player.race == self.hit.kind['race']:
+                        x = x.replace('SAMERACE', '')
+                        self.divide_lines(x)
+                elif 'DIFFRACE' in x:
+                    if self.game.player.race != self.hit.kind['race']:
+                        x = x.replace('DIFFRACE', '')
+                        self.divide_lines(x)
+                else:
+                    self.divide_lines(x)
 
     def divide_lines(self, x): # This is used to split long dialogue into separate screens.
         description = wrap(x, self.wrap_factor)
@@ -2044,6 +2103,11 @@ class Dialogue_Menu():
             if 'YN' in text_screens:
                 text_screens = text_screens.replace('YN', '')
                 self.YN = True
+            if 'GIFTS' in text_screens:
+                text_screens = text_screens.replace('GIFTS', '')
+                if not self.gifted:
+                    self.add_reward(self.game.quests[self.quest]['gifts'])
+                    self.gifted = True
             self.draw_text(text_screens, default_font, 40, WHITE, self.game.screen_width/5 + 15, self.game.screen_height * 4/7 + 60 + (45 * i), "topleft")
         if self.YN:
             self.list_choices()

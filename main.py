@@ -1056,6 +1056,17 @@ class Game:
                     pass
 
 
+        # Generates random drop items
+        if self.map_type in ['mountain', 'forest', 'grassland', 'desert', 'beachw']:
+            for i in range(0, randrange(1, 15)):
+                for item in ITEMS:
+                    if 'random drop' in ITEMS[item].keys():
+                        if randrange(0, ITEMS[item]['random drop']) < 2:
+                            centerx = randrange(200, self.map.width - 200)
+                            centery = randrange(200, self.map.height - 200)
+                            center = vec(centerx, centery)
+                            Dropped_Item(self, center, 'items', item, map)
+
         # Generates random animals/Npcs on maps that don't have existing animals on them. The type of animal depends on the maptype object in the tmx file.
         if (len(self.mobs) - len(self.companions)) < 4:
             if self.map_type != None:
@@ -1128,6 +1139,8 @@ class Game:
         # Adds vehicles back to group
         if self.player.in_vehicle:
             self.group.add(self.player.vehicle)
+            if self.player.vehicle.cat == 'tank':
+                self.group.add(self.player.vehicle.turret)
 
         self.previous_map = map
         self.respawn = False
@@ -1324,16 +1337,17 @@ class Game:
             self.too_much_weight = False
             hits = pg.sprite.spritecollide(self.player, self.dropped_items, False, pg.sprite.collide_circle_ratio(0.75))
             for hit in hits:
-                self.pick_up_text = True
-                if self.e_down:
-                    self.player.inventory[hit.item_type].append(hit.item)
-                    self.player.calculate_weight()
-                    if self.player.stats['weight'] > self.player.stats['max weight']:
-                        self.player.inventory[hit.item_type].remove(hit.item)
+                if hit.name not in ['fire pit']:
+                    self.pick_up_text = True
+                    if self.e_down:
+                        self.player.inventory[hit.item_type].append(hit.item)
                         self.player.calculate_weight()
-                        self.too_much_weight = True
-                    else:
-                        hit.kill()
+                        if self.player.stats['weight'] > self.player.stats['max weight']:
+                            self.player.inventory[hit.item_type].remove(hit.item)
+                            self.player.calculate_weight()
+                            self.too_much_weight = True
+                        else:
+                            hit.kill()
 
             # player melee hits breakable: a bush, tree, rock, ore vein, shell, glass, etc.
             if self.player.melee_playing:
@@ -1514,6 +1528,19 @@ class Game:
                         bullet.explode(mob)
                         if bullet.mother == self.player:
                             self.player.stats['marksmanship hits'] += 1
+
+        # fireball hits firepit
+        hits = pg.sprite.groupcollide(self.dropped_items, self.fireballs, False, False, fire_collide)
+        for item in hits:
+            for bullet in hits[item]:
+                if item.name == 'fire pit':
+                    if not item.lit:
+                        bullet.explode(item)
+                        item.lit = True
+                        center = vec(item.rect.center)
+                        Stationary_Animated(self, center, 'fire')
+                        Work_Station(self, center.x - 64, center.y - 64, 128, 128, 'cooking fire')
+
 
         # bullets hit moving_target
         hits = pg.sprite.groupcollide(self.moving_targets, self.bullets, False, False, pg.sprite.collide_circle_ratio(0.5))
@@ -1894,6 +1921,10 @@ class Game:
                 if event.key == pg.K_f:
                     if self.player.dragon:
                         self.player.breathe_fire()
+                if event.key == pg.K_l:
+                    self.in_station_menu = True
+                    self.in_menu = True
+                    self.station_menu = Work_Station_Menu(self, 'crafting')
                 if event.key == pg.K_u:
                     if self.player.in_vehicle:
                         if self.player.vehicle in self.flying_vehicles:

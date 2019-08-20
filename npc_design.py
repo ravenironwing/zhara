@@ -110,9 +110,13 @@ class Npc_Info_Designer(Tk):
         Label(self, text="Needed Item:", font="none 12 bold").grid(row=15, column=1, sticky=W)
         self.needed_item1_entry = Entry(self)
         self.needed_item1_entry.grid(row=16, column=1, sticky=W)
-        Label(self, text="Rewards (Separate items with commas. Example: steel sword, 100gold):", font="none 12 bold").grid(row=15, column=2, columnspan=5, sticky=W)
+        Label(self, text="Gifts:", font="none 12 bold").grid(row=15, column=2, columnspan=5, sticky=W)
+        self.gifts_item = Entry(self)
+        self.gifts_item.grid(row=16, column=2, sticky=W)
+        Label(self, text="Rewards (Separate items with commas. Example: steel sword, gold:100):", font="none 12 bold").grid(row=15, column=3, columnspan=4, sticky=W)
         self.reward1_item = Entry(self)
-        self.reward1_item.grid(row=16, column=2, sticky=W)
+        self.reward1_item.grid(row=16, column=3, sticky=W)
+
         Label(self, text="Description", font="none 12 bold").grid(row=17, column=0, sticky=W)
         self.quest1_des_entry = Entry(self, width=195)
         self.quest1_des_entry.grid(row=18, column=0, columnspan=8, sticky=W)
@@ -221,6 +225,11 @@ class Npc_Info_Designer(Tk):
         autoaccept = str(bool(self.autoaccept_var.get())   )
         rewards = self.reward1_item.get().split(", ")
         rewards_string = '["' + '", "'.join(rewards) + '"]'
+        gifts = self.gifts_item.get().split(", ")
+        gifts_string = '["' + '", "'.join(gifts) + '"]'
+        accept_text = self.accept_text1.get()
+        if self.gifts_item.get() != "":
+            accept_text = accept_text + 'GIFTS'
         dialogue = self.dialogue_entry.get()
         dialogue2 = self.dialogue2_entry.get()
         dialogue2_name = 'None'
@@ -247,7 +256,7 @@ class Npc_Info_Designer(Tk):
             self.character.kind['quest'] = self.quest1_name_entry.get()
             file = open("quests.py", "a")
             file.write("\n")
-            file.write("QUESTS['" + self.quest1_name_entry.get() + "'] = " + '{"accepted": False, "completed": False, "rewarded": False, "inventory check": ' + inv_check + ', "needed item": ' + '"' + needed_item + '"' + ', "autocomplete": ' + autocomplete + ', "autoaccept": ' + autoaccept + ', "description": ' + '"' + self.quest1_des_entry.get() + '"' + ', "accept text": ' + '["' + self.accept_text1.get() + '"]' + ', "deny text": ' + '["' + self.deny_text1.get() + '"]' + ', "completed text": ' + '["' + self.completed_text1.get() + '"]' + ', "waiting text": ' + '["' + self.waiting_text1.get() + '"]' + ', "has item text": ' + '["' + self.has_item_text1.get() + '"]' + ', "refuse to give text": ' + '["' + self.refuse_text1.get() + '"]' + ', "reward text": ' + '["' + self.reward1_text1.get() + '"]' + ', "next quest": None, "next dialogue": "' + dialogue2_name + '", "reward": ' + rewards_string + '}')
+            file.write("QUESTS['" + self.quest1_name_entry.get() + "'] = " + '{"accepted": False, "completed": False, "rewarded": False, "inventory check": ' + inv_check + ', "needed item": ' + '"' + needed_item + '"' + ', "autocomplete": ' + autocomplete + ', "autoaccept": ' + autoaccept + ', "description": ' + '"' + self.quest1_des_entry.get() + '"' + ', "accept text": ' + '["' + accept_text + '"]' + ', "deny text": ' + '["' + self.deny_text1.get() + '"]' + ', "completed text": ' + '["' + self.completed_text1.get() + '"]' + ', "waiting text": ' + '["' + self.waiting_text1.get() + '"]' + ', "has item text": ' + '["' + self.has_item_text1.get() + '"]' + ', "refuse to give text": ' + '["' + self.refuse_text1.get() + '"]' + ', "reward text": ' + '["' + self.reward1_text1.get() + '"]' + ', "next quest": None, "next dialogue": "' + dialogue2_name + '", "gifts": ' + gifts_string + ', "reward": ' + rewards_string + '}')
             file.close()
 
         self.destroy()
