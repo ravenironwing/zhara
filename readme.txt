@@ -43,6 +43,7 @@ I - To access inventory, or exit menus
 K - Stats menu
 P - Pause
 J - Quest menu
+L - Crafting menu (used for making various items that don't require a special location: like making fire pits)
 M - toggles mini map and compass (+/- changes size of mini map)
 O - toggles overworld map.
 TAB - Melee attack

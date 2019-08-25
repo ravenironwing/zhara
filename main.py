@@ -149,6 +149,7 @@ def fire_collide(one, two):
 
 class Game:
     def __init__(self):
+        pg.mixer.init()
         self.window_ratio = .97
         self.screen_width = WIDTH
         self.screen_height = int(HEIGHT * self.window_ratio)
@@ -368,7 +369,10 @@ class Game:
         for x, size in enumerate(BULLET_SIZES):
             for i, item in enumerate(BULLET_IMAGES):
                 bullet_img = pg.image.load(path.join(bullets_folder, BULLET_IMAGES[i])).convert_alpha()
-                img = pg.transform.scale(bullet_img, (10*(x + 1), 10*(x + 1)))
+                if size != 'ar':
+                    img = pg.transform.scale(bullet_img, (10*(x + 1), 10*(x + 1)))
+                else:
+                    img = pg.transform.scale(bullet_img, (80, 10))
                 bullet_name = size + str(i + 1)
                 self.bullet_images[bullet_name] = img
 
@@ -645,6 +649,7 @@ class Game:
         self.all_sprites = pg.sprite.LayeredUpdates() # Used for all non_static sprites
         self.all_static_sprites = pg.sprite.Group() # used for all static sprites
         self.firepots = pg.sprite.Group()
+        self.arrows = pg.sprite.Group()
         self.detectors = pg.sprite.Group()
         self.detectables = pg.sprite.Group()
         self.portals = pg.sprite.Group()
@@ -1088,7 +1093,7 @@ class Game:
                         rand_trees = randrange(8, 12)
                     if self.map_type == 'forest':
                         rand_range = randrange(1, 3)
-                        rand_trees = randrange(8, 15)
+                        rand_trees = randrange(30, 60)
                     for i in range(0, rand_range):
                         vein = choice(VEIN_LIST)
                         centerx = randrange(200, self.map.width - 200)
@@ -1118,6 +1123,32 @@ class Game:
                         objecty = int(centery - object_height / 2)
                         center = vec(centerx, centery)
                         Breakable(self, center, objectx, objecty, object_width, object_height, BREAKABLES[plant], plant, map)
+                if self.map_type in ['beach']:
+                    rand_plants = randrange(15, 35)
+                    for i in range(0, rand_plants):
+                        tree = choice(BEACH_PLANT_LIST)
+                        centerx = randrange(200, self.map.width - 200)
+                        centery = randrange(200, self.map.height - 200)
+                        object_width = object_height = 100
+                        objectx = int(centerx - object_width / 2)
+                        objecty = int(centery - object_height / 2)
+                        center = vec(centerx, centery)
+                        Breakable(self, center, objectx, objecty, object_width, object_height, BREAKABLES[tree], tree, map)
+                if self.map_type in ['tundra']:
+                    rand_plants = randrange(10, 25)
+                    for i in range(0, rand_plants):
+                        tree = 'pine tree'
+                        centerx = randrange(200, self.map.width - 200)
+                        centery = randrange(200, self.map.height - 200)
+                        object_width = object_height = 100
+                        objectx = int(centerx - object_width / 2)
+                        objecty = int(centery - object_height / 2)
+                        center = vec(centerx, centery)
+                        Breakable(self, center, objectx, objecty, object_width, object_height, BREAKABLES[tree], tree, map)
+        # Kills breakables that spawn in water
+        hits = pg.sprite.groupcollide(self.breakable, self.water, True, False)
+        hits = pg.sprite.groupcollide(self.breakable, self.shallows, True, False)
+
 
         # check for fish out of water and kills them
         hits = pg.sprite.groupcollide(self.animals, self.water, False, False)

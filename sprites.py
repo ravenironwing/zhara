@@ -584,7 +584,7 @@ class Character(pg.sprite.Sprite):
             self.l_reload_anim = self.render_animation(L_RELOAD)
 
         if self.mother.gun:
-            self.shoot_anim = self.render_animation([CP_PISTOL0])
+            self.shoot_anim = self.render_animation(SHOOT)
             self.reload_anim = self.render_animation(RELOAD)
 
         self.stand_anim = self.render_animation(STAND)
@@ -742,7 +742,12 @@ class Character(pg.sprite.Sprite):
         self.stand_anim = self.render_animation(STAND)
         if not self.game.in_character_menu:
             if (self.mother not in self.game.npcs) or (self.mother in self.game.companions):
-                self.l_reload_anim = self.render_animation(L_RELOAD)
+                if self.mother.bow:
+                    self.l_reload_anim = self.render_animation(L_BOW_RELOAD)
+                    self.l_shoot_anim = self.render_animation(L_BOW_SHOOT)
+                else:
+                    self.l_reload_anim = self.render_animation(L_RELOAD)
+                    self.l_shoot_anim = self.render_animation(L_SHOOT)
                 self.walk_reload_anim = self.render_animation(WALK_RELOAD)
                 self.l_walk_reload_anim = self.render_animation(L_WALK_RELOAD)
                 self.walk_dual_reload_anim = self.render_animation(WALK_RELOAD + L_WALK_RELOAD)
@@ -750,13 +755,15 @@ class Character(pg.sprite.Sprite):
                 self.climbing_weapon_anim = self.render_animation(CLIMB)
                 self.climbing_weapon_melee_anim = self.render_animation(CLIMB_MELEE)
                 self.climbing_l_weapon_melee_anim = self.render_animation(L_CLIMB_MELEE)
-                self.l_shoot_anim = self.render_animation(L_SHOOT)
                 self.dual_melee_anim = self.render_animation(D_PUNCH)
                 self.walk_melee_anim = self.render_animation(WALK_PUNCH)
                 self.walk_l_melee_anim = self.render_animation(L_WALK_PUNCH)
                 self.jump_anim = self.render_animation(JUMP)
 
-            if self.mother.gun:
+            if self.mother.bow:
+                self.reload_anim = self.render_animation(BOW_RELOAD)
+                self.shoot_anim = self.render_animation(BOW_SHOOT)
+            elif self.mother.gun:
                 self.reload_anim = self.render_animation(RELOAD)
                 self.shoot_anim = self.render_animation(SHOOT)
 
@@ -887,6 +894,7 @@ class Player(pg.sprite.Sprite):
         self.dual_melee = False
         self.is_reloading = False
         self.gun = True # Says that the player needs reloading animations
+        self.bow = False
         self.melee_rate = 0
         self.last_melee_sound = 0
         self.last_throw = 0
@@ -917,6 +925,7 @@ class Player(pg.sprite.Sprite):
         self.stamina_perk = self.old_stamina_perk = 0
         self.magica_perk = self.old_magica_perk = 0
         self.invisible = False
+        self.arrow = None
         # vars for leveling
         self.last_kills = 0
         self.last_exercise = 0
@@ -931,7 +940,7 @@ class Player(pg.sprite.Sprite):
         self.inventory = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 0, 'items': [None], 'magic': [None]}
         self.equipped = {'gender': 'female', 'race': 'osidine', 'weapons': None, 'weapons2': None, 'hair': None, 'hats': None, 'tops': None, 'bottoms': None, 'shoes': None, 'gloves': None, 'items': None, 'magic': None}
         self.race = self.equipped['race']
-        self.ammo = {'pistol': 100, 'submachine gun': 100, 'shotgun': 100, 'rifle': 100, 'sniper rifle': 100, 'rocket launcher': 100, 'grenades': 100, 'turret': 1000, 'laser': 100, 'crystals': 100}
+        self.ammo = {'pistol': 100, 'submachine gun': 100, 'shotgun': 100, 'rifle': 100, 'sniper rifle': 100, 'rocket launcher': 100, 'grenades': 100, 'turret': 1000, 'laser': 100, 'crystals': 100, 'bow': 100}
         self.mag1 = 0
         self.mag2 = 0
         self.ammo_cap1 = 0
@@ -1042,13 +1051,15 @@ class Player(pg.sprite.Sprite):
         # Running
         if keys[pg.K_LSHIFT] and (keys[pg.K_w] or pg.mouse.get_pressed() == (0, 1, 0) or keys[pg.K_RIGHT] or keys[pg.K_LEFT] or keys[pg.K_UP] or keys[pg.K_DOWN]):
             if self.stats['stamina'] > 10 and not self.in_vehicle:
-                if now - self.last_shift > 100:
-                    self.acceleration = PLAYER_RUN + self.stats['agility']/4
-                    if self.acceleration > MAX_RUN:
-                        self.acceleration = MAX_RUN
-                    self.add_stamina(-0.8)
-                    self.last_shift = now
-
+                if self.arrow == None:
+                    if now - self.last_shift > 100:
+                        self.acceleration = PLAYER_RUN + self.stats['agility']/4
+                        if self.acceleration > MAX_RUN:
+                            self.acceleration = MAX_RUN
+                        self.add_stamina(-0.8)
+                        self.last_shift = now
+                else:
+                    self.acceleration = PLAYER_ACC
             else:
                 self.acceleration = PLAYER_ACC
         else:
@@ -1125,8 +1136,12 @@ class Player(pg.sprite.Sprite):
             elif self.is_reloading:
                 animate_speed = 120 # This animation is set up in the reload method
             elif keys[pg.K_LSHIFT] and self.stats['stamina'] > 10:
-                self.animation_playing = self.body.run_anim
-                animate_speed = 80
+                if self.arrow == None:
+                    self.animation_playing = self.body.run_anim
+                    animate_speed = 80
+                else:
+                    self.animation_playing = self.body.walk_anim
+                    animate_speed = 120
             else:
                 self.animation_playing = self.body.walk_anim
                 animate_speed = 120
@@ -1285,6 +1300,10 @@ class Player(pg.sprite.Sprite):
             self.pre_melee()
 
     def fire_bullets(self):
+        if self.arrow != None: # Gets rid of arrow shown in bow before firing.
+            self.arrow.kill()
+            self.arrow = None
+
         if self.weapon_hand == 'weapons':
             angle = self.body.weapon_angle
             mag_selected = self.mag1
@@ -1345,6 +1364,15 @@ class Player(pg.sprite.Sprite):
 
     def pre_reload(self):
         if not (self.melee_playing or self.jumping or self.swimming):
+            if self.arrow != None:  # Gets rid of arrow shown in bow before reloading them.
+                self.arrow.kill()
+                self.arrow = None
+            if self.equipped['weapons'] != None:
+                if WEAPONS[self.equipped['weapons']]['type'] == 'bow':
+                    self.game.effects_sounds['bow reload'].play()
+            if self.equipped['weapons2'] != None:
+                if WEAPONS[self.equipped['weapons2']]['type'] == 'bow':
+                    self.game.effects_sounds['bow reload'].play()
             self.is_reloading = True
             self.body.frame = 0
             self.reload()
@@ -1390,10 +1418,12 @@ class Player(pg.sprite.Sprite):
             if self.is_reloading:
                 self.body.animate(self.animation_playing, speed)
                 if self.body.frame > len(self.animation_playing[0]) - 1:
-                    self.game.effects_sounds['gun_pickup'].play()
-
                     # Reloads magazines
                     if self.equipped['weapons'] != None:
+                        if WEAPONS[self.equipped['weapons']]['type'] != 'bow':
+                            self.game.effects_sounds['gun_pickup'].play()
+                        else:
+                            Arrow(self.game, self, self.equipped['weapons'])
                         if 'enchanted' in self.equipped['weapons'] and WEAPONS[self.equipped['weapons']]['gun']:
                             if self.ammo['crystals'] - (WEAPONS[self.equipped['weapons']]['magazine size'] - self.mag1) < 0:
                                 self.ammo['crystals'] = 0
@@ -1428,6 +1458,10 @@ class Player(pg.sprite.Sprite):
                         self.mag1 = self.ammo_cap1 = 0
 
                     if self.equipped['weapons2'] != None:
+                        if WEAPONS[self.equipped['weapons2']]['type'] != 'bow':
+                            self.game.effects_sounds['gun_pickup'].play()
+                        else:
+                            Arrow(self.game, self, self.equipped['weapons2'])
                         if 'enchanted' in self.equipped['weapons2'] and WEAPONS[self.equipped['weapons2']]['gun']:
                             if self.ammo['crystals'] - (WEAPONS[self.equipped['weapons2']]['magazine size'] - self.mag2) < 0:
                                 self.ammo['crystals'] = 0
@@ -2171,6 +2205,7 @@ class Npc(pg.sprite.Sprite):
         self.living = True
         self.weapon_hand = 'weapons'
         self.gun = False
+        self.bow = False
         self.melee_range = 100
         self.offensive = False # Used to tell weather or not the npc will attack
         self.provoked = False # Used to tell if the player attacked the npc
@@ -2563,6 +2598,9 @@ class Npc(pg.sprite.Sprite):
                 self.gun = False
                 self.mag_size = 0
                 self.weapon_range = 0
+            self.bow = False
+            if 'bow' in self.equipped[self.weapon_hand]:
+                self.game.player.bow = True
 
     def gets_hit(self, damage, knockback, rot):
         now = pg.time.get_ticks()
@@ -3248,6 +3286,40 @@ class Animal(pg.sprite.Sprite):
     def draw_health(self):
         pass
 
+
+# Used for arrows shown in loaded bows (not ones being shot)
+class Arrow(pg.sprite.Sprite):
+    def __init__(self, game, mother, weapon):
+        self._layer = BULLET_LAYER
+        self.groups = game.all_sprites, game.arrows
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.mother = mother
+        self.game.group.add(self)
+        self.weapon = weapon
+        self.image_orig = self.game.bullet_images[WEAPONS[self.weapon]['bullet_size']]
+        self.image = self.image_orig.copy()
+        self.rect = self.image.get_rect()
+        if self.mother.weapon_hand == 'weapons':
+            self.offset = self.mother.body.weapon_pos
+        else:
+            self.offset = self.mother.body.weapon2_pos
+        self.rect.center = self.mother.pos + self.offset.rotate(-self.mother.rot)
+        self.mother.arrow = self
+
+
+    def get_keys(self):
+        keys = pg.key.get_pressed()
+        if keys[pg.K_x]:
+            pass
+
+    def update(self):
+        self.image = pg.transform.rotate(self.image_orig, self.mother.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.mother.pos + self.offset.rotate(-self.mother.rot)
+        self.get_keys()  # this needs to be last in this method to avoid executing the rest of the update section if you exit
+
+
 class Bullet(pg.sprite.Sprite):
     def __init__(self, mother, game, pos, dir, rot, weapon, enemy = False, sky = False):
         self.sky = sky
@@ -3267,16 +3339,16 @@ class Bullet(pg.sprite.Sprite):
         self.weapon = weapon
         self.target = None
         self.size = WEAPONS[self.weapon]['bullet_size']
-        self.image = game.bullet_images[WEAPONS[self.weapon]['bullet_size']]
+        self.rot = rot
+        self.image = pg.transform.rotate(game.bullet_images[WEAPONS[self.weapon]['bullet_size']], self.rot)
         self.rect = self.image.get_rect()
         self.hit_rect = self.rect
         self.pos = vec(pos)
         self.knockback = WEAPONS[self.weapon]['knockback']
-        self.rot = rot
         self.rect.center = pos
         spread = uniform(-WEAPONS[self.weapon]['spread'], WEAPONS[self.weapon]['spread'])
         self.dir = dir.rotate(spread)
-        self.vel = self.dir * WEAPONS[self.weapon]['bullet_speed'] * uniform(0.9, 1.1)
+        self.vel = self.dir * WEAPONS[self.weapon]['bullet_speed'] * uniform(0.9, 1.1) + self.mother.vel
         self.lifetime = WEAPONS[self.weapon]['bullet_lifetime']
 
         self.spawn_time = pg.time.get_ticks()
@@ -3755,7 +3827,9 @@ class Portal(pg.sprite.Sprite):
 
 class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
     def __init__(self, game, obj_center, x, y, w, h, kind, name, map, fixed_rot = None):
-        if 'tree' in name:
+        if 'palm tree' in name:
+            self._layer = EFFECTS_LAYER
+        elif 'tree' in name:
             self._layer = ROOF_LAYER
         else:
             self._layer = WALL_LAYER
@@ -3764,7 +3838,10 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.center = obj_center
         self.kind = kind
         self.name = name
+        #if 'large ' in self.name
         self.image_list = self.game.breakable_images[self.name]
+        self.scale_factor = 1
+
         self.groups = game.all_sprites, game.breakable
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game.group.add(self)
@@ -3880,7 +3957,8 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                 else:
                     for kind in ITEM_TYPE_LIST:
                         if thing in eval(kind.upper()):
-                            Dropped_Item(self.game, self.center, kind, thing, self.map, 0, True)
+                            rand_rot = randrange(0, 360)
+                            Dropped_Item(self.game, self.center, kind, thing, self.map, rand_rot, True)
 
         if None not in self.rare_items:
             if random_value < 5: # Chance of getting a rare item

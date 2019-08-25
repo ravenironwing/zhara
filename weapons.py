@@ -1,7 +1,7 @@
 import pygame as pg
 vec = pg.math.Vector2
 
-BULLET_SIZES = ['sm', 'md', 'lg', 'xl']
+BULLET_SIZES = ['sm', 'md', 'lg', 'xl', 'ar']
 ENCHANTED_BULLETS = ['2', '3', '5', '6', '7', '8', '9']
 FIRE_BULLETS = ['3', '5', '6', '9']
 SHOCK_BULLETS = ['2', '7', '8', '9']
@@ -9,9 +9,9 @@ EXPLOSIVE_BULLETS = ['4', '5', '8', '10']
 
 # Weapon settings
 WEAPON_SOUNDS = {'pistol': ['pistol.wav'], 'laser': ['laser.wav'], 'grenades': ['shotgun.wav'], 'pickaxe': ['mace_swipe.wav'], 'axe': ['mace_swipe.wav'],
-                 'shotgun': ['shotgun.wav'], 'rifle': ['assault rifle.wav'], 'turret': ['turret.wav'], 'sword': ['sword_swipe.wav'], 'mace': ['mace_swipe.wav'], 'dagger': ['sword_swipe.wav'], 'shield': ['mace_swipe.wav']}
+                 'shotgun': ['shotgun.wav'], 'rifle': ['assault rifle.wav'], 'turret': ['turret.wav'], 'sword': ['sword_swipe.wav'], 'mace': ['mace_swipe.wav'], 'dagger': ['sword_swipe.wav'], 'shield': ['mace_swipe.wav'], 'bow': ['arrow.wav']}
 WEAPON_HIT_SOUNDS = {'pistol': ['gun_hit1.wav'], 'laser': ['gun_hit1.wav'], 'grenades': ['shotgun.wav'], 'pickaxe': ['pickaxe.wav'], 'axe': ['axe.wav'],
-                 'shotgun': ['gun_hit1.wav'], 'rifle': ['gun_hit1.wav'], 'turret': ['turret_hit1.wav'], 'sword': ['sword_hit1.wav'], 'mace': ['mace_hit1.wav', 'mace_hit2.wav'], 'dagger': ['sword_hit1.wav'], 'shield': ['punch1.wav', 'punch2.wav']}
+                 'shotgun': ['gun_hit1.wav'], 'rifle': ['gun_hit1.wav'], 'turret': ['turret_hit1.wav'], 'sword': ['sword_hit1.wav'], 'mace': ['mace_hit1.wav', 'mace_hit2.wav'], 'dagger': ['sword_hit1.wav'], 'shield': ['punch1.wav', 'punch2.wav'], 'bow': ['punch1.wav', 'punch2.wav']}
 
 WEAPONS = {}
 WEAPONS['harmless bullet source'] = {'type': 'turret',
@@ -304,6 +304,31 @@ WEAPONS['assault rifle'] = {'type': 'rifle','gun': True, 'value': 700,
                       'offset': vec(58, 0),
                       'armor': 0,
                       'weight': 2.9}
+
+WEAPONS['wooden bow'] = {'type': 'bow','gun': True, 'value': 250,
+                     'bullet_speed': 400,
+                     'bullet_lifetime': 1000,
+                     'magazine size': 1,
+                     'reload speed': 100,
+                     'rate': 250,
+                     'auto': False,
+                     'kickback': 3,
+                     'knockback': 0.2,
+                     'spread': 5,
+                     'damage': 10,
+                     'melee damage': 1,
+                     'bullet_size': 'ar11',
+                     'bullet_count': 1,
+                     'grip': 'CP_BOWWALK0',
+                     'melee animation': 'SWIPE',
+                     'walk': 'BOW_WALK',
+                     'image': 33,
+                     'offset': vec(0, 0),
+                     'armor': 0,
+                     'craftable': True,
+                     'materials': {'cut green wood': 1, 'leather strips': 1},
+                     'weight': 1.4}
+
 WEAPONS['steel sword'] = {'type': 'sword','gun': False, 'value': 200,
                       'bullet_speed': 0,
                       'bullet_lifetime': 0,

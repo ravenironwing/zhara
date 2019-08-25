@@ -597,6 +597,13 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         if self.character.in_vehicle:
             if not self.character.vehicle.mountable:
                 self.character.vehicle.reequip()
+        self.game.player.bow = False
+        if self.game.player.equipped['weapons'] != None:
+            if 'bow' in self.game.player.equipped['weapons']:
+                self.game.player.bow = True
+        if self.game.player.equipped['weapons2'] != None:
+            if 'bow' in self.game.player.equipped['weapons2']:
+                self.game.player.bow = True
         self.game.in_inventory_menu = False
         self.game.in_menu = False
         self.character.current_weapon = self.character.equipped['weapons']

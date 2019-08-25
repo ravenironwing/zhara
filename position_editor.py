@@ -11,8 +11,8 @@ WIDTH = 480
 HEIGHT = 600
 FPS = 60
 
-default = CP_STANDING_ARMS_OUT0
-animation = ROW
+default = CP_BOWWALK0
+animation = SHOTGUN_WALK
 
 
 # define some colors (R, G, B)

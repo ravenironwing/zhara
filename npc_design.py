@@ -4,12 +4,6 @@ from items import *
 from weapons import *
 
 class Npc_Info_Designer(Tk):
-    """PEOPLE['generic'] = {'name': 'generic', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
-    'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
-    'gender': 'male', 'race': 'osidine',
-    'dialogue': 'random VILLAGER_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': list(WEAPONS.keys()), 'hats': list(HATS.keys()), 'hair': list(HAIR.keys()), 'tops': list(TOPS.keys()), 'bottoms': list(BOTTOMS.keys()), 'shoes': list(SHOES.keys()), 'gloves': list(GLOVES.keys()), 'gold': 100, 'items': ['random'], 'magic': list(MAGIC.keys())},
-    'animations': {None}}"""
 
     def __init__(self, npc_menu, character):
         Tk.__init__(self)

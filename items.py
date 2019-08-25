@@ -26,7 +26,7 @@ ITEMS['potion of masculinization'] = {'alchemy': True, 'change sex': 'male', 'im
 ITEMS['lock pick'] = {'image': 11, 'weight': 0.2, 'value': 120}
 
 # Craftable
-ITEMS['fire pit'] = {'craftable': True, 'image': 135, 'weight': 23, 'materials': {'cut wood':4, 'ordinary rock':10}, 'random drop': 100}
+ITEMS['fire pit'] = {'craftable': True, 'image': 135, 'weight': 23, 'materials': {'cut dry wood':4, 'ordinary rock':10}, 'random drop': 100}
 
 
 # Containers/bowls
@@ -42,13 +42,19 @@ ITEMS['empty barrel'] = {'image': 131, 'weight': 10, 'value': 100}
 # Misc items
 ITEMS['candle burner'] = {'image': 61, 'weight': 1, 'value': 250}
 ITEMS['candle'] = {'image': 62, 'weight': 0.3, 'value': 25}
-ITEMS['brick'] = {'image': 97, 'weight': 1, 'value': 0, 'random drop': 60}
 ITEMS['chop sticks'] = {'image': 106, 'weight': 0.1, 'value': 1}
-ITEMS['ordinary rock'] = {'image': 115, 'weight': 1.5, 'value': 0, 'random drop': 2}
+
 ITEMS['airship fuel'] = {'alchemy': True, 'image': 130, 'weight': 25, 'materials': {'empty barrel':1, 'whale oil':3, 'distilled alcohol':5}, 'value': 2000}
 ITEMS['horse bridle'] = {'image': 132, 'weight': 1, 'value': 300}
 
+# Building Materials
+ITEMS['ordinary rock'] = {'image': 115, 'weight': 1.5, 'value': 0, 'random drop': 2}
+ITEMS['palm leaf'] = {'image': 137, 'weight': 0.6, 'value': 3}
+ITEMS['pine branch'] = {'image': 138, 'weight': 0.6, 'value': 3}
+ITEMS['brick'] = {'image': 97, 'weight': 1, 'value': 0, 'random drop': 60}
+
 # Foods
+ITEMS['coconut'] = {'image': 136, 'health': 10, 'stamina': 10, 'weight': 0.9, 'food': True, 'value': 4}
 ITEMS['cheese wedge'] = {'image': 38, 'health': 15, 'stamina': 5, 'weight': 0.8, 'food': True, 'value': 5}
 ITEMS['roasted chicken'] = {'image': 35, 'health': 20, 'stamina': 15, 'weight': 3, 'materials': {'dead chicken':1}, 'food': True, 'value': 25}
 ITEMS['roasted wyvern ribs'] = {'image': 129, 'health': 40, 'stamina': 45, 'weight': 8, 'materials': {'wyvern meat':1}, 'food': True, 'value': 80}
@@ -125,6 +131,7 @@ ITEMS['turtle shell plate'] = {'image': 113, 'weight': 3, 'value': 150}
 ITEMS['demon dust'] = {'image': 121, 'weight': 0.1, 'value': 52}
 ITEMS['ectoplasm'] = {'image': 122, 'weight': 0.1, 'value': 52}
 ITEMS['clay'] = {'image': 123, 'weight': 1, 'value': 30, 'random drop': 20}
+ITEMS['feather'] = {'image': 141, 'weight': 0.1, 'value': 1, 'random drop': 18}
 
 # Forging Materials (some are also used for enchanting)
 ITEMS['steel pipe'] = {'image': 84, 'weight': 2, 'materials': {'steel ingot': 1}, 'forgeable': True, 'value': 50}
@@ -169,9 +176,13 @@ ITEMS['silver ore'] = {'material': 'metal', 'image': 95, 'weight': 4.5, 'value':
 ITEMS['aluminum ore'] = {'material': 'metal', 'image': 94, 'weight': 3, 'value': 18}
 ITEMS['lead ore'] = {'material': 'metal', 'image': 95, 'weight': 10, 'value': 25}
 ITEMS['zinc ore'] = {'material': 'metal', 'image': 95, 'weight': 3, 'value': 24}
-ITEMS['cut wood'] = {'material': 'metal', 'image': 114, 'weight': 2, 'value': 5}
+ITEMS['cut dry wood'] = {'material': 'metal', 'image': 114, 'weight': 2, 'value': 5}
+ITEMS['cut green wood'] = {'material': 'metal', 'image': 114, 'weight': 2.2, 'value': 5}
 
 # Ammo
+ITEMS['arrow'] = {'ammo': 1, 'type': 'bow', 'image': 139, 'weight': 0.1, 'value': 1, 'craftable': True, 'materials': {'cut green wood': 1, 'feather': 1, 'flint stone': 1}}
+ITEMS['small arrow quiver'] = {'ammo': 30, 'type': 'bow', 'image': 140, 'weight': 1.5, 'value': 70, 'craftable': True, 'materials': {'cut green wood': 1, 'feather': 2, 'flint stone': 1}}
+ITEMS['large arrow quiver'] = {'ammo': 60, 'type': 'bow', 'image': 140, 'weight': 1.5, 'value': 70, 'craftable': True, 'materials': {'cut green wood': 2, 'feather': 6, 'flint stone': 2}}
 ITEMS['large pistol ammo case'] = {'ammo': 100, 'type': 'pistol', 'image': 12, 'weight': 7, 'value': 80}
 ITEMS['large shotgun ammo case'] = {'ammo': 100, 'type': 'shotgun', 'image': 12, 'weight': 10, 'value': 100}
 ITEMS['large rifle ammo case'] = {'ammo': 100, 'type': 'rifle', 'image': 12, 'weight': 9, 'value': 120}
