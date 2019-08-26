@@ -37,3 +37,5 @@ CHESTS['anttunnel1coffin'] = {'locked': False, 'combo': None, 'difficulty': 0,'w
                   'items': [None], 'magic': [None], 'gold': 60}
 CHESTS['empty '] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': [None], 'magic': [None], 'gold': 0}
+CHESTS['boat'] = {'locked': True, 'combo': 123, 'difficulty': 9,'weapons': ['steel dagger'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
+                  'items': ['fireball tome'], 'magic': [None], 'gold': 3400}
