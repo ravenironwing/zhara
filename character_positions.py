@@ -92,6 +92,7 @@ CP_RIDE1 = [[13, 28, -51], [13, -24, 49], [-3, 0, 0], [11, 22, 21], [10, -22, -2
 L_CP_PISTOL0 = reverse_symetry(CP_PISTOL0)
 L_CP_SHOTGUN0 = reverse_symetry(CP_SHOTGUN0)
 L_CP_SWORD_GRIP = reverse_symetry(CP_SWORD_GRIP)
+L_CP_BOWWALK0 = reverse_symetry(CP_BOWWALK0)
 
 
 # Animations
@@ -144,3 +145,4 @@ L_CLIMB_SHOOT = reverse_animation_symetry(CLIMB_SHOOT)
 L_BOW_SHOOT = reverse_animation_symetry(BOW_SHOOT)
 L_BOW_RELOAD = reverse_animation_symetry(BOW_RELOAD)
 L_WALK = reverse_animation_symetry(WALK)
+

@@ -499,7 +499,7 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                     self.character.equipped[self.item_type] = temp_item
                 else:
                     self.character.equipped[self.item_type] = item.text
-
+        self.check_dual()
 
     def left_equip(self, item):
         if self.item_type == 'weapons':
@@ -518,6 +518,16 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                 else:
                     self.character.last_weapon2 = self.character.equipped['weapons2']  # Used to keep track of bullets fired from unequipped weapons
                     self.character.equipped['weapons2'] = item.text
+        self.check_dual()
+
+    def check_dual(self):
+        # This section prevents dual equipping with two handed weapons.
+        dual_list = ['bow', 'rifle', 'shotgun', 'launcher']
+        for kind in dual_list:
+            if kind in str(self.character.equipped['weapons']):
+                self.character.equipped['weapons2'] = None
+            if kind in str(self.character.equipped['weapons2']):
+                self.character.equipped['weapons'] = None
 
     def list_items(self):
         remove_nones(self.character.inventory[self.item_type]) # Makes sure to remove empty slots in inventory.

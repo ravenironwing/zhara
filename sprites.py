@@ -1420,10 +1420,6 @@ class Player(pg.sprite.Sprite):
                 if self.body.frame > len(self.animation_playing[0]) - 1:
                     # Reloads magazines
                     if self.equipped['weapons'] != None:
-                        if WEAPONS[self.equipped['weapons']]['type'] != 'bow':
-                            self.game.effects_sounds['gun_pickup'].play()
-                        else:
-                            Arrow(self.game, self, self.equipped['weapons'])
                         if 'enchanted' in self.equipped['weapons'] and WEAPONS[self.equipped['weapons']]['gun']:
                             if self.ammo['crystals'] - (WEAPONS[self.equipped['weapons']]['magazine size'] - self.mag1) < 0:
                                 self.ammo['crystals'] = 0
@@ -1454,14 +1450,15 @@ class Player(pg.sprite.Sprite):
                                     self.ammo[WEAPONS[self.equipped['weapons']]['type']] -= (WEAPONS[self.equipped['weapons']]['magazine size'] - self.mag1)
                                     self.mag1 = WEAPONS[self.equipped['weapons']]['magazine size']
                                 self.ammo_cap1 = self.ammo[WEAPONS[self.equipped['weapons']]['type']]  # Used for HUD display value to improve frame rate by not looking up the value every cycle
+                        if WEAPONS[self.equipped['weapons']]['type'] != 'bow':
+                            self.game.effects_sounds['gun_pickup'].play()
+                        else:
+                            if self.mag1 > 0:
+                                Arrow(self.game, self, self.equipped['weapons'])
                     else:
                         self.mag1 = self.ammo_cap1 = 0
 
                     if self.equipped['weapons2'] != None:
-                        if WEAPONS[self.equipped['weapons2']]['type'] != 'bow':
-                            self.game.effects_sounds['gun_pickup'].play()
-                        else:
-                            Arrow(self.game, self, self.equipped['weapons2'])
                         if 'enchanted' in self.equipped['weapons2'] and WEAPONS[self.equipped['weapons2']]['gun']:
                             if self.ammo['crystals'] - (WEAPONS[self.equipped['weapons2']]['magazine size'] - self.mag2) < 0:
                                 self.ammo['crystals'] = 0
@@ -1501,6 +1498,11 @@ class Player(pg.sprite.Sprite):
                                 if WEAPONS[self.equipped['weapons']]['bullet_count'] > 0 and WEAPONS[self.equipped['weapons2']]['bullet_count'] > 0:
                                     if self.ammo[WEAPONS[self.equipped['weapons']]['type']] == self.ammo[WEAPONS[self.equipped['weapons2']]['type']]:
                                         self.ammo_cap1 = self.ammo_cap2 # Makes sure if both your weapons use the same ammo they display the same ammo capacity.
+                        if WEAPONS[self.equipped['weapons2']]['type'] != 'bow':
+                            self.game.effects_sounds['gun_pickup'].play()
+                        else:
+                            if self.mag2 > 0:
+                                Arrow(self.game, self, self.equipped['weapons2'])
                     else:
                         self.mag2 = self.ammo_cap2 = 0
                     self.is_reloading = False
@@ -1541,7 +1543,7 @@ class Player(pg.sprite.Sprite):
         snd.play()
 
     def pre_melee(self, shot = False): # Used to get the timing correct between each melee strike, and for the sounds
-        if not (self.jumping or self.is_reloading):
+        if True not in [self.jumping, self.is_reloading, self.arrow != None]:
             if not self.melee_playing:
                 # Subtracts stamina
                 if self.equipped[self.weapon_hand] != None:
@@ -2200,6 +2202,7 @@ class Npc(pg.sprite.Sprite):
         self.in_vehicle = False
         self.in_player_vehicle = False
         self.in_flying_vehicle = False
+        self.arrow = None
         self.driver = None
         self.has_dragon_body = False
         self.living = True
@@ -2317,6 +2320,8 @@ class Npc(pg.sprite.Sprite):
             self.has_magic = True
         else:
             self.has_magic = False
+        if self.bow:
+            self.reload()
 
     def update_collide_list(self):
         self.collide_list = [self.game.walls]
@@ -2537,8 +2542,17 @@ class Npc(pg.sprite.Sprite):
                         elif True not in [self.reloading, self.hit_wall, self.swimming]:
                             if self.gun:
                                 if target_dist.length_squared() < self.weapon_range ** 2:
-                                    self.shoot()
-                                    if self.bullets_shot > self.mag_size:
+                                    if self.bow:
+                                        if self.arrow != None:
+                                            self.shoot()
+                                            self.arrow.kill()
+                                            self.arrow = None
+                                        else:
+                                            self.reloading = True
+                                            self.animating_reload = True
+                                    else:
+                                        self.shoot()
+                                    if self.bullets_shot >= self.mag_size:
                                         self.bullets_shot = 0
                                         self.reloading = True
                                         self.animating_reload = True
@@ -2600,7 +2614,7 @@ class Npc(pg.sprite.Sprite):
                 self.weapon_range = 0
             self.bow = False
             if 'bow' in self.equipped[self.weapon_hand]:
-                self.game.player.bow = True
+                self.bow = True
 
     def gets_hit(self, damage, knockback, rot):
         now = pg.time.get_ticks()
@@ -2767,6 +2781,9 @@ class Npc(pg.sprite.Sprite):
 
     def pre_melee(self): # Used to get the timing correct between each melee strike, and for the sounds
         if not (self.jumping or self.melee_playing):
+            if self.arrow != None:
+                self.arrow.kill()
+                self.arrow = None
             magic_chance = randrange(0, 10)
             if self.has_magic:
                 if magic_chance == 1:
@@ -2846,10 +2863,14 @@ class Npc(pg.sprite.Sprite):
             self.body.animate(self.animation_playing, speed)
             if self.body.frame > len(self.animation_playing[0]) - 1:
                 self.animating_reload = False
+                if self.bow:
+                    if self.arrow == None:
+                        Arrow(self.game, self, self.equipped[self.weapon_hand])
         if now - self.last_reload > 10000:  # Makes it so Npc isn't always shooting
             self.reloading = False
             self.animating_reload = False
             self.last_reload = now
+
 
 
     def shoot(self):
@@ -3307,17 +3328,10 @@ class Arrow(pg.sprite.Sprite):
         self.rect.center = self.mother.pos + self.offset.rotate(-self.mother.rot)
         self.mother.arrow = self
 
-
-    def get_keys(self):
-        keys = pg.key.get_pressed()
-        if keys[pg.K_x]:
-            pass
-
     def update(self):
         self.image = pg.transform.rotate(self.image_orig, self.mother.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.mother.pos + self.offset.rotate(-self.mother.rot)
-        self.get_keys()  # this needs to be last in this method to avoid executing the rest of the update section if you exit
 
 
 class Bullet(pg.sprite.Sprite):

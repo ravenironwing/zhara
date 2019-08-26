@@ -125,7 +125,7 @@ PEOPLE['blacksmith'] = {'name': 'Blacksmith', 'protected': True, 'health': 500, 
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'osidine',
     'dialogue': 'BLACKSMITH_DLG', 'store': BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel sword'], 'hats': [None], 'hair': ['long black pony'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['dewcastle blacksmith chest key'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['wooden bow'], 'hats': [None], 'hair': ['long black pony'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['dewcastle blacksmith chest key'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['tamolin'] = {'name': 'Tamolin the Mage', 'quest': 'Ant eggs for Tamolin', 'protected': True, 'health': 550, 'touch damage': False, 'damage': 25, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
