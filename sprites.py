@@ -183,6 +183,16 @@ def random_inventory_item(container, temp_inventory):
                 else:
                     container.inventory[item_type][i] = temp_inventory[item_type][i]
 
+def drop_all_items(sprite, delete_items = False):
+    for item_type in ITEM_TYPE_LIST:
+        if item_type != 'magic':
+            if not delete_items:
+                for item in sprite.inventory[item_type]:
+                    if item != None:
+                        Dropped_Item(sprite.game, sprite.pos + vec(randrange(-50, 50), randrange(-100, 100)), item_type, item, sprite.game.previous_map)
+            sprite.inventory[item_type] = [None]
+            sprite.equipped[item_type] = None
+
 def change_clothing(character, best = False):
     # Adds items to equipped list
     remove_nones(character.inventory['tops'], character.inventory['bottoms'], character.inventory['hair'], character.inventory['weapons'], character.inventory['shoes'], character.inventory['gloves'], character.inventory['hats'])
@@ -738,89 +748,92 @@ class Character(pg.sprite.Sprite):
             self.frame += 1
 
     def update_animations(self): # This needs to be done whenever the player or an NPC switches a weapon or other animation dependent equipment
-        #Default animaitons if no weapons
-        self.stand_anim = self.render_animation(STAND)
-        if not self.game.in_character_menu:
-            if (self.mother not in self.game.npcs) or (self.mother in self.game.companions):
+        if self.dragon and (self.mother.equipped['race'] not in list(RACE.keys())):
+            return
+        else:
+            #Default animaitons if no weapons
+            self.stand_anim = self.render_animation(STAND)
+            if not self.game.in_character_menu:
+                if (self.mother not in self.game.npcs) or (self.mother in self.game.companions):
+                    if self.mother.bow:
+                        self.l_reload_anim = self.render_animation(L_BOW_RELOAD)
+                        self.l_shoot_anim = self.render_animation(L_BOW_SHOOT)
+                    else:
+                        self.l_reload_anim = self.render_animation(L_RELOAD)
+                        self.l_shoot_anim = self.render_animation(L_SHOOT)
+                    self.walk_reload_anim = self.render_animation(WALK_RELOAD)
+                    self.l_walk_reload_anim = self.render_animation(L_WALK_RELOAD)
+                    self.walk_dual_reload_anim = self.render_animation(WALK_RELOAD + L_WALK_RELOAD)
+                    self.climbing_shoot_anim = self.render_animation(CLIMB_SHOOT)
+                    self.climbing_weapon_anim = self.render_animation(CLIMB)
+                    self.climbing_weapon_melee_anim = self.render_animation(CLIMB_MELEE)
+                    self.climbing_l_weapon_melee_anim = self.render_animation(L_CLIMB_MELEE)
+                    self.dual_melee_anim = self.render_animation(D_PUNCH)
+                    self.walk_melee_anim = self.render_animation(WALK_PUNCH)
+                    self.walk_l_melee_anim = self.render_animation(L_WALK_PUNCH)
+                    self.jump_anim = self.render_animation(JUMP)
+
                 if self.mother.bow:
-                    self.l_reload_anim = self.render_animation(L_BOW_RELOAD)
-                    self.l_shoot_anim = self.render_animation(L_BOW_SHOOT)
-                else:
-                    self.l_reload_anim = self.render_animation(L_RELOAD)
-                    self.l_shoot_anim = self.render_animation(L_SHOOT)
-                self.walk_reload_anim = self.render_animation(WALK_RELOAD)
-                self.l_walk_reload_anim = self.render_animation(L_WALK_RELOAD)
-                self.walk_dual_reload_anim = self.render_animation(WALK_RELOAD + L_WALK_RELOAD)
-                self.climbing_shoot_anim = self.render_animation(CLIMB_SHOOT)
-                self.climbing_weapon_anim = self.render_animation(CLIMB)
-                self.climbing_weapon_melee_anim = self.render_animation(CLIMB_MELEE)
-                self.climbing_l_weapon_melee_anim = self.render_animation(L_CLIMB_MELEE)
-                self.dual_melee_anim = self.render_animation(D_PUNCH)
-                self.walk_melee_anim = self.render_animation(WALK_PUNCH)
-                self.walk_l_melee_anim = self.render_animation(L_WALK_PUNCH)
-                self.jump_anim = self.render_animation(JUMP)
+                    self.reload_anim = self.render_animation(BOW_RELOAD)
+                    self.shoot_anim = self.render_animation(BOW_SHOOT)
+                elif self.mother.gun:
+                    self.reload_anim = self.render_animation(RELOAD)
+                    self.shoot_anim = self.render_animation(SHOOT)
 
-            if self.mother.bow:
-                self.reload_anim = self.render_animation(BOW_RELOAD)
-                self.shoot_anim = self.render_animation(BOW_SHOOT)
-            elif self.mother.gun:
-                self.reload_anim = self.render_animation(RELOAD)
-                self.shoot_anim = self.render_animation(SHOOT)
-
-            self.run_anim = self.render_animation(RUNNING)
-            self.walk_anim = self.render_animation(WALK)
-            self.melee_anim = self.render_animation(PUNCH)
-            self.l_melee_anim = self.render_animation(L_PUNCH)
-            self.shallows_anim = self.render_animation(SHALLOWS_WALK)
-
-            # These animations never have weapons
-            self.mother.current_weapon = self.mother.equipped['weapons']
-            self.mother.current_weapon2 = self.mother.equipped['weapons2']
-            toggle_equip(self.mother, True) # This makes it so these animations are not ever created with weapons
-            if (self.mother not in self.game.npcs) or (self.mother in self.game.companions):
-                self.swim_jump_anim = self.render_animation(WATER_JUMP)
-                self.climb_jump_anim = self.render_animation(CLIMB_JUMP)
-                self.climbing_anim = self.render_animation(CLIMB)
-                self.climbing_melee_anim = self.render_animation(CLIMB_MELEE)
-                self.climbing_l_melee_anim = self.render_animation(L_CLIMB_MELEE)
-
-            self.swim_anim = self.render_animation(SWIM)
-            self.swim_melee_anim = self.render_animation(WATER_PUNCH)
-            toggle_equip(self.mother, False)
-
-            # Default animations if right equipped
-            if self.mother.equipped['weapons'] != None:
-                #self.reload_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['reload animation']))
-                self.stand_anim = self.render_animation([eval(WEAPONS[self.mother.equipped['weapons']]['grip'])])  # Change after animations are created
-                self.shoot_anim = self.render_animation([eval(WEAPONS[self.mother.equipped['weapons']]['grip'])])
-                self.walk_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['walk']))
-                self.melee_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['melee animation']))
-            # Default animations if left equipped
-            if self.mother.equipped['weapons2'] != None:
-                #self.l_reload_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['reload animation']))
-                self.l_shoot_anim = self.render_animation([eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['grip'])])
-                self.l_melee_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['melee animation']))
-                self.stand_anim = self.render_animation([eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['grip'])])  # Change after animations are created
-                self.walk_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['walk']))
-            # Default animaitons for duel wielding
-            if self.mother.equipped['weapons'] != None and self.mother.equipped['weapons2'] != None:
-                self.dual_reload_anim = self.render_animation(RELOAD + L_RELOAD)
-                self.stand_anim = self.render_animation(STAND)
-                self.shoot_anim = self.render_animation([CP_STANDING_ARMS_OUT0])
-                self.l_shoot_anim = self.render_animation([CP_STANDING_ARMS_OUT0])
+                self.run_anim = self.render_animation(RUNNING)
                 self.walk_anim = self.render_animation(WALK)
-            if self.mother.in_vehicle:
-                if self.mother.vehicle.mountable:
-                    self.walk_anim = self.run_anim = self.shallows_anim = self.swim_anim = self.shallows_anim = self.climbing_anim = self.climb_jump_anim = self.render_animation(RIDE)
-                    self.melee_anim = self.walk_melee_anim = self.climbing_melee_anim = self.climbing_shoot_anim = self.climbing_weapon_anim = self.climbing_weapon_melee_anim = self.render_animation(SWIPE)
-                    self.l_melee_anim = self.walk_l_melee_anim = self.climbing_l_melee_anim = self.climbing_l_weapon_melee_anim = self.render_animation(L_SWIPE)
-                else:
-                    self.walk_anim = self.swim_anim = self.run_anim = self.shallows_anim = self.render_animation(self.mother.vehicle.player_walk_anim)
-                    self.melee_anim = self.walk_melee_anim = self.render_animation(self.mother.vehicle.player_rattack_anim)
-                    self.l_melee_anim = self.walk_l_melee_anim = self.render_animation(self.mother.vehicle.player_lattack_anim)
+                self.melee_anim = self.render_animation(PUNCH)
+                self.l_melee_anim = self.render_animation(L_PUNCH)
+                self.shallows_anim = self.render_animation(SHALLOWS_WALK)
 
-        self.update_weapon_width()
-        self.animate(self.stand_anim, 1) #Calling this automatically updates the image
+                # These animations never have weapons
+                self.mother.current_weapon = self.mother.equipped['weapons']
+                self.mother.current_weapon2 = self.mother.equipped['weapons2']
+                toggle_equip(self.mother, True) # This makes it so these animations are not ever created with weapons
+                if (self.mother not in self.game.npcs) or (self.mother in self.game.companions):
+                    self.swim_jump_anim = self.render_animation(WATER_JUMP)
+                    self.climb_jump_anim = self.render_animation(CLIMB_JUMP)
+                    self.climbing_anim = self.render_animation(CLIMB)
+                    self.climbing_melee_anim = self.render_animation(CLIMB_MELEE)
+                    self.climbing_l_melee_anim = self.render_animation(L_CLIMB_MELEE)
+
+                self.swim_anim = self.render_animation(SWIM)
+                self.swim_melee_anim = self.render_animation(WATER_PUNCH)
+                toggle_equip(self.mother, False)
+
+                # Default animations if right equipped
+                if self.mother.equipped['weapons'] != None:
+                    #self.reload_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['reload animation']))
+                    self.stand_anim = self.render_animation([eval(WEAPONS[self.mother.equipped['weapons']]['grip'])])  # Change after animations are created
+                    self.shoot_anim = self.render_animation([eval(WEAPONS[self.mother.equipped['weapons']]['grip'])])
+                    self.walk_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['walk']))
+                    self.melee_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['melee animation']))
+                # Default animations if left equipped
+                if self.mother.equipped['weapons2'] != None:
+                    #self.l_reload_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['reload animation']))
+                    self.l_shoot_anim = self.render_animation([eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['grip'])])
+                    self.l_melee_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['melee animation']))
+                    self.stand_anim = self.render_animation([eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['grip'])])  # Change after animations are created
+                    self.walk_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['walk']))
+                # Default animaitons for duel wielding
+                if self.mother.equipped['weapons'] != None and self.mother.equipped['weapons2'] != None:
+                    self.dual_reload_anim = self.render_animation(RELOAD + L_RELOAD)
+                    self.stand_anim = self.render_animation(STAND)
+                    self.shoot_anim = self.render_animation([CP_STANDING_ARMS_OUT0])
+                    self.l_shoot_anim = self.render_animation([CP_STANDING_ARMS_OUT0])
+                    self.walk_anim = self.render_animation(WALK)
+                if self.mother.in_vehicle:
+                    if self.mother.vehicle.mountable:
+                        self.walk_anim = self.run_anim = self.shallows_anim = self.swim_anim = self.shallows_anim = self.climbing_anim = self.climb_jump_anim = self.render_animation(RIDE)
+                        self.melee_anim = self.walk_melee_anim = self.climbing_melee_anim = self.climbing_shoot_anim = self.climbing_weapon_anim = self.climbing_weapon_melee_anim = self.render_animation(SWIPE)
+                        self.l_melee_anim = self.walk_l_melee_anim = self.climbing_l_melee_anim = self.climbing_l_weapon_melee_anim = self.render_animation(L_SWIPE)
+                    else:
+                        self.walk_anim = self.swim_anim = self.run_anim = self.shallows_anim = self.render_animation(self.mother.vehicle.player_walk_anim)
+                        self.melee_anim = self.walk_melee_anim = self.render_animation(self.mother.vehicle.player_rattack_anim)
+                        self.l_melee_anim = self.walk_l_melee_anim = self.render_animation(self.mother.vehicle.player_lattack_anim)
+
+            self.update_weapon_width()
+            self.animate(self.stand_anim, 1) #Calling this automatically updates the image
 
     def update_weapon_width(self): #Gets the widths of the currently equipped weapons for melee attacks and bullet spawning locations.
         if self.mother.equipped['weapons'] == None:
@@ -900,6 +913,8 @@ class Player(pg.sprite.Sprite):
         self.last_throw = 0
         # Player state variables
         self.dragon = False
+        self.temp_equipped = None # Used for switching your body to a mech suit or for Wraith possession.
+        self.possessing = None
         self.transformable = False
         self.weapon_hand = 'weapons'
         self.jumping = False
@@ -1053,11 +1068,17 @@ class Player(pg.sprite.Sprite):
             if self.stats['stamina'] > 10 and not self.in_vehicle:
                 if self.arrow == None:
                     if now - self.last_shift > 100:
-                        self.acceleration = PLAYER_RUN + self.stats['agility']/4
-                        if self.acceleration > MAX_RUN:
-                            self.acceleration = MAX_RUN
-                        self.add_stamina(-0.8)
-                        self.last_shift = now
+                        if self.possessing == None:
+                            self.acceleration = PLAYER_RUN + self.stats['agility']/4
+                            if self.acceleration > MAX_RUN:
+                                self.acceleration = MAX_RUN
+                            self.add_stamina(-0.8)
+                            self.last_shift = now
+                        else:
+                            self.acceleration = self.possessing.run_speed / 6
+                            if 'mech_suit' not in self.equipped['race']:
+                                self.add_stamina(-0.8)
+                                self.last_shift = now
                 else:
                     self.acceleration = PLAYER_ACC
             else:
@@ -1202,7 +1223,9 @@ class Player(pg.sprite.Sprite):
                     self.equipped['race'] = self.race + 'dragon'
                     explosion = Explosion(self.game, self)
                     self.human_body.remove(self.game.all_sprites)
+                    self.human_body.remove(self.game.npc_bodies)
                     self.dragon_body.add(self.game.all_sprites)
+                    self.dragon_body.add(self.game.npc_bodies)
                     self.game.group.add(self.dragon_body)
                     self.game.group.remove(self.human_body)
                     self.body = self.dragon_body
@@ -1213,7 +1236,9 @@ class Player(pg.sprite.Sprite):
             self.equipped['race'] = self.race
             explosion = Explosion(self.game, self)
             self.dragon_body.remove(self.game.all_sprites)
+            self.dragon_body.remove(self.game.npc_bodies)
             self.human_body.add(self.game.all_sprites)
+            self.human_body.add(self.game.npc_bodies)
             self.game.group.add(self.human_body)
             self.game.group.remove(self.dragon_body)
             self.body = self.human_body
@@ -1716,6 +1741,8 @@ class Player(pg.sprite.Sprite):
     def gets_hit(self, damage, knockback, rot):
         if self.in_vehicle:
             self.vehicle.gets_hit(damage, knockback, rot)
+        elif self.possessing != None:
+            self.possessing.gets_hit(damage, knockback, rot)
         else:
             now = pg.time.get_ticks()
             if now - self.last_hit > DAMAGE_RATE:
@@ -1736,28 +1763,50 @@ class Player(pg.sprite.Sprite):
                 self.stats['hits taken'] += 1
 
     def does_melee_damage(self, mob):
-        damage_reduction = self.stats['stamina'] / self.stats['max stamina']
-        now = pg.time.get_ticks()
-        if now - self.last_damage > self.melee_rate:
-            if self.equipped[self.weapon_hand] == None:
-                damage = damage_reduction * self.stats['strength']
-                mob.vel = vec(0, 0)
-                choice(self.game.punch_sounds).play()
-                mob.gets_hit(damage, 2, self.rot)
-            else:
-                weapon_damage = WEAPONS[self.equipped[self.weapon_hand]]['melee damage']
-                damage = damage_reduction * (self.stats['strength'] + weapon_damage) + weapon_damage/4
-                mob.vel = vec(0, 0)
-                knockback = WEAPONS[self.equipped[self.weapon_hand]]['knockback']
-                self.play_weapon_hit_sound()
-                mob.gets_hit(damage, knockback, self.rot)
-            #choice(mob.hit_sounds).play()
-            self.stats['melee'] += 0.1
-            self.last_damage = now
+        if self.possessing != None: # Makes it so if you are in a mech suit or possessing an NPC your damage depends on their stats.
+            now = pg.time.get_ticks()
+            if now - self.last_damage > self.melee_rate:
+                if self.equipped[self.weapon_hand] == None:
+                    damage = self.possessing.damage
+                    mob.vel = vec(0, 0)
+                    choice(self.game.punch_sounds).play()
+                    mob.gets_hit(damage, 2, self.rot)
+                else:
+                    weapon_damage = WEAPONS[self.equipped[self.weapon_hand]]['melee damage']
+                    damage = self.possessing.damage + weapon_damage
+                    mob.vel = vec(0, 0)
+                    knockback = self.possessing.knockback / 2 + WEAPONS[self.equipped[self.weapon_hand]]['knockback']
+                    self.play_weapon_hit_sound()
+                    mob.gets_hit(damage, knockback, self.rot)
+                self.stats['melee'] += 0.1
+                self.last_damage = now
 
-        if not self.game.guard_alerted:
-            if mob.protected:
-                self.alert_guard()
+            if not self.game.guard_alerted:
+                if mob.protected:
+                    self.alert_guard()
+        else:     # For when you are not in a mech suit or possessing
+            damage_reduction = self.stats['stamina'] / self.stats['max stamina']
+            now = pg.time.get_ticks()
+            if now - self.last_damage > self.melee_rate:
+                if self.equipped[self.weapon_hand] == None:
+                    damage = damage_reduction * self.stats['strength']
+                    mob.vel = vec(0, 0)
+                    choice(self.game.punch_sounds).play()
+                    mob.gets_hit(damage, 2, self.rot)
+                else:
+                    weapon_damage = WEAPONS[self.equipped[self.weapon_hand]]['melee damage']
+                    damage = damage_reduction * (self.stats['strength'] + weapon_damage) + weapon_damage/4
+                    mob.vel = vec(0, 0)
+                    knockback = WEAPONS[self.equipped[self.weapon_hand]]['knockback']
+                    self.play_weapon_hit_sound()
+                    mob.gets_hit(damage, knockback, self.rot)
+                #choice(mob.hit_sounds).play()
+                self.stats['melee'] += 0.1
+                self.last_damage = now
+
+            if not self.game.guard_alerted:
+                if mob.protected:
+                    self.alert_guard()
 
     def alert_guard(self):
         for npc in self.game.npcs:
@@ -1784,12 +1833,34 @@ class Player(pg.sprite.Sprite):
         if self.equipped['magic'] != None:
             now = pg.time.get_ticks()
             if now - self.last_cast > self.game.effects_sounds[MAGIC[self.equipped['magic']]['sound']].get_length() * 1000:
-                if self.stats['magica'] > MAGIC[self.equipped['magic']]['cost']:
+                if self.stats['magica'] >= MAGIC[self.equipped['magic']]['cost']:
                     if self.check_materials('magic', self.equipped['magic']):
                         self.game.effects_sounds[MAGIC[self.equipped['magic']]['sound']].play()
                         Spell_Animation(self.game, self.equipped['magic'], self.pos, self.rot, self.vel)
                         pos = vec(0, 0)
                         pos = self.pos + vec(60, 0).rotate(-self.rot)
+                        if 'possession' in MAGIC[self.equipped['magic']]:
+                            if self.possessing == None:
+                                if 'wraith' in self.equipped['race']:
+                                    hits = pg.sprite.spritecollide(self, self.game.npcs, False, False)
+                                    if hits:
+                                        if 'wraith' not in hits[0].race:
+                                            drop_all_items(self, False)
+                                            hits[0].possess(self, True)
+                                else:
+                                    self.equipped['race'] = 'blackwraith'
+                                    self.race = 'blackwraith'
+                                    temp_inventory = self.inventory.copy()
+                                    drop_all_items(self, True)
+                                    corpse = Npc(self.game, self.pos.x, self.pos.y, map, 'villager')
+                                    corpse.inventory = temp_inventory
+                                    corpse.death()
+                                    self.human_body.update_animations()
+                                    self.dragon_body.update_animations()
+                                    self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you mount them.
+                            else:
+                                self.possessing.depossess()
+
                         if 'summon' in MAGIC[self.equipped['magic']]:
                             if MAGIC[self.equipped['magic']]['summon'] in PEOPLE:
                                 summoned = Npc(self.game, self.pos.x + 128, self.pos.y, self.game.map, MAGIC[self.equipped['magic']]['summon'])
@@ -1805,6 +1876,7 @@ class Player(pg.sprite.Sprite):
                                 Fireball(self, self.game, self.pos, self.rot + (36 * i), damage, 30, 1300, 500, self.vel, 'fire', False, self.in_flying_vehicle)
                         self.add_magica(-MAGIC[self.equipped['magic']]['cost'])
                         self.stats['casting'] += MAGIC[self.equipped['magic']]['cost'] / 10
+
                         #dir = vec(1, 0).rotate(-self.rot)
                         self.last_cast = now
 
@@ -2087,6 +2159,8 @@ class Player(pg.sprite.Sprite):
         self.fireball_rate_perk = 0
         self.invisible = False
         for item_type in self.equipped:
+            if item_type == 'race' and (self.equipped['race'] not in list(RACE.keys())):
+                continue
             if item_type == 'weapons2':
                 temp_item_type = 'weapons'
             else:
@@ -2177,7 +2251,10 @@ class Npc(pg.sprite.Sprite):
     def __init__(self, game, x, y, map, kind):
         self._layer = ITEMS_LAYER # The NPC's body is set to the PLAYER LAYER, but the NPC is set to the ITEMS_LAYER so its corpse appears under the player when it dies.
         self.game = game
-        self.groups = game.all_sprites, game.mobs, game.npcs, game.detectables, game.moving_targets
+        if kind == 'mech suit':
+            self.groups = game.all_sprites, game.mobs, game.npcs, game.detectables, game.moving_targets, game.mechsuits
+        else:
+            self.groups = game.all_sprites, game.mobs, game.npcs, game.detectables, game.moving_targets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.map = map # This keeps track of which NPCs belong on which maps
         self.image = self.game.body_surface
@@ -2204,6 +2281,7 @@ class Npc(pg.sprite.Sprite):
         self.in_flying_vehicle = False
         self.arrow = None
         self.driver = None
+        self.possessed = False
         self.has_dragon_body = False
         self.living = True
         self.weapon_hand = 'weapons'
@@ -2439,136 +2517,144 @@ class Npc(pg.sprite.Sprite):
 
     def update(self):
         if self.living:
-            if self.target != self.game.player:
-                if not self.target.living:  # Makes it so the guards switch back to the player being their target if they kill the mob they are attacking.
-                    if not self.game.player.invisible:
-                        self.target = self.game.player
-                        self.offensive = False
-                    else:
-                        self.target = choice(list(self.game.random_targets))
-                if self.guard:
-                    if self.provoked:
+            if self.driver != None:
+                self.pos = self.driver.pos
+                self.rect.center = self.pos
+                self.hit_rect.center = self.pos
+                if self.health <= 0:
+                    self.depossess()
+                    self.death()
+            else:
+                if self.target != self.game.player:
+                    if not self.target.living:  # Makes it so the guards switch back to the player being their target if they kill the mob they are attacking.
                         if not self.game.player.invisible:
                             self.target = self.game.player
-                            self.offensive = True
-
-            if self in self.game.companions:
-                if self.target == self.game.player:
-                    self.offensive = False
-
-            if self.melee_playing:
-                self.melee()
-            elif self.reloading:
-                self.reload()
-
-            ora = pg.time.get_ticks()
-            if ora - self.last_hit > 3000: # Used to set the time NPCs flee for after being attacked.
-                if self.running:
-                    if self.aggression == 'fwp':
-                        self.approach_vector = vec(-1, -1)
-                    self.running = False
-            if ora - self.last_seek > 1000: # Checks for the closest target
-                self.seek_mobs()
-                self.last_seek = ora
-
-            target_dist = self.target.pos - self.pos
-            if True not in [self.melee_playing, self.animating_reload]: # Only moves character if not attacking or reloading
-                if not self.offensive and target_dist.length_squared() < 100 ** 2 and self.approach_vector != vec(-1, 0):
-                    self.vel = vec(0, 0)
-                    self.rot = target_dist.angle_to(vec(1, 0))
-
-                elif target_dist.length_squared() < self.detect_radius**2:
-                    # Animates Character's Walking
-                    if self.speed == 0:
-                        temp_animate_speed = 500
-                    else:
-                        if self.running:
-                            temp_animate_speed = 20000 / self.run_speed
+                            self.offensive = False
                         else:
-                            temp_animate_speed = 20000 / self.speed
+                            self.target = choice(list(self.game.random_targets))
+                    if self.guard:
+                        if self.provoked:
+                            if not self.game.player.invisible:
+                                self.target = self.game.player
+                                self.offensive = True
 
-                    if self.swimming:
-                        self.body.animate(self.body.swim_anim, temp_animate_speed)
-                    elif self.in_shallows:
-                        self.body.animate(self.body.shallows_anim, temp_animate_speed)
-                    elif self.running:
-                        self.body.animate(self.body.run_anim, temp_animate_speed)
-                    elif self.climbing:
-                        self.body.animate(self.body.climbing_anim, temp_animate_speed)
-                    else:
-                        self.body.animate(self.body.walk_anim, temp_animate_speed)
+                if self in self.game.companions:
+                    if self.target == self.game.player:
+                        self.offensive = False
 
-                    if random() < 0.002: # This makes different sounds for each type of npc
-                        if self.equipped['race'] == 'immortui':
-                            choice(self.game.zombie_moan_sounds).play()
-                        if 'wraith' in self.equipped['race']:
-                            choice(self.game.wraith_sounds).play()
+                if self.melee_playing:
+                    self.melee()
+                elif self.reloading:
+                    self.reload()
 
-                    # This part makes the NPC avoid walls
-                    now = pg.time.get_ticks()
-                    if not self.immaterial:
-                        hits = pg.sprite.spritecollide(self, self.game.walls, False)
-                        if hits:
-                            self.hit_wall = True
-                            if now - self.last_wall_hit > 1000:
-                                self.last_wall_hit = now
-                                self.rot = (self.rot + (randrange(90, 180) * choice([-1, 1]))) % 360
-                        elif now - self.last_wall_hit > randrange(3000, 5000):
-                            self.last_wall_hit = now
-                            self.hit_wall = False
-                    if not self.hit_wall:
-                        self.rot = target_dist.angle_to(self.approach_vector)
+                ora = pg.time.get_ticks()
+                if ora - self.last_hit > 3000: # Used to set the time NPCs flee for after being attacked.
+                    if self.running:
+                        if self.aggression == 'fwp':
+                            self.approach_vector = vec(-1, -1)
+                        self.running = False
+                if ora - self.last_seek > 1000: # Checks for the closest target
+                    self.seek_mobs()
+                    self.last_seek = ora
 
-                    self.rect.center = self.pos
-                    self.acc = vec(1, 0).rotate(-self.rot)
-                    self.avoid_mobs()
-                    try: #prevents scaling a vector of 0 length
-                        if self.running:
-                            speed = self.run_speed
+                target_dist = self.target.pos - self.pos
+                if True not in [self.melee_playing, self.animating_reload]: # Only moves character if not attacking or reloading
+                    if not self.offensive and target_dist.length_squared() < 100 ** 2 and self.approach_vector != vec(-1, 0):
+                        self.vel = vec(0, 0)
+                        self.rot = target_dist.angle_to(vec(1, 0))
+
+                    elif target_dist.length_squared() < self.detect_radius**2:
+                        # Animates Character's Walking
+                        if self.speed == 0:
+                            temp_animate_speed = 500
                         else:
-                            speed = self.speed
-                        self.acc.scale_to_length(speed)
-                    except:
-                        self.acc = vec(0, 0)
-                    self.accelerate()
-                    collide(self)
-
-                    if self.offensive:
-                        if target_dist.length_squared() < self.melee_range**2:
-                            now = pg.time.get_ticks()
-                            if now - self.last_melee > randrange(1000, 3000):
-                                self.last_melee = now
-                                self.pre_melee()
-                        elif True not in [self.reloading, self.hit_wall, self.swimming]:
-                            if self.gun:
-                                if target_dist.length_squared() < self.weapon_range ** 2:
-                                    if self.bow:
-                                        if self.arrow != None:
-                                            self.shoot()
-                                            self.arrow.kill()
-                                            self.arrow = None
-                                        else:
-                                            self.reloading = True
-                                            self.animating_reload = True
-                                    else:
-                                        self.shoot()
-                                    if self.bullets_shot >= self.mag_size:
-                                        self.bullets_shot = 0
-                                        self.reloading = True
-                                        self.animating_reload = True
+                            if self.running:
+                                temp_animate_speed = 20000 / self.run_speed
                             else:
-                                if target_dist.length_squared() < self.detect_radius ** 2:
-                                    magic_chance = randrange(0, 100)
-                                    if magic_chance == 1:
-                                        self.cast_spell()
-                        if self.game.player.in_vehicle:
-                            if target_dist.length_squared() < 3*self.melee_range**2:
+                                temp_animate_speed = 20000 / self.speed
+
+                        if self.swimming:
+                            self.body.animate(self.body.swim_anim, temp_animate_speed)
+                        elif self.in_shallows:
+                            self.body.animate(self.body.shallows_anim, temp_animate_speed)
+                        elif self.running:
+                            self.body.animate(self.body.run_anim, temp_animate_speed)
+                        elif self.climbing:
+                            self.body.animate(self.body.climbing_anim, temp_animate_speed)
+                        else:
+                            self.body.animate(self.body.walk_anim, temp_animate_speed)
+
+                        if random() < 0.002: # This makes different sounds for each type of npc
+                            if self.equipped['race'] == 'immortui':
+                                choice(self.game.zombie_moan_sounds).play()
+                            if 'wraith' in self.equipped['race']:
+                                choice(self.game.wraith_sounds).play()
+
+                        # This part makes the NPC avoid walls
+                        now = pg.time.get_ticks()
+                        if not self.immaterial:
+                            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+                            if hits:
+                                self.hit_wall = True
+                                if now - self.last_wall_hit > 1000:
+                                    self.last_wall_hit = now
+                                    self.rot = (self.rot + (randrange(90, 180) * choice([-1, 1]))) % 360
+                            elif now - self.last_wall_hit > randrange(3000, 5000):
+                                self.last_wall_hit = now
+                                self.hit_wall = False
+                        if not self.hit_wall:
+                            self.rot = target_dist.angle_to(self.approach_vector)
+
+                        self.rect.center = self.pos
+                        self.acc = vec(1, 0).rotate(-self.rot)
+                        self.avoid_mobs()
+                        try: #prevents scaling a vector of 0 length
+                            if self.running:
+                                speed = self.run_speed
+                            else:
+                                speed = self.speed
+                            self.acc.scale_to_length(speed)
+                        except:
+                            self.acc = vec(0, 0)
+                        self.accelerate()
+                        collide(self)
+
+                        if self.offensive:
+                            if target_dist.length_squared() < self.melee_range**2:
                                 now = pg.time.get_ticks()
                                 if now - self.last_melee > randrange(1000, 3000):
                                     self.last_melee = now
                                     self.pre_melee()
-            if self.health <= 0:
-                self.death()
+                            elif True not in [self.reloading, self.hit_wall, self.swimming]:
+                                if self.gun:
+                                    if target_dist.length_squared() < self.weapon_range ** 2:
+                                        if self.bow:
+                                            if self.arrow != None:
+                                                self.shoot()
+                                                self.arrow.kill()
+                                                self.arrow = None
+                                            else:
+                                                self.reloading = True
+                                                self.animating_reload = True
+                                        else:
+                                            self.shoot()
+                                        if self.bullets_shot >= self.mag_size:
+                                            self.bullets_shot = 0
+                                            self.reloading = True
+                                            self.animating_reload = True
+                                else:
+                                    if target_dist.length_squared() < self.detect_radius ** 2:
+                                        magic_chance = randrange(0, 100)
+                                        if magic_chance == 1:
+                                            self.cast_spell()
+                            if self.game.player.in_vehicle:
+                                if target_dist.length_squared() < 3*self.melee_range**2:
+                                    now = pg.time.get_ticks()
+                                    if now - self.last_melee > randrange(1000, 3000):
+                                        self.last_melee = now
+                                        self.pre_melee()
+                if self.health <= 0:
+                    self.death()
         else:  #Kills corpse when it is empty
             count = 0
             for key in self.inventory:
@@ -2601,6 +2687,73 @@ class Npc(pg.sprite.Sprite):
         self.guard = False
         self.speed = self.walk_speed = 80
         self.run_speed = 100
+
+    def possess(self, driver, demon = False):
+        if self.driver == None:
+            if driver.possessing == None:
+                #self.game.group.change_layer(self.body, PLAYER_LAYER)
+                if demon:
+                    self.possessed = True
+                self.frame = 0
+                self.knockback = 0
+                self.driver = driver
+                if self.driver.dragon:
+                    self.driver.transform()
+                self.driver.possessing = self
+                self.driver.body = self.body
+                self.driver.body.mother = self.driver
+                self.driver.body.update()
+                self.driver.human_body.remove(self.game.all_sprites)
+                self.driver.human_body.remove(self.game.npc_bodies)
+                self.game.group.remove(self.driver.human_body)
+                self.body = self.driver.human_body
+                self.body.mother = self
+                self.remove(self.game.mobs)
+                self.remove(self.game.npcs)
+                self.remove(self.game.moving_targets)
+                self.driver.temp_equipped = copy.deepcopy(self.driver.equipped)
+                self.driver.equipped = self.equipped
+                self.driver.equipped['magic'] = self.driver.temp_equipped['magic']
+                if demon:
+                    for item_type in ITEM_TYPE_LIST:
+                        for item in self.inventory[item_type]:
+                            self.driver.inventory[item_type].append(item)
+                self.driver.body.update_animations()
+                self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you mount them.
+
+    def depossess(self):
+        if self.driver != None:
+            self.driver.possessing = None
+            self.knockback = self.kind['knockback']
+            if self.driver.swimming:
+                self.driver.equipped['weapons'] = None
+                self.driver.current_weapon = self.driver.last_weapon
+                self.driver.equipped['weapons2'] = None
+                self.driver.current_weapon2 = self.driver.last_weapon2
+            self.body = self.driver.body
+            self.body.mother = self
+            self.driver.body = self.driver.human_body
+            self.driver.body.mother = self.driver
+            self.driver.human_body.add(self.game.all_sprites)
+            self.driver.human_body.add(self.game.npc_bodies)
+            self.game.group.add(self.driver.human_body)
+            self.equipped = copy.deepcopy(self.driver.equipped)
+            self.driver.equipped = self.driver.temp_equipped
+            self.driver.body.update_animations()
+            self.add(self.game.mobs)
+            self.add(self.game.npcs)
+            self.add(self.game.moving_targets)
+            if self.possessed:
+                self.possessed = False
+                drop_all_items(self.driver, True)
+            self.driver.human_body.update_animations()
+            if self.driver.has_dragon_body:
+                self.driver.dragon_body.update_animations()
+            self.driver.pos = self.driver.pos + (80, 80)
+            self.driver = None
+            #self.game.group.change_layer(self.body, MOB_LAYER)
+            self.frame = 0
+            self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you dismount the animal.
 
     def set_gun_vars(self):
         if self.equipped[self.weapon_hand] != None:

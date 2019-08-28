@@ -149,7 +149,6 @@ def fire_collide(one, two):
 
 class Game:
     def __init__(self):
-        pg.mixer.init()
         self.window_ratio = .97
         self.screen_width = WIDTH
         self.screen_height = int(HEIGHT * self.window_ratio)
@@ -633,6 +632,7 @@ class Game:
         self.hud_map = False
         self.hud_overmap = False
         self.vehicle_text = False
+        self.mechsuit_text = False
         self.vehicle_key_text = False
         self.talk_text = False
         self.station_type = ''
@@ -650,6 +650,7 @@ class Game:
         self.all_static_sprites = pg.sprite.Group() # used for all static sprites
         self.firepots = pg.sprite.Group()
         self.arrows = pg.sprite.Group()
+        self.mechsuits = pg.sprite.Group()
         self.detectors = pg.sprite.Group()
         self.detectables = pg.sprite.Group()
         self.portals = pg.sprite.Group()
@@ -1416,10 +1417,22 @@ class Game:
                     collide_with_walls(self.player, [hit], 'y')
                     self.player.rect.center = self.player.hit_rect.center
 
-            # player hits an empty vehicle
+
+            # player hits an empty vehicle or mech suit
             self.vehicle_text = False
             self.vehicle_key_text = False
+            self.mechsuit_text = False
             if not self.player.in_vehicle:
+                if self.player.possessing == None:
+                    hits = pg.sprite.spritecollide(self.player, self.mechsuits, False)
+                    if hits:
+                        if (hits[0].driver == None) and hits[0].living:
+                            self.mechsuit_text = True
+                        if self.e_down:
+                            if hits[0].living:
+                                hits[0].possess(self.player)
+                            self.mechsuit_text = False
+
                 hits = pg.sprite.spritecollide(self.player, self.vehicles, False)
                 if hits:
                     if not hits[0].occupied and hits[0].living:
@@ -1799,8 +1812,13 @@ class Game:
         if now - self.last_hud_update > FPS * 10:
             if self.player.in_vehicle:
                 self.hud_health = self.player.vehicle.health / self.player.vehicle.maxhealth
+                self.hud_health_num = self.player.vehicle.health
+            elif self.player.possessing != None:
+                self.hud_health = self.player.possessing.health / self.player.possessing.max_health
+                self.hud_health_num = self.player.possessing.health
             else:
                 self.hud_health = self.player.stats['health'] / self.player.stats['max health']
+                self.hud_health_num = self.player.stats['health']
             self.hud_stamina = self.player.stats['stamina'] / self.player.stats['max stamina']
             self.hud_magica = self.player.stats['magica'] / self.player.stats['max magica']
             if self.player.ammo_cap1 + self.player.mag1 != 0:
@@ -1824,6 +1842,9 @@ class Game:
             self.draw_text("Paused", self.title_font, 105, RED, self.screen_width / 2, self.screen_height / 2, align="center")
         if self.vehicle_text == True:
             self.draw_text('E to enter, X to exit', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
+                           align="center")
+        if self.mechsuit_text == True:
+            self.draw_text('E to enter, T to exit', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
                            align="center")
         if self.vehicle_key_text == True:
             self.draw_text('You need a key to operate this vehicle.', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
@@ -1854,7 +1875,7 @@ class Game:
                            align="center")
         self.draw_text("FPS {:.0f}".format(self.clock.get_fps()), self.hud_font, 20, WHITE,
                        25, 100, align="topleft")
-        self.draw_text("HP {:.0f}".format(self.player.stats['health']), self.hud_font, 20, WHITE,
+        self.draw_text("HP {:.0f}".format(self.hud_health_num), self.hud_font, 20, WHITE,
                        120, 10, align="topleft")
         self.draw_text("ST {:.0f}".format(self.player.stats['stamina']), self.hud_font, 20, WHITE,
                        120, 40, align="topleft")
@@ -1947,8 +1968,12 @@ class Game:
                 if event.key == pg.K_g:
                     self.player.throw_grenade()
                 if event.key == pg.K_t:
-                    if self.player.stats['magica'] > 50 or self.player.dragon:
-                        self.player.transform()
+                    if self.player.possessing == None:
+                        if self.player.stats['magica'] > 50 or self.player.dragon:
+                            self.player.transform()
+                    else:
+                        self.player.possessing.depossess()
+
                 if event.key == pg.K_f:
                     if self.player.dragon:
                         self.player.breathe_fire()

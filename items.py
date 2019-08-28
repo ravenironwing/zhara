@@ -203,6 +203,7 @@ ITEMS['red crystal'] = {'image': 67, 'weight': 0.5, 'ammo': 25, 'type': 'crystal
 ITEMS['old book'] = {'image': 117, 'weight': 1, 'value': 0}
 
 # Spell books
+ITEMS['book of demon secrets'] = {'image': 142, 'spell': 'demonic possession', 'weight': 1, 'sound': 'enchant', 'value': 9000}
 ITEMS['healing tome'] = {'image': 118, 'spell': 'healing', 'weight': 1, 'sound': 'casting healing', 'value': 2000}
 ITEMS['fireball tome'] = {'image': 119, 'spell': 'fireball', 'weight': 1, 'sound': 'fire blast', 'value': 700}
 ITEMS['fire spray tome'] = {'image': 120, 'spell': 'fire spray', 'sound': 'fire blast', 'weight': 1, 'value': 3000}

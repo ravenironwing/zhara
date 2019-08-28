@@ -26,10 +26,13 @@ default_font = MENU_FONT
 #        if x not in ['race', 'gender']
 #            d[x] = [None]
 
-# This makes sure the player or any other sprite is not equipping items they don't have.
+# This makes sure the player or any other sprite is not equipping items they don't have. Also makes sure players aren't equipping armor in mechsuits
 def check_equip(sprite):
     for item_type in ITEM_TYPE_LIST:
         if sprite.equipped[item_type] not in sprite.inventory[item_type]:
+            sprite.equipped[item_type] = None
+    if sprite.equipped['race'] in NO_CLOTHES_RACES:
+        for item_type in ['hair', 'tops', 'bottoms', 'shoes', 'hats', 'gloves']:
             sprite.equipped[item_type] = None
 
 class Draw_Text():
@@ -385,6 +388,8 @@ class Character_Design_Menu(Menu):
         check_equip(self.character)
         self.character.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
         self.character.dragon_body.update_animations()
+        if self.character.possessing != None:
+            self.character.body.update_animations()
         self.character.pre_reload()
         self.character.stats = RACE[self.character.race]['start_stats'] # Gives player different stats based on selected race.
 
@@ -572,8 +577,11 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                         temp_item = item.replace('2', '')
                     else:
                         temp_item = item
-                    if 'armor' in eval(temp_item.upper())[self.character.equipped[item]]:
-                        self.character.stats['armor'] += eval(temp_item.upper())[self.character.equipped[item]]['armor']
+                    try:
+                        if 'armor' in eval(temp_item.upper())[self.character.equipped[item]]:
+                            self.character.stats['armor'] += eval(temp_item.upper())[self.character.equipped[item]]['armor']
+                    except:
+                        pass
 
             self.character.calculate_weight()
 
@@ -627,6 +635,8 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         check_equip(self.character)
         self.character.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
         self.character.dragon_body.update_animations()
+        if self.character.possessing != None:
+            self.character.body.update_animations()
         if self.character == self.game.player:
             self.character.calculate_fire_power()
             self.character.calculate_perks()
@@ -1122,7 +1132,7 @@ class Stats_Menu(Draw_Text):
             self.game.clock.tick(30)
             self.events()
             self.draw()
-        self.game.in_stats_menu = self.game.menu = False
+        self.game.in_stats_menu = self.game.in_menu = False
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
 
     def draw(self):
@@ -1782,6 +1792,8 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
         check_equip(self.game.player)
         self.game.player.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
         self.game.player.dragon_body.update_animations()
+        if self.game.player.possessing != None:
+            self.game.player.body.update_animations()
         self.game.player.calculate_fire_power()
         self.game.player.calculate_perks()
         # Reloads
@@ -2337,6 +2349,8 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
         check_equip(self.game.player)
         self.game.player.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
         self.game.player.dragon_body.update_animations()
+        if self.game.player.possessing != None:
+            self.game.player.body.update_animations()
         self.game.player.calculate_fire_power()
         self.game.player.calculate_perks()
         # Reloads

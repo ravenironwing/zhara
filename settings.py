@@ -22,6 +22,7 @@ male_player_sound_folder = path.join(snd_folder, 'male_player')
 music_folder = path.join(game_folder, 'music')
 map_folder = path.join(game_folder, 'maps')
 # image folder and subfolders
+male_mech_suit_parts_folder = female_mech_suit_parts_folder = path.join(img_folder, 'mech_suit')
 male_golem_parts_folder = female_golem_parts_folder = path.join(img_folder, 'golem_parts')
 male_icegolem_parts_folder = female_icegolem_parts_folder = path.join(img_folder, 'icegolem_parts')
 male_blackwraith_parts_folder = female_blackwraith_parts_folder = path.join(img_folder, 'blackwraith_parts')
@@ -115,6 +116,7 @@ SHADOW = (0, 0, 0, 150)
 # game settings
 pg.mixer.pre_init(44100, -16, 4, 2048)
 pg.init()
+pg.mixer.init()
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 infoObject = pg.display.Info() #creates an info object to detect native screen resolution.
 # Sets maximum screen resolution to 1920 by 1080
@@ -418,9 +420,9 @@ RACE['miewdra'] = {'armor': 4, 'image': 4, 'start map': (89, 48), 'start pos': (
 RACE['mechanima'] = {'armor': 35, 'image': 5, 'start map': (126, 21), 'start pos': (45, 44),
                      'start_stats': {'health': 110, 'max health': 110, 'stamina': 100, 'max stamina': 100, 'magica': 70, 'max magica': 70, 'weight': 0, 'max weight': 200, 'strength': 3.5, 'agility': 1.2, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0.2, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
                     'description': 'The Mechanima are the remnants of an advanced race who were driven into extinction who were able to preserve their souls in robot bodies. They are strong, naturally armored, immune to poison, and recharged by energy attacks.'}
-#RACE['blackwraith'] = {'armor': 0, 'image': 8, 'start map': (53, 75), 'start pos': (45, 5),
-#                       'start_stats': {'health': 300, 'max health': 300, 'stamina': 150, 'max stamina': 150, 'magica': 150, 'max magica': 150, 'weight': 0, 'max weight': 50, 'strength': 0.2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-#                        'description': 'Black wraiths are disembodied practitioners of dark magic. They are immune to unenchanted melee weapons, bullets, and can walk through walls when not carrying any weight.'}
+RACE['blackwraith'] = {'armor': 0, 'image': 8, 'start map': (53, 75), 'start pos': (45, 5),
+                       'start_stats': {'health': 300, 'max health': 300, 'stamina': 150, 'max stamina': 150, 'magica': 150, 'max magica': 150, 'weight': 0, 'max weight': 50, 'strength': 0.2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                        'description': 'Black wraiths are disembodied practitioners of dark magic. They are immune to unenchanted melee weapons, bullets, and can walk through walls when not carrying any weight.'}
 RACE['whitewraith'] = {'armor': 0, 'image': 7, 'start map': (59, 64), 'start pos': (40, 38),
                        'start_stats': {'health': 200, 'max health': 200, 'stamina': 160, 'max stamina': 160, 'magica': 220, 'max magica': 220, 'weight': 0, 'max weight': 50, 'strength': 0.1, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2.5, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
                         'description': 'White wraiths are disembodied practitioners of white magic. They are immune to unenchanted melee weapons, bullets, and can walk through walls when not carrying any weight.'}
@@ -457,6 +459,9 @@ DEFAULT_INVENTORIES['male whitewraith'] = {'gender': list(GENDER.keys()), 'race'
 DEFAULT_INVENTORIES['female whitewraith'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
 DEFAULT_INVENTORIES['male skeleton'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
 DEFAULT_INVENTORIES['female skeleton'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
+DEFAULT_INVENTORIES['male blackwraith'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
+DEFAULT_INVENTORIES['female blackwraith'] = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 25, 'items': [None], 'magic': [None]}
+
 
 ENCHANTMENTS = {}
 ENCHANTMENTS['explosive'] = {'materials':{'gun powder':1, 'black crystal':1}, 'equip kind': ['weapons'], 'image': 3}

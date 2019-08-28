@@ -4,18 +4,18 @@ from armor import *
 from character_positions import *
 
 # Stores
-BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel sword', 'iron dagger'], 'hats': ['steel helmet'], 'hair': [None], 'tops': ['leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'gold ingot', 'silver ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
-LACERTOLIAN_BLACKSMITH_STORE = {'markup': 1, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['bronze mace', 'iron dagger'], 'hats': ['steel helmet'], 'hair': [None], 'tops': ['leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['bronze ingot', 'iron ingot', 'copper ingot', 'brass ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
-ELF_BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel dagger', 'iron dagger'], 'hats': ['steel helmet', 'elf hat'], 'hair': [None], 'tops': ['leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'gold ingot', 'silver ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
-SHAKTELE_BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['pistol', 'grenade launcher', 'mini gun', 'auto grenade launcher', 'shotgun', 'assault rifle'], 'hats': ['tactical helmet', 'military helmet'], 'hair': [None], 'tops': ['shaktele guard armor', 'leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots', 'black combat'], 'gloves': ['steel gauntlets', 'leather gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'aluminum', 'brass ingot', 'lead ingot', 'charcoal', 'gun powder', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
-MIEWDRA_BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['miewdra blade', 'steel dagger'], 'hats': ['steel helmet'], 'hair': [None], 'tops': ['leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'copper ingot', 'brass ingot', 'gold ingot', 'silver ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
-MECHANIMA_BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel sword', 'steel dagger', 'mechanima blaster'], 'hats': ['tactical helmet'], 'hair': [None], 'tops': ['guard armor', 'steel plate armor', 'leather armor M', 'leather armor F'], 'bottoms': ['chainmail leggings M', 'chainmail leggings F', 'leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'aluminum ingot', 'machine screws', 'springs', 'copper ingot', 'brass ingot', 'bronze ingot', 'large laser ammo module', 'medium laser ammo module', 'gold ingot', 'silver ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
-TAMOLIN_STORE = {'markup': 1.2, 'pvalue': 0.7, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': ['red cloak', 'blue cloak', 'black cloak'], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['potion of moderate healing', 'potion of major healing', 'potion of moderate stamina', 'potion of moderate magica', 'empty bottle', 'yarrow', 'sulphur', 'potassium nitrate crystals', 'charcoal', 'red crystal', 'yellow crystal', 'green crystal', 'healing tome', 'fire spray tome', 'fireball tome'], 'magic': [None]}}
-DANGERMAN_STORE = {'markup': 0.2, 'pvalue': 0.1, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['lock pick'], 'magic': [None]}}
-FELIUS_STORE = {'markup': 2, 'pvalue': 0.5, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['wolf skin', 'deer skin', 'leather'], 'magic': [None]}}
-KEVIN_STORE = {'markup': 2.5, 'pvalue': 0.9, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['distilled alcohol', 'squid ink', 'candle', 'potion of major healing', 'gun powder', 'charcoal', 'surphur', 'potassium nitrate crystals'], 'magic': [None]}}
-ANNA_STORE = {'markup': 1.2, 'pvalue': 0.1, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['carrot', 'horse bridle'], 'magic': [None]}}
-LIZ_STORE = {'markup': 1.2, 'pvalue': 0.7, 'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': ['red cloak'], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['potion of moderate healing', 'potion of major healing', 'potion of moderate stamina', 'potion of moderate magica', 'empty bottle', 'yarrow', 'charcoal', 'red crystal', 'blue crystal', 'green crystal', 'healing tome', 'fireball tome', 'clay', 'cut wood', 'squid ink', 'squid eye', 'spider venom'], 'magic': [None]}}
+BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel sword', 'iron dagger'], 'hats': ['steel helmet'], 'hair': [None], 'tops': ['leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'gold ingot', 'silver ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
+LACERTOLIAN_BLACKSMITH_STORE = {'markup': 1, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['bronze mace', 'iron dagger'], 'hats': ['steel helmet'], 'hair': [None], 'tops': ['leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['bronze ingot', 'iron ingot', 'copper ingot', 'brass ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
+ELF_BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger', 'iron dagger'], 'hats': ['steel helmet', 'elf hat'], 'hair': [None], 'tops': ['leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'gold ingot', 'silver ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
+SHAKTELE_BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['pistol', 'grenade launcher', 'mini gun', 'auto grenade launcher', 'shotgun', 'assault rifle'], 'hats': ['tactical helmet', 'military helmet'], 'hair': [None], 'tops': ['shaktele guard armor', 'leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots', 'black combat'], 'gloves': ['steel gauntlets', 'leather gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'aluminum', 'brass ingot', 'lead ingot', 'charcoal', 'gun powder', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
+MIEWDRA_BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['miewdra blade', 'steel dagger'], 'hats': ['steel helmet'], 'hair': [None], 'tops': ['leather armor M', 'leather armor F'], 'bottoms': ['leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'copper ingot', 'brass ingot', 'gold ingot', 'silver ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
+MECHANIMA_BLACKSMITH_STORE = {'markup': 1.5, 'pvalue': 0.8, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel sword', 'steel dagger', 'mechanima blaster'], 'hats': ['tactical helmet'], 'hair': [None], 'tops': ['guard armor', 'steel plate armor', 'leather armor M', 'leather armor F'], 'bottoms': ['chainmail leggings M', 'chainmail leggings F', 'leather leggings M', 'leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 0, 'items': ['steel ingot', 'iron ingot', 'aluminum ingot', 'machine screws', 'springs', 'copper ingot', 'brass ingot', 'bronze ingot', 'large laser ammo module', 'medium laser ammo module', 'gold ingot', 'silver ingot', 'charcoal', 'wood block', 'leather', 'leather strips'], 'magic': [None]}}
+TAMOLIN_STORE = {'markup': 1.2, 'pvalue': 0.7, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': ['red cloak', 'blue cloak', 'black cloak'], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['potion of moderate healing', 'potion of major healing', 'potion of moderate stamina', 'potion of moderate magica', 'empty bottle', 'yarrow', 'sulphur', 'potassium nitrate crystals', 'charcoal', 'red crystal', 'yellow crystal', 'green crystal', 'healing tome', 'fire spray tome', 'fireball tome'], 'magic': [None]}}
+DANGERMAN_STORE = {'markup': 0.2, 'pvalue': 0.1, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['lock pick'], 'magic': [None]}}
+FELIUS_STORE = {'markup': 2, 'pvalue': 0.5, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['wolf skin', 'deer skin', 'leather'], 'magic': [None]}}
+KEVIN_STORE = {'markup': 2.5, 'pvalue': 0.9, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['distilled alcohol', 'squid ink', 'candle', 'potion of major healing', 'gun powder', 'charcoal', 'surphur', 'potassium nitrate crystals'], 'magic': [None]}}
+ANNA_STORE = {'markup': 1.2, 'pvalue': 0.1, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['carrot', 'horse bridle'], 'magic': [None]}}
+LIZ_STORE = {'markup': 1.2, 'pvalue': 0.7, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': ['red cloak'], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['potion of moderate healing', 'potion of major healing', 'potion of moderate stamina', 'potion of moderate magica', 'empty bottle', 'yarrow', 'charcoal', 'red crystal', 'blue crystal', 'green crystal', 'healing tome', 'fireball tome', 'clay', 'cut wood', 'squid ink', 'squid eye', 'spider venom'], 'magic': [None]}}
 
 NPC_TYPE_LIST = ['people', 'animals']
 # NPCs Settings
@@ -31,19 +31,19 @@ PEOPLE['melerous'] = {'name': 'Melerous', 'protected': False, 'health': 100, 'to
     'collide': [],
     'gender': 'male', 'race': 'blackwraith',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['karang'], 'hats': ['dark wizard hood'], 'hair': [None], 'tops': ['melerous armor'], 'bottoms': ['chainmail leggings M'], 'shoes': ['demon boots'], 'gloves': ['demon gauntlets'], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': ['fireball']},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['karang'], 'hats': ['dark wizard hood'], 'hair': [None], 'tops': ['melerous armor'], 'bottoms': ['chainmail leggings M'], 'shoes': ['demon boots'], 'gloves': ['demon gauntlets'], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': ['fireball']},
     'animations': {None}}
 PEOPLE['vadashay'] = {'name': 'Vadashay', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 600, 'avoid radius': 100, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'vadashay',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['dead bluefish'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['dead bluefish'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['demon'] = {'name': 'demon', 'protected': False, 'health': 666, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (100, 150), 'run speed': 260, 'detect radius': 650, 'avoid radius': 100, 'aggression': 'awd', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'demon',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['random DEMON_'], 'hats': ['random DEMON_'], 'hair': ['random DEMON_'], 'tops': ['random DEMON_'], 'bottoms': ['random DEMON_'], 'shoes': [None], 'gloves': ['random DEMON_'], 'gold': 666, 'items': ['random DEMON_'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random DEMON_'], 'hats': ['random DEMON_'], 'hair': ['random DEMON_'], 'tops': ['random DEMON_'], 'bottoms': ['random DEMON_'], 'shoes': [None], 'gloves': ['random DEMON_'], 'gold': 666, 'items': ['random DEMON_'], 'magic': [None]},
     'animations': {None}}
 
 DEMON_HATS = [None, 'demon helmet']
@@ -57,44 +57,44 @@ PEOPLE['clay golem guard'] = {'name': 'clay golem Guard', 'protected': False, 'h
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'golem',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 300, 'items': ['clay', 'clay', 'clay', 'clay'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 300, 'items': ['clay', 'clay', 'clay', 'clay'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['ice golem'] = {'name': 'ice golem', 'protected': False, 'health': 400, 'touch damage': False, 'damage': 50, 'knockback': 50, 'walk speed': (70, 100), 'run speed': 200, 'detect radius': 700, 'avoid radius': 100, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'icegolem',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 300, 'items': ['living water', 'living water', 'living water', 'living water'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 300, 'items': ['living water', 'living water', 'living water', 'living water'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['goblin'] = {'name': 'goblin', 'protected': False, 'health': 200, 'touch damage': False, 'damage': 10, 'knockback': 5, 'walk speed': (100, 200), 'run speed': 300, 'detect radius': 700, 'avoid radius': 100, 'aggression': 'awd', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'goblin',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['random SKELETON_'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['random SKELETON_'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random SKELETON_'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['random SKELETON_'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['goblin king'] = {'name': 'Tronold Grump', 'protected': False, 'health': 10000, 'touch damage': False, 'damage': 100, 'knockback': 20, 'walk speed': (50, 75), 'run speed': 90, 'detect radius': 400, 'avoid radius': 80, 'aggression': 'sap', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'male', 'race': 'goblin',
     'dialogue': 'GOBLIN_KING_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['live goldfish'], 'hats': ['golden crown'], 'hair': ['The Golden Toupee'], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 1000000000, 'items': [None], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['live goldfish'], 'hats': ['golden crown'], 'hair': ['The Golden Toupee'], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 1000000000, 'items': [None], 'magic': [None]},
     'animations': {None}}
 PEOPLE['goblin guard'] = {'name': 'Goblin Guard', 'protected': True, 'health': 350, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'goblin',
     'dialogue': 'random GUARD_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['bone club'], 'hats': ['skull helmet'], 'hair': [None], 'tops': ['iron plate armor'], 'bottoms': ['leather leggings M'], 'shoes': [None], 'gloves': [None], 'gold': 250, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['bone club'], 'hats': ['skull helmet'], 'hair': [None], 'tops': ['iron plate armor'], 'bottoms': ['leather leggings M'], 'shoes': [None], 'gloves': [None], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['goblin slave'] = {'name': 'slave', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'random HUMAN_RACES',
     'dialogue': 'random GOBLIN_SLAVE_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 HUMAN_RACES = ['shaktele', 'osidine']
 PEOPLE['immortui'] = {'name': 'Immortui', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 600, 'avoid radius': 50, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'random', 'race': 'immortui',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random IMMORTUI_'], 'bottoms': ['random IMMORTUI_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random IMMORTUI_'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random IMMORTUI_'], 'bottoms': ['random IMMORTUI_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random IMMORTUI_'], 'magic': [None]},
     'animations': {'walk': ZOMBIE_WALK}}
 IMMORTUI_TOPS = ['decayed shirt F', 'decayed shirt M', 'tshirt M', 'tshirt F', 'dark tshirt M', 'dark tshirt F']
 IMMORTUI_BOTTOMS = CASUAL_BOTTOMS_LIST
@@ -103,20 +103,20 @@ PEOPLE['blackwraith'] = {'name': 'black wraith', 'protected': False, 'health': 1
     'collide': [],
     'gender': 'random', 'race': 'blackwraith',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': ['fireball']},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': ['fireball']},
     'animations': {'walk': ZOMBIE_WALK}}
 BLACKWRAITH_ITEMS = ['demon dust', 'ectoplasm']
 PEOPLE['whitewraith'] = {'name': 'white wraith', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 0, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 500, 'avoid radius': 300, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': [],
     'gender': 'random', 'race': 'whitewraith',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': [None]},
     'animations': {'walk': ZOMBIE_WALK}}
 PEOPLE['skeleton'] = {'name': 'skeleton', 'protected': False, 'health': 300, 'touch damage': False, 'damage': 10, 'knockback': 5, 'walk speed': (100, 200), 'run speed': 300, 'detect radius': 700, 'avoid radius': 150, 'aggression': 'awd', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'skeleton',
     'dialogue': None, 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['random SKELETON_'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['random SKELETON_'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random SKELETON_'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['random SKELETON_'], 'magic': [None]},
     'animations': {None}}
 SKELETON_WEAPONS = ['ancient viking sword', 'bone club']
 SKELETON_ITEMS = ['charcoal', 'charcoal', 'sulphur', 'sulphur', 'sulphur', 'sulphur', 'jar', 'empty bottle', 'yarrow', 'sheep horn', 'gun powder']
@@ -125,43 +125,43 @@ PEOPLE['blacksmith'] = {'name': 'Blacksmith', 'protected': True, 'health': 500, 
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'osidine',
     'dialogue': 'BLACKSMITH_DLG', 'store': BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['wooden bow'], 'hats': [None], 'hair': ['long black pony'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['dewcastle blacksmith chest key'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['wooden bow'], 'hats': [None], 'hair': ['long black pony'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['dewcastle blacksmith chest key'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['tamolin'] = {'name': 'Tamolin the Mage', 'quest': 'Ant eggs for Tamolin', 'protected': True, 'health': 550, 'touch damage': False, 'damage': 25, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'shaktele',
     'dialogue': 'TAMOLIN_DLG', 'store': TAMOLIN_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['bronze mace'], 'hats': ['red cloak'], 'hair': ['short brown'], 'tops': ['blue mage robe top M'], 'bottoms': ['blue mage robe bottom'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['bronze mace'], 'hats': ['red cloak'], 'hair': ['short brown'], 'tops': ['blue mage robe top M'], 'bottoms': ['blue mage robe bottom'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['kimmy'] = {'name': 'Kimmy', 'protected': True,'health': 1000, 'touch damage': False, 'damage': 15, 'knockback': 1, 'walk speed': (300, 400), 'run speed': 400, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'female', 'race': 'elf',
     'dialogue': 'KIMMY_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['long blond'], 'tops': ['tshirt F'], 'bottoms': ['red mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['long blond'], 'tops': ['tshirt F'], 'bottoms': ['red mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
     'animations': {'walk': RUNNING}}
 PEOPLE['loella'] = {'name': 'Loella', 'quest': 'A fish for Loella', 'protected': True,'health': 1000, 'touch damage': False, 'damage': 0, 'knockback': 1, 'walk speed': (200, 300), 'run speed': 400, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'water'],
     'gender': 'female', 'race': 'elf',
     'dialogue': 'LOELLA_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['long straight brown'], 'tops': ['dark tshirt F'], 'bottoms': ['green mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['long straight brown'], 'tops': ['dark tshirt F'], 'bottoms': ['green mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['steve'] = {'name': 'Steve the Guard', 'quest': 'A mace for Steve', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'male', 'race': 'osidine',
     'dialogue': 'STEVE_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['short messy'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 12, 'items': ['baked potato', 'cheese wedge'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['short messy'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 12, 'items': ['baked potato', 'cheese wedge'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['anna'] = {'name': 'Anna the Stable Guard', 'quest': None, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'female', 'race': 'osidine',
     'dialogue': 'ANNA_DLG', 'store': ANNA_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel dagger'], 'hats': [None], 'hair': ['long blond pony'], 'tops': ['leather armor F'], 'bottoms': ['leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['leather gauntlets'], 'gold': 12, 'items': ['cheese wedge', 'carrot'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': [None], 'hair': ['long blond pony'], 'tops': ['leather armor F'], 'bottoms': ['leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['leather gauntlets'], 'gold': 12, 'items': ['cheese wedge', 'carrot'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['guard'] = {'name': 'Guard', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'osidine',
     'dialogue': 'random GUARD_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['random GUARD_'], 'hats': ['random GUARD_'], 'hair': ['random'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['random GUARD_'], 'gold': 250, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random GUARD_'], 'hats': ['random GUARD_'], 'hair': ['random'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['random GUARD_'], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 GUARD_WEAPONS = ['steel sword', 'steel mace']
 GUARD_HATS = ['guard helmet', 'steel helmet']
@@ -171,7 +171,7 @@ PEOPLE['villager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'tou
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'osidine',
     'dialogue': 'random VILLAGER_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 VILLAGER_TOPS = CASUAL_TOPS_LIST
 VILLAGER_BOTTOMS = CASUAL_BOTTOMS_LIST
@@ -180,35 +180,35 @@ PEOPLE['shaktelevillager'] = {'name': 'Villager', 'protected': True, 'health': 1
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'shaktele',
     'dialogue': 'random VILLAGER_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['random SHAKTELEVILLAGER_'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random SHAKTELEVILLAGER_'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 SHAKTELEVILLAGER_HAIR = RACE_HAIR['shaktele']
 PEOPLE['shaktele blacksmith'] = {'name': 'Blacksmith', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'shaktele',
     'dialogue': 'BLACKSMITH_DLG', 'store': SHAKTELE_BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['dreadlocks'], 'tops': ['tshirt M'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['dreadlocks'], 'tops': ['tshirt M'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['shakteleguard'] = {'name': 'Guard', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (190, 200), 'run speed': 260, 'detect radius': 450, 'avoid radius': 130, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'shaktele',
     'dialogue': 'random GUARD_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['assault rifle'], 'hats': ['tactical helmet'], 'hair': ['random'], 'tops': ['shaktele guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['black combat'], 'gloves': ['leather gauntlets'], 'gold': 250, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['assault rifle'], 'hats': ['tactical helmet'], 'hair': ['random'], 'tops': ['shaktele guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['black combat'], 'gloves': ['leather gauntlets'], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['kevin'] = {'name': 'Kevin', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (190, 200), 'run speed': 260, 'detect radius': 450, 'avoid radius': 130, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'male', 'race': 'shaktele',
     'dialogue': 'KEVIN_DLG', 'store': KEVIN_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel dagger'], 'hats': [None], 'hair': ['dreadlocks'], 'tops': ['shaktele guard armor'], 'bottoms': ['leather leggings M'], 'shoes': ['black combat'], 'gloves': [None], 'gold': 200, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': [None], 'hair': ['dreadlocks'], 'tops': ['shaktele guard armor'], 'bottoms': ['leather leggings M'], 'shoes': ['black combat'], 'gloves': [None], 'gold': 200, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['miewdravillager'] = {'name': 'Miewdra Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'miewdra',
     'dialogue': 'random MIEWDRA_VILLAGER_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['random MIEWDRAVILLAGER_'], 'tops': ['random MIEWDRAVILLAGER_'], 'bottoms': ['random MIEWDRAVILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random MIEWDRAVILLAGER_'], 'tops': ['random MIEWDRAVILLAGER_'], 'bottoms': ['random MIEWDRAVILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 MIEWDRAVILLAGER_TOPS = CASUAL_TOPS_LIST
 MIEWDRAVILLAGER_BOTTOMS = CASUAL_BOTTOMS_LIST
@@ -217,26 +217,26 @@ PEOPLE['miewdra blacksmith'] = {'name': 'Blacksmith', 'protected': True, 'health
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'miewdra',
     'dialogue': 'BLACKSMITH_DLG', 'store': MIEWDRA_BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel dagger'], 'hats': ['elf hat'], 'hair': ['cat tufts'], 'tops': ['leather armor M'], 'bottoms': ['leather leggings M'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': ['elf hat'], 'hair': ['cat tufts'], 'tops': ['leather armor M'], 'bottoms': ['leather leggings M'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['felius'] = {'name': 'Felius', 'quest': 'Fuel for Felius', 'protected': True, 'health': 1000, 'touch damage': False, 'damage': 50, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'miewdra',
     'dialogue': 'FELIUS_DLG', 'store': FELIUS_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['miewdra blade'], 'hats': [None], 'hair': ['cat tufts'], 'tops': ['demon armor M'], 'bottoms': ['chainmail leggings M'], 'shoes': ['demon boots'], 'gloves': ['demon gauntlets'], 'gold': randrange(100, 1000), 'items': ['fireball tome'], 'magic': ['fireball']},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['miewdra blade'], 'hats': [None], 'hair': ['cat tufts'], 'tops': ['demon armor M'], 'bottoms': ['chainmail leggings M'], 'shoes': ['demon boots'], 'gloves': ['demon gauntlets'], 'gold': randrange(100, 1000), 'items': ['fireball tome'], 'magic': ['fireball']},
     'animations': {None}}
 PEOPLE['catrina'] = {'name': 'Catrina', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'female', 'race': 'miewdra',
     'dialogue': 'CATRINA_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['white cat'], 'tops': ['red dress top'], 'bottoms': ['blue dress skirt'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['white cat'], 'tops': ['red dress top'], 'bottoms': ['blue dress skirt'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['elfvillager'] = {'name': 'Elf Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'elf',
     'dialogue': 'random ELF_VILLAGER_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['random ELFVILLAGER_'], 'tops': ['random ELFVILLAGER_'], 'bottoms': ['random ELFVILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random ELFVILLAGER_'], 'tops': ['random ELFVILLAGER_'], 'bottoms': ['random ELFVILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 ELFVILLAGER_HAIR = ['brown elf braids', 'blond elf braids', 'white elf braids', 'short brown', 'short blond', 'long black pony', 'long brown side pony', 'long blond side pony']
 ELFVILLAGER_TOPS = CASUAL_TOPS_LIST
@@ -245,28 +245,28 @@ PEOPLE['elf blacksmith'] = {'name': 'Blacksmith', 'protected': True, 'health': 1
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'elf',
     'dialogue': 'BLACKSMITH_DLG', 'store': ELF_BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel dagger'], 'hats': ['elf hat'], 'hair': ['white elf braids'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': ['elf hat'], 'hair': ['white elf braids'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['elfqueen'] = {'name': 'Elf Queen', 'protected': True, 'health': 200, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (100, 110), 'run speed': 200, 'detect radius': 500, 'avoid radius': 10, 'aggression': 'sap', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'elf',
     'dialogue': 'ELF_QUEEN_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel dagger'], 'hats': ['paladin crown'], 'hair': ['white elf braids'], 'tops': ['wedding dress top'], 'bottoms': ['red mini dress skirt'], 'shoes': ['brown boots'], 'gloves': ['dress gloves'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': ['paladin crown'], 'hair': ['white elf braids'], 'tops': ['wedding dress top'], 'bottoms': ['red mini dress skirt'], 'shoes': ['brown boots'], 'gloves': ['dress gloves'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['elfguard'] = {'name': 'Elf Guard', 'protected': True, 'health': 400, 'touch damage': False, 'damage': 25, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'elf',
     'dialogue': 'random ELF_GUARD_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['random GUARD_'], 'hats': [None], 'hair': ['random ELFVILLAGER_'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['random GUARD_'], 'gold': 250, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random GUARD_'], 'hats': [None], 'hair': ['random ELFVILLAGER_'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['random GUARD_'], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['dangerman'] = {'name': 'Elron Dangerman', 'protected': True, 'health': 800, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (20, 25), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'sap', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'elf',
     'dialogue': 'DANGERMAN_DLG', 'store': DANGERMAN_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': ['red cloak'], 'hair': ['white beard'], 'tops': ['red mage robe top M'], 'bottoms': ['red mage robe bottom'], 'shoes': ['bronze boots'], 'gloves': [None], 'gold': randrange(1, 10), 'items': ['potato', 'lock pick'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': ['red cloak'], 'hair': ['white beard'], 'tops': ['red mage robe top M'], 'bottoms': ['red mage robe bottom'], 'shoes': ['bronze boots'], 'gloves': [None], 'gold': randrange(1, 10), 'items': ['potato', 'lock pick'], 'magic': [None]},
     'animations': {None}}
 
 
@@ -274,7 +274,7 @@ PEOPLE['lacertolianvillager'] = {'name': 'Lacertolian Villager', 'protected': Tr
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'lacertolian',
     'dialogue': 'random LACERTOLIAN_VILLAGER_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 LACERTOLIANVILLAGER_TOPS = CASUAL_TOPS_LIST
 LACERTOLIANVILLAGER_BOTTOMS = CASUAL_BOTTOMS_LIST
@@ -282,20 +282,27 @@ PEOPLE['lacertolian blacksmith'] = {'name': 'Blacksmith', 'protected': True, 'he
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'lacertolian',
     'dialogue': 'BLACKSMITH_DLG', 'store': LACERTOLIAN_BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['steel sword'], 'hats': [None], 'hair': ['lizard spikes'], 'tops': ['leather armor M'], 'bottoms': ['leather leggings M'], 'shoes': [None], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel sword'], 'hats': [None], 'hair': ['lizard spikes'], 'tops': ['leather armor M'], 'bottoms': ['leather leggings M'], 'shoes': [None], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['liz'] = {'name': 'Liz', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 20, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'lacertolian',
     'dialogue': 'LIZ_DLG', 'store': LIZ_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': ['iron dagger'], 'hats': [None], 'hair': [None], 'tops': ['pink dress top'], 'bottoms': ['leather leggings F'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': ['fireball']},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['iron dagger'], 'hats': [None], 'hair': [None], 'tops': ['pink dress top'], 'bottoms': ['leather leggings F'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': ['fireball']},
     'animations': {None}}
 
 PEOPLE['mechanima blacksmith'] = {'name': 'Blacksmith', 'protected': True, 'health': 600, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'mechanima',
     'dialogue': 'BLACKSMITH_DLG', 'store': MECHANIMA_BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': ['LED skin'], 'tops': ['guard armor'], 'bottoms': ['chainmail leggings M'], 'shoes': ['black combat'], 'gloves': ['steel gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['LED skin'], 'tops': ['guard armor'], 'bottoms': ['chainmail leggings M'], 'shoes': ['black combat'], 'gloves': ['steel gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'animations': {None}}
+
+PEOPLE['mech suit'] = {'name': 'Mech Suit', 'protected': False, 'health': 600, 'touch damage': False, 'damage': 60, 'knockback': 20, 'walk speed': (100, 110), 'run speed': 480, 'detect radius': 50, 'avoid radius': 10, 'aggression': 'sap', 'armed': True, 'dual wield': False,
+    'collide': ['walls', 'water'],
+    'gender': 'male', 'race': 'mech_suit',
+    'dialogue': None, 'store': None,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['machine screws', 'machine screws', 'steel pipe', 'aluminum rod', 'steel wire', 'steel ingot', 'steel ingot'], 'magic': [None]},
     'animations': {None}}
 
 #Animation patterns:
