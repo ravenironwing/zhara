@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="49" nextobjectid="789">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="49" nextobjectid="795">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1593,6 +1593,12 @@
   <object id="778" name="green tree" x="3157.5" y="767" width="45" height="42"/>
   <object id="786" name="mech suit" x="4669.33" y="6950.67" width="54.6667" height="60"/>
   <object id="787" name="Zhara Talisman" x="4812" y="6841.33" width="21.3333" height="33.3333"/>
-  <object id="788" name="book of demon secrets" x="4857.33" y="6962.67" width="22.6667" height="30.6667"/>
+  <object id="788" name="book: War of the Worlds" x="4857.33" y="6962.67" width="22.6667" height="30.6667"/>
+  <object id="789" name="book of demon secrets" x="4993.33" y="7009.33" width="33.3333" height="33.3333"/>
+  <object id="790" name="elementary healing tome" x="5153.33" y="7006.67" width="29.3333" height="32"/>
+  <object id="791" name="summon golem tome" x="4796" y="7054.67" width="22.6667" height="28"/>
+  <object id="792" name="summon rabbit tome" x="4922.67" y="7069.33" width="26.6667" height="30.6667"/>
+  <object id="793" name="fireball tome" x="5080" y="7061.33" width="33.3333" height="36"/>
+  <object id="794" name="fire spray tome" x="5236" y="7062.67" width="40" height="42.6667"/>
  </objectgroup>
 </map>

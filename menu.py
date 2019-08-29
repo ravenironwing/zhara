@@ -6,6 +6,7 @@ from npcs import *
 from quests import *
 #from tilemap import collide_hit_rect
 from os import path
+import sys
 from random import choice, shuffle
 from collections import Counter
 from glob import glob
@@ -128,12 +129,14 @@ class Menu():  # used as the parent class for other menus.
                     picture.kill()
             if event.type == pg.MOUSEBUTTONUP:
                 pos = pg.mouse.get_pos()
-                # get a list of all sprites that are under the mouse cursor
+                # get a list of all heading sprites that are under the mouse cursor
                 self.clicked_sprites = [s for s in self.menu_sprites if s.rect.collidepoint(pos)]
                 for heading in self.menu_heading_sprites:
                     if heading in self.clicked_sprites:
                         self.item_type = heading.text.lower()
                         self.selected_heading = heading
+                        self.item_selected = False
+                        self.selected_item = None
                         self.list_items()
                 # Equips items
                 for item in self.clicked_sprites:
@@ -458,11 +461,122 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
 
     def use_item(self):
         if self.item_type == 'items':
+            if 'book' in self.selected_item.text or 'tome' in self.selected_item.text:
+                self.read_book()
             self.character.equipped['items'] = self.selected_item.text
             if self.character == self.game.player:
                 self.character.use_item()
             self.selected_item = None
             self.list_items()
+
+    def read_book(self):
+        self.page = 0
+        self.wrap_factor = int(ceil((self.game.screen_width / 2) / 19))
+        self.number_of_lines = int(ceil((self.game.screen_height / 54)))
+        self.book_font = eval(ITEMS[self.selected_item.text]['font'])
+        if self.book_font == 'KAWTHI_FONT':
+            self.heading_font = KAWTHI_FONT
+        else:
+            self.heading_font = HEADING_FONT
+        self.book_heading = ITEMS[self.selected_item.text]['heading']
+        self.book_author = ITEMS[self.selected_item.text]['author']
+        spellwords = ITEMS[self.selected_item.text]['spell words']
+        self.book_spellwords = wrap(spellwords, self.wrap_factor)
+        if 'book:' in self.selected_item.text:
+            book_file_name = self.selected_item.text.replace('book: ', '')
+        else:
+            book_file_name = self.selected_item.text
+        with open(path.join(books_folder, book_file_name + '.txt'), 'r') as file:
+            self.book_text = file.read()
+        book_lines = self.book_text.split('\n')
+        wrapped_lines = []
+        for line in book_lines:
+            wrapped_line = wrap(line, self.wrap_factor, replace_whitespace=False, drop_whitespace=False)
+            wrapped_lines.extend(wrapped_line)
+
+        self.book_data = [wrapped_lines[z:z + self.number_of_lines] for z in range(0, len(wrapped_lines), self.number_of_lines)]
+        self.display_page()
+        waiting = True
+        while waiting:
+            self.game.clock.tick(30)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if pg.mouse.get_pressed() == (0, 0, 1):
+                        self.page += 1
+                        self.display_page()
+                    elif pg.mouse.get_pressed() == (1, 0, 0):
+                        if self.page == 0:
+                            pass
+                        elif not self.page <= 0:
+                            self.page -= 2
+                            self.game.effects_sounds['page turn'].play()
+                        else:
+                            self.game.effects_sounds['page turn'].play()
+                        if self.page < 0:
+                            self.page = 0
+                        self.display_page()
+
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_e:
+                        waiting = False
+                    elif event.key in [pg.K_SPACE, pg.K_RIGHT]:
+                        self.page += 1
+                        self.display_page()
+                    elif event.key in [pg.K_BACKSPACE, pg.K_LEFT]:
+                        if self.page == 0:
+                            pass
+                        elif not self.page <= 0:
+                            self.page -= 2
+                            self.game.effects_sounds['page turn'].play()
+                        else:
+                            self.game.effects_sounds['page turn'].play()
+                        if self.page < 0:
+                            self.page = 0
+                        self.display_page()
+
+    def display_page(self):
+        self.game.screen.fill(BLACK)
+        self.game.screen.blit(self.game.open_book_image, (0, 0))
+        self.draw_text("Press SPACE to turn page or RIGHT and LEFT Arrow Keys, E to exit.", default_font, 20, WHITE, self.game.screen_width / 2, self.game.screen_height - 15, "center")
+        if self.page == 0:
+            self.draw_text(self.book_heading, self.heading_font, 40, BLACK, self.game.screen_width * (3/4), self.game.screen_height * (1/5), "center")
+            self.draw_text('by', self.book_font, 28, BLACK, self.game.screen_width * (3/4), self.game.screen_height * (2/5), "center")
+            self.draw_text(self.book_author, self.book_font, 28, BLACK, self.game.screen_width * (3/4), self.game.screen_height * (3/5), "center")
+        else:
+            if self.page > len(self.book_data):
+                self.page -= 1
+                return
+            self.game.effects_sounds['page turn'].play()
+            #lines = len(self.book_data[self.page])
+            left_margin = 125
+            top_margin = 45
+            right_margin = self.game.screen_width/2 + 50
+            j = 0
+            for i, line in enumerate(self.book_data[self.page - 1]):
+                self.draw_text(line, self.book_font, 25, BLACK, left_margin, top_margin + (45 * i), "topleft")
+                j += 1
+            if self.page == len(self.book_data):
+                for line in self.book_spellwords:
+                    self.draw_text(line, KAWTHI_FONT, 25, BLACK, left_margin, top_margin + (45 * j), "topleft")
+                    j += 1
+            self.page += 1
+            if self.page > len(self.book_data):
+                pg.display.flip()
+                self.page -= 1
+                return
+            j = 0
+            for i, line in enumerate(self.book_data[self.page - 1]):
+                self.draw_text(line, self.book_font, 25, BLACK, right_margin, top_margin + (45 * i), "topleft")
+                j += 1
+            if self.page == len(self.book_data):
+                for line in self.book_spellwords:
+                    self.draw_text(line, KAWTHI_FONT, 25, BLACK, right_margin, top_margin + (45 * j), "topleft")
+                    j += 1
+        pg.display.flip()
+
 
     def drop_item(self):
         # Unequips item if you drop one you are equipping and don't have another one.

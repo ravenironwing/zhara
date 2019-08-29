@@ -14,6 +14,7 @@ vec = pg.math.Vector2
 # define game folders
 game_folder = path.dirname(__file__)
 img_folder = path.join(game_folder, 'img')
+books_folder = path.join(game_folder, 'books')
 saves_folder = path.join(game_folder, 'saves')
 fonts_folder = path.join(game_folder, 'fonts')
 snd_folder = path.join(game_folder, 'snd')
@@ -94,6 +95,7 @@ SCRIPT_FONT = path.join(fonts_folder, 'EagleLake-Regular.ttf')
 HUD_FONT = path.join(fonts_folder, 'Aegean.ttf')
 MENU_FONT = path.join(fonts_folder, 'LinBiolinum_Rah.ttf')
 WRITING_FONT = path.join(fonts_folder, 'DancingScript-Regular.ttf')
+KAWTHI_FONT = path.join(fonts_folder, 'Kawthi.ttf')
 
 ITEM_TYPE_LIST = ['weapons', 'tops', 'bottoms', 'hats', 'hair', 'shoes', 'gloves', 'items', 'magic']
 

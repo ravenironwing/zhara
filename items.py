@@ -200,15 +200,18 @@ ITEMS['yellow crystal'] = {'image': 70, 'weight': 0.5, 'ammo': 50, 'type': 'crys
 ITEMS['red crystal'] = {'image': 67, 'weight': 0.5, 'ammo': 25, 'type': 'crystals', 'value': 100}
 
 # Books
-ITEMS['old book'] = {'image': 117, 'weight': 1, 'value': 0}
+ITEMS['old book'] = {'image': 117, 'weight': 1, 'value': 0, 'author': '', 'heading': '', 'spell words': '', 'font': 'SCRIPT_FONT'}
+ITEMS['book: War of the Worlds'] = {'image': 117, 'weight': 1, 'value': 5, 'author': 'H. G. Wells', 'heading': 'War of the Worlds', 'spell words': '', 'font': 'SCRIPT_FONT'}
 
 # Spell books
-ITEMS['book of demon secrets'] = {'image': 142, 'spell': 'demonic possession', 'weight': 1, 'sound': 'enchant', 'value': 9000}
-ITEMS['healing tome'] = {'image': 118, 'spell': 'healing', 'weight': 1, 'sound': 'casting healing', 'value': 2000}
-ITEMS['fireball tome'] = {'image': 119, 'spell': 'fireball', 'weight': 1, 'sound': 'fire blast', 'value': 700}
-ITEMS['fire spray tome'] = {'image': 120, 'spell': 'fire spray', 'sound': 'fire blast', 'weight': 1, 'value': 3000}
-ITEMS['summon golem tome'] = {'image': 124, 'spell': 'summon golem', 'weight': 1, 'sound': 'casting healing', 'value': 4000}
-ITEMS['summon rabbit tome'] = {'image': 125, 'spell': 'summon rabbit', 'weight': 1, 'sound': 'casting healing', 'value': 1100}
+ITEMS['book of demon secrets'] = {'image': 142, 'spell': 'demonic possession', 'weight': 1, 'sound': 'enchant', 'value': 9000, 'author': 'Lucious Captivarian', 'heading': "The Book of Demon Secrets", 'font': 'SCRIPT_FONT',
+                                  'spell words': 'wE SPka  sepUka wE  wE famas aka  ka epa wE'}
+ITEMS['elementary healing tome'] = {'image': 118, 'spell': 'healing', 'weight': 1, 'sound': 'casting healing', 'value': 2000, 'author': 'Tamolin Abara', 'heading': 'Elementary Healing Magic', 'spell words': 'beUma wE samawaha P UwaRa', 'font': 'SCRIPT_FONT'}
+ITEMS['fireball tome'] = {'image': 119, 'spell': 'fireball', 'weight': 1, 'sound': 'fire blast', 'value': 700, 'author': 'Draconius Elandrom', 'heading': 'Casting Fireballs', 'spell words': 'eTU ba yEda', 'font': 'SCRIPT_FONT'}
+ITEMS['fire spray tome'] = {'image': 120, 'spell': 'fire spray', 'sound': 'fire blast', 'weight': 1, 'value': 3000, 'author': 'Draconius Elandrom', 'heading': 'Conjouring Zharan Flames', 'spell words': 'ba ayEda eJarE', 'font': 'SCRIPT_FONT'}
+ITEMS['summon golem tome'] = {'image': 124, 'spell': 'summon golem', 'weight': 1, 'sound': 'casting healing', 'value': 4000, 'author': 'Tamolin Abara', 'heading': 'The Art of Creating Life', 'spell words': 'heyeba ruhEged', 'font': 'SCRIPT_FONT'}
+ITEMS['summon rabbit tome'] = {'image': 125, 'spell': 'summon rabbit', 'weight': 1, 'sound': 'casting healing', 'value': 1100, 'author': 'Tamolin Abara', 'heading': 'Practicing Summoning', 'spell words': 'yeba vidUru', 'font': 'SCRIPT_FONT'}
+
 
 # Misc Keys for vehicles and such
 ITEMS['airship key'] = {'image': 116, 'weight': 0.1, 'value': 10000}

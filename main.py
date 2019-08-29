@@ -182,6 +182,9 @@ class Game:
         return datetime.datetime.now().strftime(directive)
 
     def save(self):
+        possessing = self.player.possessing
+        if self.player.possessing != None:
+            self.player.possessing.depossess()
         self.player.dragon = False
         if 'dragon' in self.player.equipped['race']: # Makes it so you aren't a dragon when you load a game.
             self.player.equipped['race'] = self.player.equipped['race'].replace('dragon', '')
@@ -206,6 +209,8 @@ class Game:
         save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list]
         with open(path.join(saves_folder, self.player.race + "_" + self.format_date() + ".sav"), "wb", -1) as FILE:
             pickle.dump(save_list, FILE)
+        if possessing != None:
+            possessing.possess(self.player)
 
     def load_save(self, file_name):
         load_file = []
@@ -328,6 +333,8 @@ class Game:
         self.body_surface = pg.Surface((64, 64)).convert()
         self.body_surface.set_colorkey(BLACK)
         self.title_image = pg.image.load(path.join(img_folder, TITLE_IMAGE)).convert()
+        self.open_book_image = pg.image.load(path.join(img_folder, 'open_book.png')).convert()
+        self.open_book_image = pg.transform.scale(self.open_book_image, (self.screen_width, self.screen_height - 30))
         self.over_minimap_image = pg.image.load(path.join(img_folder, OVERWORLD_MAP_IMAGE)).convert()
         self.over_minimap_image = pg.transform.scale(self.over_minimap_image, (self.screen_width, self.screen_height))
         self.compass_image = pg.image.load(path.join(img_folder, 'compass.png')).convert_alpha()

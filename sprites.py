@@ -193,11 +193,13 @@ def drop_all_items(sprite, delete_items = False):
             sprite.inventory[item_type] = [None]
             sprite.equipped[item_type] = None
 
-def change_clothing(character, best = False):
+def change_clothing(character, best = False, naked = False):
     # Adds items to equipped list
     remove_nones(character.inventory['tops'], character.inventory['bottoms'], character.inventory['hair'], character.inventory['weapons'], character.inventory['shoes'], character.inventory['gloves'], character.inventory['hats'])
     for item_type in ITEM_TYPE_LIST:
-        if not best:
+        if naked:
+            character.equipped[item_type] = None
+        elif not best:
             character.equipped[item_type] = choice(character.inventory[item_type])
         if best: # Changest into clothes with best ratings
             stat = 0
@@ -486,7 +488,7 @@ class Vehicle(pg.sprite.Sprite):
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
     
 
-    def gets_hit(self, damage, knockback, rot):
+    def gets_hit(self, damage, knockback = 0, rot = 0):
         if self.living:
             now = pg.time.get_ticks()
             if now - self.last_hit > DAMAGE_RATE * 2:
@@ -1064,7 +1066,7 @@ class Player(pg.sprite.Sprite):
         now = pg.time.get_ticks()
 
         # Running
-        if keys[pg.K_LSHIFT] and (keys[pg.K_w] or pg.mouse.get_pressed() == (0, 1, 0) or keys[pg.K_RIGHT] or keys[pg.K_LEFT] or keys[pg.K_UP] or keys[pg.K_DOWN]):
+        if keys[pg.K_LSHIFT] and self.is_moving():
             if self.stats['stamina'] > 10 and not self.in_vehicle:
                 if self.arrow == None:
                     if now - self.last_shift > 100:
@@ -1135,6 +1137,8 @@ class Player(pg.sprite.Sprite):
         elif self.jumping:
             if self.climbing:
                 self.acceleration = PLAYER_CLIMB
+            elif self.possessing != None:
+                self.acceleration = self.possessing.run_speed / 6
             else:
                 self.acceleration = PLAYER_RUN
         else:
@@ -1738,7 +1742,7 @@ class Player(pg.sprite.Sprite):
 
 
 
-    def gets_hit(self, damage, knockback, rot):
+    def gets_hit(self, damage, knockback = 0, rot = 0):
         if self.in_vehicle:
             self.vehicle.gets_hit(damage, knockback, rot)
         elif self.possessing != None:
@@ -1842,11 +1846,17 @@ class Player(pg.sprite.Sprite):
                         if 'possession' in MAGIC[self.equipped['magic']]:
                             if self.possessing == None:
                                 if 'wraith' in self.equipped['race']:
-                                    hits = pg.sprite.spritecollide(self, self.game.npcs, False, False)
-                                    if hits:
-                                        if 'wraith' not in hits[0].race:
-                                            drop_all_items(self, False)
-                                            hits[0].possess(self, True)
+                                    if self.equipped['race'] == 'whitewraith': # Turns you into a black wraith for using dark magic.
+                                        self.equipped['race'] = 'blackwraith'
+                                        self.race = 'blackwraith'
+                                        self.human_body.update_animations()
+                                        self.dragon_body.update_animations()
+                                    else:
+                                        hits = pg.sprite.spritecollide(self, self.game.npcs, False, False)
+                                        if hits:
+                                            if 'wraith' not in hits[0].race:
+                                                drop_all_items(self, False)
+                                                hits[0].possess(self, True)
                                 else:
                                     self.equipped['race'] = 'blackwraith'
                                     self.race = 'blackwraith'
@@ -1859,6 +1869,8 @@ class Player(pg.sprite.Sprite):
                                     self.dragon_body.update_animations()
                                     self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you mount them.
                             else:
+                                self.add_health(self.possessing.health)
+                                self.possessing.gets_hit(self.stats['stamina'])
                                 self.possessing.depossess()
 
                         if 'summon' in MAGIC[self.equipped['magic']]:
@@ -1917,29 +1929,37 @@ class Player(pg.sprite.Sprite):
         self.calculate_weight()
 
     def use_item(self):
+        remove = False
         if self.equipped['items'] != None:
             if self.equipped['items'] == 'airship fuel':
                 if self.in_vehicle:
                     if self.vehicle.cat == 'airship':
                         self.vehicle.fuel += 100
                         self.game.effects_sounds['pee'].play()
+                        remove = True
             if 'spell' in ITEMS[self.equipped['items']]:
-                self.inventory['magic'].append(ITEMS[self.equipped['items']]['spell'])
-                self.game.effects_sounds['page turn'].play()
-                self.game.effects_sounds[ITEMS[self.equipped['items']]['sound']].play()
+                if ITEMS[self.equipped['items']]['spell'] not in self.inventory['magic']:
+                    self.inventory['magic'].append(ITEMS[self.equipped['items']]['spell'])
+                    self.game.effects_sounds['page turn'].play()
+                    self.game.effects_sounds[ITEMS[self.equipped['items']]['sound']].play()
             if 'ammo' in ITEMS[self.equipped['items']]:
                 self.ammo[ITEMS[self.equipped['items']]['type']] += ITEMS[self.equipped['items']]['ammo']
                 self.pre_reload()
+                remove = True
             if 'magica' in ITEMS[self.equipped['items']]:
                 self.add_magica(ITEMS[self.equipped['items']]['magica'] + (self.stats['magica regen'] / 20))
+                remove = True
             if 'health' in ITEMS[self.equipped['items']]:
                 self.add_health(ITEMS[self.equipped['items']]['health'] + (self.stats['healing'] / 20))
+                remove = True
             if 'stamina' in ITEMS[self.equipped['items']]:
                 self.add_stamina(ITEMS[self.equipped['items']]['stamina'] + (self.stats['stamina regen'] / 20))
+                remove = True
             if 'change race' in ITEMS[self.equipped['items']]:
                 self.equipped['race'] = ITEMS[self.equipped['items']]['change race']
                 self.human_body.update_animations()
                 self.dragon_body.update_animations()
+                remove = True
             if 'change sex' in ITEMS[self.equipped['items']]:
                 self.equipped['gender'] = ITEMS[self.equipped['items']]['change sex']
                 if self.equipped['gender'] == 'female':
@@ -1962,11 +1982,13 @@ class Player(pg.sprite.Sprite):
                     self.equipped['hair'] = random_hair
                 self.human_body.update_animations()
                 self.dragon_body.update_animations()
+                remove = True
             if 'potion' in self.equipped['items']:
                 self.inventory['items'].append('empty bottle') # lets you keep the bottle to use for creating new potions.
             if 'fuel' in self.equipped['items']:
                 self.inventory['items'].append('empty barrel')
-            self.inventory['items'].remove(self.equipped['items'])
+            if remove:
+                self.inventory['items'].remove(self.equipped['items'])
             if self.equipped['items'] not in self.inventory['items']: # This lets you keep equipping items of the same kind. This way you can use multiple heath potions in a row for example.
                 self.equipped['items'] = None
             self.game.player.calculate_weight()
@@ -2691,7 +2713,7 @@ class Npc(pg.sprite.Sprite):
     def possess(self, driver, demon = False):
         if self.driver == None:
             if driver.possessing == None:
-                #self.game.group.change_layer(self.body, PLAYER_LAYER)
+                self.game.group.change_layer(self.body, PLAYER_LAYER)
                 if demon:
                     self.possessed = True
                 self.frame = 0
@@ -2737,7 +2759,11 @@ class Npc(pg.sprite.Sprite):
             self.driver.human_body.add(self.game.all_sprites)
             self.driver.human_body.add(self.game.npc_bodies)
             self.game.group.add(self.driver.human_body)
-            self.equipped = copy.deepcopy(self.driver.equipped)
+            if self.possessed:
+                self.equipped = copy.deepcopy(self.driver.equipped)
+                self.inventory = copy.deepcopy(self.driver.inventory)
+            else:
+                change_clothing(self, False, True) # Takes off all equipped items.
             self.driver.equipped = self.driver.temp_equipped
             self.driver.body.update_animations()
             self.add(self.game.mobs)
@@ -2751,7 +2777,8 @@ class Npc(pg.sprite.Sprite):
                 self.driver.dragon_body.update_animations()
             self.driver.pos = self.driver.pos + (80, 80)
             self.driver = None
-            #self.game.group.change_layer(self.body, MOB_LAYER)
+            self.game.group.change_layer(self.body, MOB_LAYER)
+            self.body.update_animations()
             self.frame = 0
             self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you dismount the animal.
 
@@ -2769,7 +2796,7 @@ class Npc(pg.sprite.Sprite):
             if 'bow' in self.equipped[self.weapon_hand]:
                 self.bow = True
 
-    def gets_hit(self, damage, knockback, rot):
+    def gets_hit(self, damage, knockback = 0, rot = 0):
         now = pg.time.get_ticks()
         if now - self.last_hit > DAMAGE_RATE:
             self.last_hit = now
@@ -3410,7 +3437,7 @@ class Animal(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.hit_rect.center = vec(old_center) #+ self.rect_offset.rotate(-self.rot)
 
-    def gets_hit(self, damage, knockback, rot, player_attack = True):
+    def gets_hit(self, damage, knockback = 0, rot = 0, player_attack = True):
         now = pg.time.get_ticks()
         if now - self.last_hit > DAMAGE_RATE:
             self.last_hit = now
