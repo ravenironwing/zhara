@@ -1230,8 +1230,8 @@ class Game:
                 sprite.update()
             elif sprite in self.companion_bodies:
                 sprite.update()
-        self.camera.update(self.player.body)
-        self.group.center(self.player.body.rect.center)
+        self.camera.update(self.player)
+        self.group.center(self.player.rect.center)
         #self.map.update()
         #self.camera.update(self.map)
 
@@ -1584,7 +1584,7 @@ class Game:
                         bullet.explode(mob)
                 elif bullet.mother != mob:
                     if not mob.in_player_vehicle:
-                        if not bullet.enemy:
+                        if bullet.mother == self.game.player:
                             mob.provoked = True
                         mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
                         bullet.explode(mob)

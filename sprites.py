@@ -276,6 +276,7 @@ class Turret(pg.sprite.Sprite):
         self.last_shot = 0
         self.occupied = False
         self.equipped = 'tank turret'
+        self.vel = vec(0, 0)
 
     def get_keys(self):
         self.rot_speed = 0
@@ -305,6 +306,7 @@ class Turret(pg.sprite.Sprite):
     def update(self):
         if self.occupied == True:
             self.get_keys()
+            self.vel = self.mother.vel
             self.rot_rel = (self.rot_rel + self.rot_speed * self.game.dt) % 360
             self.rot = (self.game.player.rot + self.rot_rel) % 360
             self.image = pg.transform.rotate(self.game.player_tur, self.rot)
@@ -2206,12 +2208,12 @@ class Player(pg.sprite.Sprite):
                     if item_dict[self.equipped[item_type]]['property'] == 'invisibility':
                         invisibility_perks += 1
         if invisibility_perks > 0:
-            if self.body in self.game.all_sprites:
-                self.body.remove(self.game.all_sprites)
+            if self.body in self.game.group:
+                self.game.group.remove(self.body)
                 self.invisible = True
         else:
-            if self.body not in self.game.all_sprites:
-                self.body.add(self.game.all_sprites)
+            if self.body not in self.game.group:
+                self.game.group.add(self.body)
                 self.invisible = False
         if fire_perks == 0:
             self.equipped_after_effect = False
@@ -2483,12 +2485,15 @@ class Npc(pg.sprite.Sprite):
             else:
                 self.target = self.game.player.vehicle
         else:
-            if player_dist < self.detect_radius ** 2:
+            if not self.running:
+                self.detect_radius = self.default_detect_radius
+            if player_dist < self.detect_radius:
                 self.target = self.game.player
-                if not self.running:
-                    self.detect_radius = self.default_detect_radius
             else:
-                self.seek_random_target()
+                if self.target == self.game.player:
+                    self.seek_random_target()
+                else:
+                    self.detect_radius = self.game.map.height / 2
 
         for mob in self.game.moving_targets:
             if mob != self:
@@ -2545,11 +2550,6 @@ class Npc(pg.sprite.Sprite):
             else:
                 if self.target != self.game.player:
                     if not self.target.living:  # Makes it so the guards switch back to the player being their target if they kill the mob they are attacking.
-                        #if not self.game.player.invisible:
-                        #    self.target = self.game.player
-                        #    self.offensive = False
-                        #else:
-                        #    self.target = choice(list(self.game.random_targets))
                         self.offensive = False
                         self.seek_mobs()
                     if self.aggression in ['awp', 'sap', 'fup']:
@@ -2557,6 +2557,9 @@ class Npc(pg.sprite.Sprite):
                             if not self.game.player.invisible:
                                 self.target = self.game.player
                                 self.offensive = True
+                elif self.aggression in ['awp', 'sap', 'fup']:
+                    if not self.provoked:
+                        self.offensive = False
 
                 if self in self.game.companions:
                     if self.target == self.game.player:
