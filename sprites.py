@@ -850,10 +850,8 @@ class Character(pg.sprite.Sprite):
             self.weapon2_width = self.game.weapon_images[WEAPONS[self.mother.equipped['weapons2']]['image']].get_width() / 2
 
     def update(self):
-        self.rot = self.mother.rot
-        self.image = pg.transform.rotate(self.body_surface, self.rot)
-        self.rect = self.image.get_rect()
         self.rect.center = self.mother.pos
+
         # Sets up three collision points for melee attacks: the fist, the center and the tip of the weapon.
         self.weapon_offset_temp = self.weapon_pos.rotate(-self.mother.rot)
         self.melee_rect.center = self.mother.pos + self.weapon_offset_temp
@@ -876,7 +874,7 @@ class Character(pg.sprite.Sprite):
 class Player(pg.sprite.Sprite):
     def __init__(self, game):
         #Graphics and motion setup
-        self._layer = PLAYER_LAYER
+        self._layer = ITEMS_LAYER
         self.groups = game.all_sprites, game.players, game.player_group, game.moving_targets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -2002,6 +2000,12 @@ class Player(pg.sprite.Sprite):
         return (pg.mouse.get_pressed() == (1, 0, 0) or pg.mouse.get_pressed() == (0, 0, 1) or pg.mouse.get_pressed() == (1, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1))
 
     def update(self):
+        # This parts sincs the body sprite with the player's soul.
+        self.body.rot = self.rot
+        self.body.image = pg.transform.rotate(self.body.body_surface, self.rot)
+        self.body.rect = self.body.image.get_rect()
+        self.body.rect.center = self.rect.center
+
         if self.melee_playing:
             self.melee()
         if self.jumping:
@@ -2539,6 +2543,12 @@ class Npc(pg.sprite.Sprite):
             self.talk_rect.center = self.pos
 
     def update(self):
+        # This parts sincs the body sprite with the NPC's soul.
+        self.body.rot = self.rot
+        self.body.image = pg.transform.rotate(self.body.body_surface, self.rot)
+        self.body.rect = self.body.image.get_rect()
+        self.body.rect.center = self.pos
+
         if self.living:
             if self.driver != None:
                 self.pos = self.driver.pos

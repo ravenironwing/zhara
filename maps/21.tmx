@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="49" nextobjectid="796">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="49" nextobjectid="799">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -486,7 +486,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,279,280,0,2684354795,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,222,224,2684354795,249,250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,279,280,872,2684354795,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,222,224,2684354795,249,250,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2684354795,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,232,234,2684354795,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2684354795,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,242,244,2684354795,1610612995,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2684354795,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,242,244,2684354795,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1464,7 +1464,6 @@
   <object id="689" name="climbable" x="5121" y="150" width="129" height="85"/>
   <object id="690" name="climbable" x="5024" y="130" width="66" height="70"/>
   <object id="691" name="toilet" x="5046" y="158" width="20" height="18"/>
-  <object id="695" name="large dead tree" x="4208" y="1261" width="36" height="39"/>
   <object id="698" name="large dead tree" x="6506" y="7036.5" width="34" height="33"/>
   <object id="699" name="large dead tree" x="6864" y="7071.5" width="34" height="33"/>
   <object id="700" name="large dead tree" x="6843" y="6743.5" width="34" height="33"/>
@@ -1591,6 +1590,8 @@
   <object id="776" name="green tree" x="2657.5" y="763" width="45" height="42"/>
   <object id="777" name="green tree" x="3205.5" y="271" width="45" height="42"/>
   <object id="778" name="green tree" x="3157.5" y="767" width="45" height="42"/>
-  <object id="795" name="cloak of invisibility" x="4789" y="6841" width="37" height="38"/>
+  <object id="796" name="large dead tree" x="4209" y="1321.5" width="34" height="33"/>
+  <object id="797" name="cloak of invisibility@270" x="2995" y="5938" width="26" height="32"/>
+  <object id="798" name="wall" x="2978" y="5933" width="60" height="46"/>
  </objectgroup>
 </map>
