@@ -201,7 +201,8 @@ ITEMS['red crystal'] = {'image': 67, 'weight': 0.5, 'ammo': 25, 'type': 'crystal
 
 # Books
 ITEMS['old book'] = {'image': 117, 'weight': 1, 'value': 0, 'author': '', 'heading': '', 'spell words': '', 'font': 'SCRIPT_FONT'}
-ITEMS['book: War of the Worlds'] = {'image': 117, 'weight': 1, 'value': 5, 'author': 'H. G. Wells', 'heading': 'War of the Worlds', 'spell words': '', 'font': 'SCRIPT_FONT'}
+ITEMS['book: War of the Worlds'] = {'image': 117, 'weight': 0.2, 'value': 5, 'author': 'H. G. Wells', 'heading': 'War of the Worlds', 'spell words': '', 'font': 'SCRIPT_FONT'}
+ITEMS['book of basic enchantments'] = {'image': 117, 'weight': 1, 'value': 5, 'author': 'Olrond Magarfindrel', 'heading': 'Book of Basic Enchantments', 'spell words': '', 'font': 'SCRIPT_FONT'}
 
 # Spell books
 ITEMS['book of demon secrets'] = {'image': 142, 'spell': 'demonic possession', 'weight': 1, 'sound': 'enchant', 'value': 9000, 'author': 'Lucious Captivarian', 'heading': "The Book of Demon Secrets", 'font': 'SCRIPT_FONT',

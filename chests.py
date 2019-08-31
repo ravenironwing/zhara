@@ -39,3 +39,5 @@ CHESTS['empty '] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [
                   'items': [None], 'magic': [None], 'gold': 0}
 CHESTS['boat'] = {'locked': True, 'combo': 123, 'difficulty': 9,'weapons': ['steel dagger'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': ['fireball tome'], 'magic': [None], 'gold': 3400}
+CHESTS['whitewraith temple'] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
+                  'items': ['white crystal', 'white crystal', 'white crystal', 'white crystal', 'ectoplasm', 'ectoplasm', 'ectoplasm', 'demon dust', 'demon dust', 'sage', 'blue crystal', 'blue crystal', 'ectoplasm', 'ectoplasm', 'ectoplasm', 'demon dust', 'demon dust', 'sage', 'blue crystal', 'blue crystal'], 'magic': [None], 'gold': 0}

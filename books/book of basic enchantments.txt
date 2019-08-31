@@ -1,0 +1,19 @@
+    All enchantments require magic crystals. The type of magic crystal required depends on the enchantment. Enchantments also require materials with properties related to the desired enchantment. Enchantments can only be used on certain types of items.
+
+	Here are some basic enchantments that can be used on armor:
+
+	Reinforced health: 1 red crystal and 1 potion of major healing.
+
+	Reinforced stamina: 1 blue crystal and 1 potion of major stamina.
+
+	Reinforced magica: 1 white crystal and 1 potion of major magica.
+
+
+	The following are basic enchantments that can be cast on weapons:
+
+	Explosive: 1 black crystal, gun powder.
+	Fire spark: 1 red crystal, 1 flint stone, 1 steel ingot.
+	Electric spark: 1 white crystal, 1 blue crystal, 1 dead rabbit 
+
+
+

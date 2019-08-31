@@ -36,9 +36,10 @@ class TiledMap:
                         layer.visible = False
         else:
             for layer in self.tmxdata:
-                if ('roof' in layer.name or 'tree' in layer.name):
-                    if isinstance(layer, pytmx.TiledTileLayer):
-                        layer.visible = True
+                if layer.name != None:
+                    if ('roof' in layer.name or 'tree' in layer.name):
+                        if isinstance(layer, pytmx.TiledTileLayer):
+                            layer.visible = True
         self.map_layer.redraw_tiles(self.map_layer._buffer)
 
     #def generate_under_layer(self):

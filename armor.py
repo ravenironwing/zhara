@@ -25,6 +25,7 @@ HATS['white wizard cloak'] = {'armor': 3, 'image': 20, 'weight': 0.7, 'reinforce
 HATS['red cloak'] = {'armor': 3, 'image': 21, 'weight': 0.7, 'reinforce magica': 70, 'value': 500}
 HATS['turtle plate helmet'] = {'armor': 34, 'image': 22, 'weight': 3.5, 'materials': {'turtle shell plate': 4, 'leather': 1}, 'upgrade': {'steel ingot': 1, 'leather strips': 1}, 'value': 170}
 HATS['dark wizard hood'] = {'armor': 3, 'image': 23, 'weight': 0.7, 'reinforce magica': 200, 'value': 3000}
+HATS['aetherial helmet'] = {'armor': 25, 'reinforce magica': 25, 'reinforce stamina': 25, 'image': 24, 'gender': 'other', 'weight': 0, 'value': 1100, 'materials': {'demon dust': 2, 'ectoplasm': 2, 'sage': 1, 'blue crystal': 1}, 'upgrade': {'demon dust': 1, 'ectoplasm': 1}}
 
 HAIR = {}
 HAIR['long blond pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'weight': 0.4,
@@ -142,6 +143,7 @@ SHOES['green combat'] = {'armor': 2, 'weight': 0.8, 'image': 2, 'materials': {'s
 SHOES['brown boots'] = {'armor': 1, 'weight': 0.3, 'image': 3, 'materials': {'leather': 2}, 'upgrade': {'leather': 1}, 'value': 5}
 SHOES['steel boots'] = {'armor': 10, 'weight': 2, 'image': 4, 'materials': {'steel ingot': 2, 'leather': 2},  'upgrade': {'steel ingot': 2, 'leather': 1}, 'value': 150}
 SHOES['demon boots'] = {'armor': 46, 'weight': 2.1, 'image': 5, 'value': 150}
+SHOES['aetherial boots'] = {'armor': 16, 'reinforce magica': 16, 'reinforce stamina': 16, 'image': 6, 'gender': 'other', 'weight': 0, 'value': 960, 'materials': {'demon dust': 1, 'ectoplasm': 2, 'sage': 1, 'blue crystal': 1}, 'upgrade': {'demon dust': 1, 'ectoplasm': 1}}
 
 GLOVES = {}
 GLOVES['bronze gauntlets'] = {'armor': 8, 'weight': 1.6, 'image': 0, 'materials': {'bronze ingot': 2, 'leather': 1}, 'upgrade': {'bronze ingot': 1, 'leather': 1}, 'value': 110}
@@ -152,8 +154,11 @@ GLOVES['dress gloves'] = {'armor': 1, 'weight': 0.1,
                               'image': 3}
 GLOVES['steel gauntlets'] = {'armor': 11, 'weight': 2.3, 'image': 4, 'materials': {'steel ingot': 2, 'leather': 1}, 'upgrade': {'steel ingot': 1, 'leather': 1}, 'value': 140}
 GLOVES['iron gauntlets'] = {'armor': 9, 'weight': 4, 'image': 5, 'materials': {'iron ingot': 2, 'leather': 1}, 'upgrade': {'iron ingot': 1, 'leather': 1}, 'value': 50}
+GLOVES['aetherial gauntlets'] = {'armor': 15, 'reinforce magica': 15, 'reinforce stamina': 15, 'image': 6, 'gender': 'other', 'weight': 0, 'value': 900, 'materials': {'demon dust': 1, 'ectoplasm': 2, 'sage': 1, 'blue crystal': 1}, 'upgrade': {'demon dust': 1, 'ectoplasm': 1}}
+
 
 TOPS = {}
+TOPS['aetherial armor'] = {'armor': 45, 'reinforce magica': 50, 'reinforce stamina': 50, 'image': 32, 'gender': 'other', 'weight': 0, 'value': 2100, 'materials': {'demon dust': 2, 'ectoplasm': 3, 'sage': 1, 'blue crystal': 2}, 'upgrade': {'blue crystal': 1, 'ectoplasm': 1}}
 TOPS['bronze armor'] = {'armor': 26, 'image': 0, 'gender': 'other', 'weight': 7, 'materials': {'bronze ingot': 5, 'leather': 2}, 'upgrade': {'bronze ingot': 3, 'leather strips': 1}, 'value': 250}
 TOPS['grey racerback tank top'] = {'armor': 2,'image': 1,'gender': 'female', 'weight': 0.3, 'value': 5}
 TOPS['black racerback tank top'] = {'armor': 2, 'image': 2,'gender': 'female', 'weight': 0.3, 'value': 5}
@@ -207,6 +212,8 @@ BOTTOMS['bronze chainmail leggings F'] = {'armor': 13, 'image': 0, 'gender': 'fe
 BOTTOMS['blue mage robe bottom'] = {'armor': 6, 'image': 16, 'gender': 'other', 'weight': 0.5, 'reinforce magica': 30, 'value': 40}
 BOTTOMS['red mage robe bottom'] = {'armor': 4, 'image': 17, 'gender': 'other', 'weight': 0.5, 'reinforce magica': 30, 'value': 30}
 BOTTOMS['black mage robe bottom'] = {'armor': 24, 'image': 18, 'gender': 'other', 'weight': 0.5, 'reinforce magica': 100, 'value': 1000}
+BOTTOMS['aetherial chainmail'] = {'armor': 22, 'reinforce magica': 15, 'reinforce stamina': 15, 'image': 19, 'gender': 'other', 'weight': 0, 'value': 1200, 'materials': {'demon dust': 2, 'ectoplasm': 3, 'sage': 1, 'blue crystal': 2}, 'upgrade': {'demon dust': 1, 'ectoplasm': 1}}
+
 
 MALE_TOPS = []
 for top in TOPS:

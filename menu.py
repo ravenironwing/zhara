@@ -1653,6 +1653,19 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
         else:
             makeorupgrade = 'upgrade'
         enough = True
+        if 'aetherial' in chosen_item: # Only lets wraiths craft aetherial armor
+            if 'wraith' not in self.game.player.equipped['race']:
+                return False
+        if 'elven' in chosen_item: # Only lets elves craft elven things
+            if 'elf' not in self.game.player.equipped['race']:
+                return False
+        if 'mech' in chosen_item: # Only lets elves craft elven things
+            if 'mechanima' not in self.game.player.equipped['race']:
+                return False
+        if 'dragon' in chosen_item: # Only lets dragons craft dragon things
+            if 'dragon' not in self.game.player.equipped['race']:
+                return False
+
         if self.kind == 'enchanter':
             self.materials_list = ENCHANTMENTS[chosen_item][makeorupgrade]
         else:

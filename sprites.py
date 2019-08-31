@@ -1784,10 +1784,10 @@ class Player(pg.sprite.Sprite):
                     mob.gets_hit(damage, knockback, self.rot)
                 self.stats['melee'] += 0.1
                 self.last_damage = now
-
             if not self.game.guard_alerted:
                 if mob.protected:
                     self.alert_guard()
+
         else:     # For when you are not in a mech suit or possessing
             damage_reduction = self.stats['stamina'] / self.stats['max stamina']
             now = pg.time.get_ticks()
@@ -1807,7 +1807,6 @@ class Player(pg.sprite.Sprite):
                 #choice(mob.hit_sounds).play()
                 self.stats['melee'] += 0.1
                 self.last_damage = now
-
             if not self.game.guard_alerted:
                 if mob.protected:
                     self.alert_guard()
@@ -1854,7 +1853,7 @@ class Player(pg.sprite.Sprite):
                                     else:
                                         hits = pg.sprite.spritecollide(self, self.game.npcs, False, False)
                                         if hits:
-                                            if 'wraith' not in hits[0].race:
+                                            if hits[0].race not in ['whitewraith', 'blackwraith', 'demon', 'skeleton']:
                                                 drop_all_items(self, False)
                                                 hits[0].possess(self, True)
                                 else:
@@ -2457,61 +2456,45 @@ class Npc(pg.sprite.Sprite):
                 if 0 < dist.length() < self.avoid_radius:
                     self.acc += dist.normalize()
 
+    def seek_random_target(self):
+        self.target = choice(list(self.game.random_targets))
+        self.detect_radius = self.game.map.height / 2
+        temp_dist = self.target.pos - self.pos
+        temp_dist = temp_dist.length()
+        if temp_dist > self.detect_radius:
+            self.target = choice(list(self.game.random_targets))
+        if temp_dist < 200:
+            self.target = choice(list(self.game.random_targets))
+
     def seek_mobs(self):
+        last_dist = 100000
+        player_dist = self.game.player.pos - self.pos
+        player_dist = player_dist.length()
+
         # Used for setting random NPC targets if the player isn't visible.
         if self.game.player.invisible:
             if self.target == self.game.player:
-                self.target = choice(list(self.game.random_targets))
-                self.detect_radius = self.game.map.height/2
-                temp_dist = self.target.pos - self.pos
-                temp_dist = temp_dist.length()
-                if temp_dist > self.detect_radius:
-                    self.target = choice(list(self.game.random_targets))
-                if temp_dist < 200:
-                    self.target = choice(list(self.game.random_targets))
+                self.seek_random_target()
 
         elif self.game.player.in_vehicle:
             if self.game.player.vehicle.kind == 'airship':
                 if not self.flying:
-                    self.target = choice(list(self.game.random_targets))
-                    self.detect_radius = self.game.map.height/2
-                    temp_dist = self.target.pos - self.pos
-                    temp_dist = temp_dist.length()
-                    if temp_dist > self.detect_radius:
-                        self.target = choice(list(self.game.random_targets))
-                    if temp_dist < 200:
-                        self.target = choice(list(self.game.random_targets))
+                    self.seek_random_target()
             else:
                 self.target = self.game.player.vehicle
         else:
-            self.target = self.game.player
-            self.detect_radius = self.default_detect_radius
+            if player_dist < self.detect_radius ** 2:
+                self.target = self.game.player
+                if not self.running:
+                    self.detect_radius = self.default_detect_radius
+            else:
+                self.seek_random_target()
 
-
-        last_dist = 100000 # Used for the guards
-        if self.guard:
-            for mob in self.game.mobs:
-                if mob != self:
-                    if mob.aggression == 'awd':
-                        if mob.kind != self.kind:
-                            dist = self.pos - mob.pos
-                            dist = dist.length()
-                            if 0 < dist < self.detect_radius:
-                                if last_dist > dist: # Finds closest mob
-                                    self.target = mob
-                                    self.detect_radius = self.default_detect_radius
-                                    self.approach_vector = vec(1, 0)
-                                    self.offensive = True
-                                    last_dist = dist
-
-
-        elif self.aggression == 'awd': # Makes it so aggressive NPCs attack non agressive NPCs when you are not in range
-            self.offensive = True
-            player_dist = self.game.player.pos - self.pos
-            player_dist = player_dist.length()
-            for mob in self.game.moving_targets:
-                if mob != self:
-                    if mob.aggression != 'awd':
+        for mob in self.game.moving_targets:
+            if mob != self:
+                if mob.aggression != 'awd':
+                    if self.aggression == 'awd':
+                        self.offensive = True
                         dist = self.pos - mob.pos
                         dist = dist.length()
                         if 0 < dist < self.detect_radius:
@@ -2527,6 +2510,19 @@ class Npc(pg.sprite.Sprite):
                                         self.detect_radius = self.default_detect_radius
                                     else:
                                         self.target = self.game.player
+
+                else:
+                    if self.guard:
+                        if mob.kind != self.kind:
+                            dist = self.pos - mob.pos
+                            dist = dist.length()
+                            if 0 < dist < self.detect_radius:
+                                if last_dist > dist: # Finds closest mob
+                                    self.target = mob
+                                    self.detect_radius = self.default_detect_radius
+                                    self.approach_vector = vec(1, 0)
+                                    self.offensive = True
+                                    last_dist = dist
 
     def accelerate(self):
         if self.in_player_vehicle:
@@ -2549,12 +2545,14 @@ class Npc(pg.sprite.Sprite):
             else:
                 if self.target != self.game.player:
                     if not self.target.living:  # Makes it so the guards switch back to the player being their target if they kill the mob they are attacking.
-                        if not self.game.player.invisible:
-                            self.target = self.game.player
-                            self.offensive = False
-                        else:
-                            self.target = choice(list(self.game.random_targets))
-                    if self.guard:
+                        #if not self.game.player.invisible:
+                        #    self.target = self.game.player
+                        #    self.offensive = False
+                        #else:
+                        #    self.target = choice(list(self.game.random_targets))
+                        self.offensive = False
+                        self.seek_mobs()
+                    if self.aggression in ['awp', 'sap', 'fup']:
                         if self.provoked:
                             if not self.game.player.invisible:
                                 self.target = self.game.player
@@ -2643,6 +2641,7 @@ class Npc(pg.sprite.Sprite):
 
                         if self.offensive:
                             if target_dist.length_squared() < self.melee_range**2:
+                                self.approach_vector = vec(1, 0)
                                 now = pg.time.get_ticks()
                                 if now - self.last_melee > randrange(1000, 3000):
                                     self.last_melee = now
@@ -2818,25 +2817,21 @@ class Npc(pg.sprite.Sprite):
                         self.approach_vector = vec(1, 0)
                         self.speed = self.kind['walk speed'][1] * 1.5
                         self.detect_radius = self.game.screen_width
-                        self.offensive = True
 
                     if self.aggression == 'fup':
                         self.approach_vector = vec(1, 0)
                         self.speed = self.kind['walk speed'][1] * 1.2
                         self.detect_radius = self.detect_radius * 2
-                        #self.offensive = True
 
                     if self.aggression == 'awd':
                         self.approach_vector = vec(1, 0)
                         self.speed = self.kind['walk speed'][1] * 1.5
                         self.detect_radius = self.game.screen_width
-                        #self.offensive = True
 
                     if self.aggression =='sap':
                         self.approach_vector = vec(1, 0)
                         self.detect_radius = self.game.screen_width
                         self.speed = self.kind['walk speed'][1]
-                        #self.offensive = True
 
     def does_melee_damage(self, mob):
         now = pg.time.get_ticks()
@@ -2938,26 +2933,17 @@ class Npc(pg.sprite.Sprite):
         self.remove(self.game.moving_targets)
         self.add(self.game.corpses)
         self.game.group.add(self)
-        if self.equipped['race'] == 'skeleton':
-            self.image = pg.transform.rotate(self.game.corpse_images[2], self.rot)
-        elif self.equipped['race'] == 'demon':
-            self.image = pg.transform.rotate(self.game.corpse_images[8], self.rot)
+        if self.equipped['race'] == 'demon':
             Npc(self.game, self.pos.x, self.pos.y, self.map, 'blackwraith')
-        elif self.equipped['race'] == 'goblin':
-            self.image = pg.transform.rotate(self.game.corpse_images[9], self.rot)
-        elif self.equipped['race'] == 'blackwraith':
-            self.image = pg.transform.rotate(self.game.corpse_images[10], self.rot)
-        elif self.equipped['race'] == 'whitewraith':
-            self.image = pg.transform.rotate(self.game.corpse_images[10], self.rot)
-        elif self.equipped['race'] == 'golem':
-            self.image = pg.transform.rotate(self.game.corpse_images[11], self.rot)
-        elif self.equipped['race'] == 'icegolem':
-            self.image = pg.transform.rotate(self.game.corpse_images[15], self.rot)
+        if self.equipped['race'] in RACE_CORPSE_DICT:
+            self.image = pg.transform.rotate(self.game.corpse_images[RACE_CORPSE_DICT[self.equipped['race']]], self.rot)
         else:
             self.image = pg.transform.rotate(self.game.corpse_images[0], self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.game.player.stats['kills'] += 1
+        if 'dead' in self.game.people[self.species]:
+            self.game.people[self.species]['dead'] = True
 
     def pre_melee(self): # Used to get the timing correct between each melee strike, and for the sounds
         if not (self.jumping or self.melee_playing):
@@ -3254,6 +3240,9 @@ class Animal(pg.sprite.Sprite):
             self.unmount()
 
     def mount(self, driver):
+        if driver.possessing != None:
+            if driver.possessing.race == 'mech_suit':
+                return
         self.game.group.change_layer(self, MOB_LAYER)
         self.frame = 0
         self.occupied = True

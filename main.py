@@ -890,11 +890,11 @@ class Game:
                 pass
             else:
                 try:
-                    if sprite not in [self.player, self.player.body, self.player.vehicle, self.player.vehicle.turret]:
+                    if sprite not in [self.player, self.player.body, self.player.vehicle, self.player.vehicle.turret, self.player.possessing]:
                         sprite.kill()
                         del sprite
                 except:
-                    if sprite not in [self.player, self.player.body, self.player.vehicle]:
+                    if sprite not in [self.player, self.player.body, self.player.vehicle, self.player.possessing]:
                         sprite.kill()
                         del sprite
         for sprite in self.all_static_sprites:
@@ -947,7 +947,11 @@ class Game:
                         if npc_type == 'animals':
                             Animal(self, obj_center.x, obj_center.y, map, tile_object.name)
                         else:
-                            Npc(self, obj_center.x, obj_center.y, map, tile_object.name)
+                            if 'dead' in self.people[tile_object.name]:
+                                if not self.people[tile_object.name]['dead']:
+                                    Npc(self, obj_center.x, obj_center.y, map, tile_object.name)
+                            else:
+                                Npc(self, obj_center.x, obj_center.y, map, tile_object.name)
 
                 # Loads items, weapons, and armor placed on the map
                 for item_type in ITEM_TYPE_LIST:
@@ -1519,6 +1523,10 @@ class Game:
             if body.mother.in_player_vehicle:
                 pass
             for mob in hits[body]:
+                if mob.immaterial:
+                    if body.mother.equipped[body.mother.weapon_hand] != None:
+                        if 'aetherial' not in body.mother.equipped[body.mother.weapon_hand]:
+                            continue
                 if mob.in_player_vehicle:
                     pass
                 elif body.mother == mob:
@@ -1527,14 +1535,17 @@ class Game:
                     pass
                 elif mob.in_vehicle:
                     pass
-                elif mob.immaterial:
-                    pass
                 elif body.mother.in_vehicle: # Makes it so you can't attack your own vehicle
                     if mob == body.mother.vehicle:
                         pass
                 elif body.mother.melee_playing:
                     if body.mother == self.player:
                         if mob not in self.companions:
+                            mob.offensive = True
+                            mob.provoked = True
+                    if body.mother == self.player.possessing:
+                        if mob not in self.companions:
+                            mob.offensive = True
                             mob.provoked = True
                     body.mother.does_melee_damage(mob)
 
@@ -1618,6 +1629,10 @@ class Game:
                     if not mob.immaterial or bullet.energy:
                         if not mob.in_player_vehicle:
                             if mob != self.player:
+                                if bullet.mother == self.player: # Makes it so NPCs attack you if you shoot them.
+                                    if mob.aggression in ['awd', 'sap', 'fup']:
+                                        mob.offensive = True
+                                        mob.provoked = True
                                 mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
                                 bullet.death(mob)
                             else:
