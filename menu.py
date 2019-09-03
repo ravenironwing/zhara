@@ -975,6 +975,8 @@ class Loot_Menu(Inventory_Menu):
         self.game.player.calculate_fire_power()
         self.game.player.calculate_perks()
         self.container.inventory['gold'] = 0
+        if self.container in self.game.corpses:
+            self.container.check_empty()
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
         del self
 

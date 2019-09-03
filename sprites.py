@@ -2487,7 +2487,15 @@ class Npc(pg.sprite.Sprite):
                 if not self.flying:
                     self.seek_random_target()
             else:
-                self.target = self.game.player.vehicle
+                if not self.running:
+                    self.detect_radius = self.default_detect_radius
+                if player_dist < self.detect_radius:
+                    self.target = self.game.player.vehicle
+                else:
+                    if self.target == self.game.player.vehicle:
+                        self.seek_random_target()
+                    else:
+                        self.detect_radius = self.game.map.height / 2
         else:
             if not self.running:
                 self.detect_radius = self.default_detect_radius
@@ -2500,38 +2508,39 @@ class Npc(pg.sprite.Sprite):
                     self.detect_radius = self.game.map.height / 2
 
         for mob in self.game.moving_targets:
-            if mob != self:
-                if mob.aggression != 'awd':
-                    if self.aggression == 'awd':
-                        self.offensive = True
-                        dist = self.pos - mob.pos
-                        dist = dist.length()
-                        if 0 < dist < self.detect_radius:
-                            if last_dist > dist:  # Finds closest NPC
-                                if player_dist > dist: # Only targets player if you are closer than the others NPCs
-                                    self.target = mob
-                                    self.detect_radius = self.default_detect_radius
-                                    self.approach_vector = vec(1, 0)
-                                    last_dist = dist
-                                else:
-                                    if self.game.player.invisible:
-                                        self.target = mob
-                                        self.detect_radius = self.default_detect_radius
-                                    else:
-                                        self.target = self.game.player
-
-                else:
-                    if self.guard:
-                        if mob.kind != self.kind:
+            if self.game.on_screen(mob): # Only looks at mobs that are on screen
+                if mob != self:
+                    if mob.aggression != 'awd':
+                        if self.aggression == 'awd':
+                            self.offensive = True
                             dist = self.pos - mob.pos
                             dist = dist.length()
                             if 0 < dist < self.detect_radius:
-                                if last_dist > dist: # Finds closest mob
-                                    self.target = mob
-                                    self.detect_radius = self.default_detect_radius
-                                    self.approach_vector = vec(1, 0)
-                                    self.offensive = True
-                                    last_dist = dist
+                                if last_dist > dist:  # Finds closest NPC
+                                    if player_dist > dist: # Only targets player if you are closer than the others NPCs
+                                        self.target = mob
+                                        self.detect_radius = self.default_detect_radius
+                                        self.approach_vector = vec(1, 0)
+                                        last_dist = dist
+                                    else:
+                                        if self.game.player.invisible:
+                                            self.target = mob
+                                            self.detect_radius = self.default_detect_radius
+                                        else:
+                                            self.target = self.game.player
+
+                    else:
+                        if self.guard:
+                            if mob.kind != self.kind:
+                                dist = self.pos - mob.pos
+                                dist = dist.length()
+                                if 0 < dist < self.detect_radius:
+                                    if last_dist > dist: # Finds closest mob
+                                        self.target = mob
+                                        self.detect_radius = self.default_detect_radius
+                                        self.approach_vector = vec(1, 0)
+                                        self.offensive = True
+                                        last_dist = dist
 
     def accelerate(self):
         if self.in_player_vehicle:
@@ -2689,14 +2698,15 @@ class Npc(pg.sprite.Sprite):
                                         self.pre_melee()
                 if self.health <= 0:
                     self.death()
-        else:  #Kills corpse when it is empty
-            count = 0
-            for key in self.inventory:
-                if key in ITEM_TYPE_LIST:
-                    if len(self.inventory[key]) == 0 or (self.inventory[key][0] == None and len(self.inventory[key]) == 1):
-                        count += 1
-                        if count == len(ITEM_TYPE_LIST):
-                            self.kill()
+
+    def check_empty(self):
+        count = 0
+        for key in self.inventory:
+            if key in ITEM_TYPE_LIST:
+                if len(self.inventory[key]) == 0 or (self.inventory[key][0] == None and len(self.inventory[key]) == 1):
+                    count += 1
+                    if count == len(ITEM_TYPE_LIST):
+                        self.kill()
 
     def make_companion(self):
         self.remove(self.game.mobs)
@@ -3428,9 +3438,10 @@ class Animal(pg.sprite.Sprite):
 
             if self.health <= 0:
                 self.death()
-        else:  #Kills corpse when it is empty
-            if len(self.inventory['items']) == 0 or (self.inventory['items'][0] == None and len(self.inventory['items']) == 1):
-                self.kill()
+
+    def check_empty(self):
+        if len(self.inventory['items']) == 0 or (self.inventory['items'][0] == None and len(self.inventory['items']) == 1):
+            self.kill()
 
     def rotate_image(self, image_list):
         self.image = pg.transform.rotate(image_list[self.frame], self.rot)

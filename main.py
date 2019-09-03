@@ -916,8 +916,7 @@ class Game:
         if not self.new_game:
             self.garbage_collect()
         self.map = TiledMap(self, path.join(map_folder, map))
-        self.group = PyscrollGroup(map_layer=self.map.map_layer)
-        #self.overlay_group = PyscrollGroup(map_layer=self.map.overlay)
+        self.group._map_layer = self.map.map_layer # Sets the map as the Pyscroll group base layer.
         self.camera = Camera(self.map.width, self.map.height)
 
         for i in range(0, 10): # Creates random targets for Npcs
@@ -1173,17 +1172,17 @@ class Game:
                     animal.death(True)
 
         # Adds all players and companions
-        self.group.add(self.player.body)
-        for sprite in self.companions:
-            if sprite not in self.animals:
-                self.group.add(sprite.body)
-            else:
-                self.group.add(sprite)
+        #self.group.add(self.player.body)
+        #for sprite in self.companions:
+        #    if sprite not in self.animals:
+        #        self.group.add(sprite.body)
+        #    else:
+        #        self.group.add(sprite)
         # Adds vehicles back to group
-        if self.player.in_vehicle:
-            self.group.add(self.player.vehicle)
-            if self.player.vehicle.cat == 'tank':
-                self.group.add(self.player.vehicle.turret)
+        #if self.player.in_vehicle:
+        #    self.group.add(self.player.vehicle)
+        #    if self.player.vehicle.cat == 'tank':
+        #        self.group.add(self.player.vehicle.turret)
 
         self.previous_map = map
         self.respawn = False
@@ -1973,6 +1972,10 @@ class Game:
                     self.draw_debug = not self.draw_debug
                 if event.key == pg.K_p:
                     trace_mem()
+                    print(self.group.get_layer_of_sprite(self.player.body))
+                    #print(self.player.body._layer)
+                    if self.player.vehicle != None:
+                        print(self.group.get_layer_of_sprite(self.player.vehicle))
                     self.paused = not self.paused
                 if event.key == pg.K_n:
                     self.night = not self.night
