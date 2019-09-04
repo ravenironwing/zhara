@@ -4194,6 +4194,44 @@ class Obstacle(pg.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+class Charger(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h, amount = 4, rate = 2000):
+        self.groups = game.chargers, game.all_static_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.hit_rect = self.rect
+        self.pos = vec(self.rect.center)
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.energy = 1000
+        self.last_charge = 0
+        self.rate = rate
+        self.amount = amount
+
+    def charge(self, hit):
+        player_dist = self.game.player.pos - self.pos
+        player_dist = player_dist.length()
+        now = pg.time.get_ticks()
+        if now - self.last_charge > self.rate:
+            self.last_charge = now
+            if hit.possessing != None:
+                if hit.possessing.race == 'mech_suit':
+                    hit.possessing.add_health(self.amount)
+            else:
+                hit.add_health(self.amount)
+                try:
+                    hit.add_magica(self.amount)
+                    hit.add_stamina(self.amount)
+                except:
+                    pass
+            if player_dist < 700: # This part makes it so if something is on the charging pad the charging volume decreases as you walk away from it.
+                volume = 150 / player_dist
+                self.game.effects_sounds['charge'].set_volume(volume)
+                self.game.effects_sounds['charge'].play()
+
 class Inside(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
         self.groups = game.inside, game.all_static_sprites

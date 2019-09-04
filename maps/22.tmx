@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="29" nextobjectid="181">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="29" nextobjectid="184">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -32,6 +32,9 @@
  </tileset>
  <tileset firstgid="1385" name="furnishings" tilewidth="128" tileheight="128" tilecount="90" columns="10">
   <image source="../img/map_textures/furnishings.png" width="1280" height="1152"/>
+ </tileset>
+ <tileset firstgid="1475" name="mechanima" tilewidth="128" tileheight="128" tilecount="35" columns="7">
+  <image source="../img/map_textures/mechanima.png" width="896" height="640"/>
  </tileset>
  <layer id="2" name="dirt" width="64" height="64">
   <data encoding="csv">
@@ -425,8 +428,8 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1475,1476,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1482,1483,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1266,7 +1269,7 @@
   <object id="164" name="wall" x="2818.67" y="5293.33" width="90.6667" height="34.6667"/>
   <object id="165" name="grinder" x="2920" y="5302.67" width="16" height="17.3333"/>
   <object id="166" name="mechanima blacksmith" x="2804" y="5702.67" width="40" height="40"/>
-  <object id="167" name="mech suit" x="6608.67" y="6746" width="54.6667" height="60"/>
+  <object id="167" name="mech suit" x="6244.67" y="6495.33" width="54.6667" height="60"/>
   <object id="173" name="occupied mech suit" x="4064.67" y="7826" width="54.6667" height="60"/>
   <object id="174" name="occupied mech suit" x="4300.67" y="7822" width="54.6667" height="60"/>
   <object id="175" name="occupied mech suit" x="7836.67" y="2798" width="54.6667" height="60"/>
@@ -1275,5 +1278,6 @@
   <object id="178" name="occupied mech suit" x="256.667" y="2874" width="54.6667" height="60"/>
   <object id="179" name="occupied mech suit" x="4048.67" y="298" width="54.6667" height="60"/>
   <object id="180" name="occupied mech suit" x="4304.67" y="306" width="54.6667" height="60"/>
+  <object id="183" name="charger" x="6209.33" y="6462.67" width="126.667" height="125.333"/>
  </objectgroup>
 </map>

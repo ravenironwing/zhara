@@ -376,7 +376,7 @@ class Game:
             for i, item in enumerate(BULLET_IMAGES):
                 bullet_img = pg.image.load(path.join(bullets_folder, BULLET_IMAGES[i])).convert_alpha()
                 if size != 'ar':
-                    img = pg.transform.scale(bullet_img, (10*(x + 1), 10*(x + 1)))
+                    img = pg.transform.scale(bullet_img, (6*(x + 1), 4*(x + 1)))
                 else:
                     img = pg.transform.scale(bullet_img, (80, 10))
                 bullet_name = size + str(i + 1)
@@ -657,6 +657,7 @@ class Game:
         self.all_static_sprites = pg.sprite.Group() # used for all static sprites
         self.firepots = pg.sprite.Group()
         self.arrows = pg.sprite.Group()
+        self.chargers = pg.sprite.Group()
         self.mechsuits = pg.sprite.Group()
         self.detectors = pg.sprite.Group()
         self.detectables = pg.sprite.Group()
@@ -998,6 +999,8 @@ class Game:
                     Stationary_Animated(self, obj_center, 'fire')
                 if tile_object.name == 'shock':
                     Stationary_Animated(self, obj_center, 'shock')
+                if tile_object.name == 'charger':
+                    Charger(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
                 if tile_object.name == 'portal':
                     self.portal_location = obj_center
                 if 'firepot' in tile_object.name:
@@ -1251,6 +1254,13 @@ class Game:
                 self.player.rect.center = (int(loc.x * 128), int(loc.y * 128))
                 self.player.pos = vec(self.player.rect.center)
                 self.load_map(hits[0].map)
+
+            # player hits charger
+            self.bed_text = False
+            hits = pg.sprite.spritecollide(self.player, self.chargers, False)
+            if hits:
+                if 'mechanima' in self.player.race:
+                    hits[0].charge(self.player)
 
             # player hits bed
             self.bed_text = False
@@ -1514,7 +1524,12 @@ class Game:
                         else:
                             self.player.gets_hit(0, hit.knockback, hits[0].rot)
 
-
+        # NPC hits charger
+        self.bed_text = False
+        hits = pg.sprite.groupcollide(self.npcs, self.chargers, False, False)
+        for npc in hits:
+            if npc.race in ['mechanima', 'mech_suit']:
+                hits[npc][0].charge(npc)
 
         # NPC or Player melee hits moving_target
         hits = pg.sprite.groupcollide(self.npc_bodies, self.moving_targets, False, False, melee_hit_rect)

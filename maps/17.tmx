@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="43" nextobjectid="386">
+<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="43" nextobjectid="391">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1397,7 +1397,6 @@
   <object id="347" name="climbable" x="1921" y="5143" width="250" height="86"/>
   <object id="348" name="climbable" x="2693" y="4761" width="376" height="86"/>
   <object id="349" name="climbable" x="2691" y="5141" width="374" height="86"/>
-  <object id="350" name="book: War of the Worlds" x="2777.33" y="4792.67" width="22.6667" height="30.6667"/>
   <object id="351" name="book of demon secrets" x="3007.33" y="4539.33" width="33.3333" height="33.3333"/>
   <object id="352" name="elementary healing tome" x="2607.33" y="4534.67" width="29.3333" height="32"/>
   <object id="353" name="summon golem tome" x="2812" y="4540.67" width="22.6667" height="28"/>
@@ -1405,16 +1404,11 @@
   <object id="355" name="fireball tome" x="2390" y="4533.33" width="33.3333" height="36"/>
   <object id="356" name="fire spray tome" x="2170" y="4526.67" width="40" height="42.6667"/>
   <object id="357" name="book: War of the Worlds" x="1990.67" y="4790.67" width="22.6667" height="30.6667"/>
-  <object id="358" name="book: War of the Worlds" x="2098.67" y="4796.67" width="22.6667" height="30.6667"/>
+  <object id="358" name="book: A Tale of Two Cities" x="2098.67" y="4796.67" width="22.6667" height="30.6667"/>
   <object id="359" name="book: War of the Worlds" x="2840.67" y="4792.67" width="22.6667" height="30.6667"/>
-  <object id="360" name="book: War of the Worlds" x="2900.67" y="4782.67" width="22.6667" height="30.6667"/>
-  <object id="361" name="book: War of the Worlds" x="2986.67" y="4796.67" width="22.6667" height="30.6667"/>
-  <object id="362" name="book: War of the Worlds" x="2744.67" y="5180.67" width="22.6667" height="30.6667"/>
   <object id="363" name="book: War of the Worlds" x="2814.67" y="5164.67" width="22.6667" height="30.6667"/>
-  <object id="364" name="book: War of the Worlds" x="2896.67" y="5180.67" width="22.6667" height="30.6667"/>
   <object id="365" name="book: War of the Worlds" x="2984.67" y="5184.67" width="22.6667" height="30.6667"/>
   <object id="366" name="book: War of the Worlds" x="1962.67" y="5180.67" width="22.6667" height="30.6667"/>
-  <object id="367" name="book: War of the Worlds" x="2022.67" y="5168.67" width="22.6667" height="30.6667"/>
   <object id="368" name="book: War of the Worlds" x="2108.67" y="5180.67" width="22.6667" height="30.6667"/>
   <object id="369" name="villager" x="1762" y="5442" width="62" height="54"/>
   <object id="370" name="villager" x="2824" y="4908" width="42" height="42"/>
@@ -1433,5 +1427,10 @@
   <object id="383" name="fern" x="1842.67" y="1074" width="29.3333" height="28"/>
   <object id="384" name="fern" x="4016.67" y="1076" width="29.3333" height="28"/>
   <object id="385" name="fern" x="4403.33" y="1074.67" width="29.3333" height="28"/>
+  <object id="386" name="book: A Tale of Two Cities" x="2731.33" y="4799.33" width="22.6667" height="30.6667"/>
+  <object id="387" name="book: A Tale of Two Cities" x="2970" y="4808.67" width="22.6667" height="30.6667"/>
+  <object id="388" name="book: A Tale of Two Cities" x="2747.33" y="5178" width="22.6667" height="30.6667"/>
+  <object id="389" name="book: A Tale of Two Cities" x="2902" y="5183.33" width="22.6667" height="30.6667"/>
+  <object id="390" name="book: A Tale of Two Cities" x="2028.67" y="5178" width="22.6667" height="30.6667"/>
  </objectgroup>
 </map>

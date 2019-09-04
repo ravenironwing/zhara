@@ -204,6 +204,7 @@ ITEMS['red crystal'] = {'image': 67, 'weight': 0.5, 'ammo': 25, 'type': 'crystal
 # Books
 ITEMS['old book'] = {'image': 117, 'weight': 1, 'value': 0, 'author': '', 'heading': '', 'spell words': '', 'font': 'SCRIPT_FONT'}
 ITEMS['book: War of the Worlds'] = {'image': 117, 'weight': 0.2, 'value': 5, 'author': 'H. G. Wells', 'heading': 'War of the Worlds', 'spell words': '', 'font': 'SCRIPT_FONT'}
+ITEMS['book: A Tale of Two Cities'] = {'image': 117, 'weight': 0.3, 'value': 5, 'author': 'Charles Dickens', 'heading': 'A Tale of Two Cities', 'spell words': '', 'font': 'SCRIPT_FONT'}
 ITEMS['book of basic enchantments'] = {'image': 117, 'weight': 1, 'value': 5, 'author': 'Olrond Magarfindrel', 'heading': 'Book of Basic Enchantments', 'spell words': '', 'font': 'SCRIPT_FONT'}
 ITEMS['Guide book to Aroshay'] = {'image': 117, 'weight': 1, 'value': 0, 'author': 'King Dent', 'heading': "Hitchhiker's Guide to Aroshay" , 'spell words': '', 'font': 'SCRIPT_FONT'}
 

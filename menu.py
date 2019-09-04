@@ -2279,6 +2279,7 @@ class Dialogue_Menu():
             if 'GIFTS' in text_screens:
                 text_screens = text_screens.replace('GIFTS', '')
                 if not self.gifted:
+                    self.game.effects_sounds['gun_pickup'].play()
                     self.add_reward(self.game.quests[self.quest]['gifts'])
                     self.gifted = True
             self.draw_text(text_screens, default_font, 40, WHITE, self.game.screen_width/5 + 15, self.game.screen_height * 4/7 + 60 + (45 * i), "topleft")
