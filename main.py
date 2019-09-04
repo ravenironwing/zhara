@@ -1041,8 +1041,8 @@ class Game:
                              tile_object.width, tile_object.height)
                 for item in BREAKABLES: # Used for destructable plants, rocks, ore veins, walls, etc
                     if item in tile_object.name:
-                        if '_' in tile_object.name:
-                            temp_item, rot = tile_object.name.split('_')
+                        if '@' in tile_object.name:
+                            temp_item, rot = tile_object.name.split('@')
                             rot = int(rot)
                         else:
                             rot = None
@@ -1583,7 +1583,7 @@ class Game:
                         bullet.explode(mob)
                 elif bullet.mother != mob:
                     if not mob.in_player_vehicle:
-                        if bullet.mother == self.game.player:
+                        if bullet.mother == self.player:
                             mob.provoked = True
                         mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
                         bullet.explode(mob)

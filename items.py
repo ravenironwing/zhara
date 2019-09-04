@@ -6,7 +6,8 @@ ITEMS = {}
 ITEMS['first aid kit'] = {'health': 50, 'stamina': 50, 'image': 1, 'weight': 1.5, 'value': 150}
 
 # Jewelry
-ITEMS['Zhara Talisman'] = {'image': 134, 'weight': 0}
+ITEMS['Angel Talisman'] = {'image': 134, 'weight': 0.1, 'reinforce health': 100, 'armor': 20}
+ITEMS['Zhara Talisman'] = {'image': 144, 'weight': 0}
 
 # Potions
 ITEMS['potion of minor healing'] = {'alchemy': True, 'health': 20, 'image': 4, 'weight': 0.5, 'materials': {'dead pink moth':1, 'empty bottle':1}, 'value': 50}
@@ -132,6 +133,7 @@ ITEMS['demon dust'] = {'image': 121, 'weight': 0.1, 'value': 52}
 ITEMS['ectoplasm'] = {'image': 122, 'weight': 0.1, 'value': 52}
 ITEMS['clay'] = {'image': 123, 'weight': 1, 'value': 30, 'random drop': 20}
 ITEMS['feather'] = {'image': 141, 'weight': 0.1, 'value': 1, 'random drop': 18}
+ITEMS['yellow rose'] = {'image': 143, 'weight': 0.1, 'value': 6, 'random drop': 90}
 
 # Forging Materials (some are also used for enchanting)
 ITEMS['steel pipe'] = {'image': 84, 'weight': 2, 'materials': {'steel ingot': 1}, 'forgeable': True, 'value': 50}
@@ -203,6 +205,7 @@ ITEMS['red crystal'] = {'image': 67, 'weight': 0.5, 'ammo': 25, 'type': 'crystal
 ITEMS['old book'] = {'image': 117, 'weight': 1, 'value': 0, 'author': '', 'heading': '', 'spell words': '', 'font': 'SCRIPT_FONT'}
 ITEMS['book: War of the Worlds'] = {'image': 117, 'weight': 0.2, 'value': 5, 'author': 'H. G. Wells', 'heading': 'War of the Worlds', 'spell words': '', 'font': 'SCRIPT_FONT'}
 ITEMS['book of basic enchantments'] = {'image': 117, 'weight': 1, 'value': 5, 'author': 'Olrond Magarfindrel', 'heading': 'Book of Basic Enchantments', 'spell words': '', 'font': 'SCRIPT_FONT'}
+ITEMS['Guide book to Aroshay'] = {'image': 117, 'weight': 1, 'value': 0, 'author': 'King Dent', 'heading': "Hitchhiker's Guide to Aroshay" , 'spell words': '', 'font': 'SCRIPT_FONT'}
 
 # Spell books
 ITEMS['book of demon secrets'] = {'image': 142, 'spell': 'demonic possession', 'weight': 1, 'sound': 'enchant', 'value': 9000, 'author': 'Lucious Captivarian', 'heading': "The Book of Demon Secrets", 'font': 'SCRIPT_FONT',

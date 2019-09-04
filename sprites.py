@@ -2306,6 +2306,7 @@ class Npc(pg.sprite.Sprite):
         self.in_vehicle = False
         self.in_player_vehicle = False
         self.in_flying_vehicle = False
+        self.possessing = None
         self.arrow = None
         self.driver = None
         self.possessed = False
@@ -4088,6 +4089,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.random_drop_number = self.kind['random drop number']
 
     def update(self):
+        self.rect.center = self.trunk.rect.center
         if self.hit and not self.dead:
             now = pg.time.get_ticks()
             if now - self.last_move > 80:

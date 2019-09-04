@@ -1,0 +1,76 @@
+﻿    Don’t panic and follow these instructions:
+
+	Aroshay is the name of our tiny planet. It is mostly water with many islands inhabited by many different humanoid races. Some of these races are native to Aroshay: the Osidine, the Elves, the Lacertolians, goblins, demons and the wraiths. However, some were brought here after the demon wars from other worlds through the dragon portals: the Mechanima, the Miewdra, and the Shaktele. For this reason you will often find very different levels of technological progression among the peoples of Aroshay. 
+	Before you venture anywhere in this world you need to learn how to control yourself. Good luck.
+
+Controls:
+	W - forward
+	S - backwards
+	A - rotate left
+	D - rotate right
+	Z - Strafe left
+	C - Strafe right
+	B - Use Equipped Item
+	G - throw grenade
+	Q - Use equipped magic
+	T - Transform into dragon form
+	R - Reload weapon
+	F - Breathe fire while in dragon form
+	E - Loot objects/Exit menus/Activate things/Talk/Mount animal/Enter vehicle
+	V - Climb obstacles (walls, boulders, mountains, etc.)
+	N - Nightmode, this is just for testing. In the future day and night will be timed.
+	I - To access inventory, or exit menus
+	K - Stats menu
+	P - Pause
+	J - Quest menu
+	L - Crafting menu (used for making various items that don't require a special location: like making fire pits)
+	M - toggles mini map and compass (+/- changes size of mini map)
+	O - toggles overworld map.
+	TAB - Melee attack
+	SPACE - Jump
+	LSHIFT - run
+	Escape - to quit  game while in  menu (currently the only way to end the game when in full screen)
+	ALT + ENTER - toggle fullscreen mode [Fullscreen may have issues on your particular hardware, so it is off be default]
+
+
+Mouse:
+	Move Mouse - rotate/aim
+	Left Button - Left arm attack
+	Right Button - Right arm attack
+	Middle button - Forward (only works with some mice)
+
+Vehicle Controls:
+	E - enter vehicle
+	X - exit vehicle/dismount animal
+	Z/C - rotate turret (when in tanks)
+	U - toggle mini map view in airship.
+
+	Ctrl + S - Saves your game.
+	Ctrl + L - Loads saved games.
+
+
+	In order to be a successful adventurer you will need to find a means of travel as traveling by foot can be a very slow process. There are a different kinds of vehicles you can find in your travels, but you can also ride many different kinds of large animals. Press E when you are next to them to mount them, but be careful some aggressive animals will bite.
+	There are several Zharan dragon portals in Aroshay. In order to use them you must first obtain the gift of dragon fire. Once you possess dragon fire you can activate the portals by lighting the pots in the correct sequence. Dragon fire can be used for unlocking various other puzzles throughout Aroshay.
+	An adventurer needs proper weapons and armor to protect themselves. You can find many materials in the wild or purchase them from a blacksmith. At a forge you can make many different kinds of weapons and armor, but you don’t always need a forge to make things. You can make some items like bows, arrows, and campfires in the crafting menu. Press L to access it.
+	There are a lot of different types of destructible things you will come across in your journey. There are trees you can cut down if you have an axe, rocks and ores veins you can mine if you have a pickaxe, bushes and plants you can cut down or dig up with a sword or shovel, and walls and shells you can smash. Different types of destructible obstacles require different types of weapons.
+	Once you mine ore from an ore vein you can melt it into ingots ready for forging at a smelter.
+	Green wood from green trees can be used to make handles for weapons. It can also be used for making bows an arrows.
+	Dry wood from dead trees can be used for making campfires. You can use campfires and other cooking fires to cook many different kinds of food if you have the correct ingredients. You can cook almost anything that’s edible.
+	Weapons can be upgraded at a grinding stone and armor can be upgraded at a workbench. If you kill some animals you can skin their hides then make them into leather at a tanning rack.
+	Weapons and armor can be given special powers at enchanting tables. You’ll recognize them when you see them if you look for the skull of a giant. You will need special ingredients and crystals of different colors for your enchantments. Many enchanted weapons need to be reloaded with crystal ammo. You can convert a crystal into crystal ammo by using it in the inventory menu.
+	Various potions and chemical compounds can be created at alchemy labs. A lot of items may seem useless at first, but you may be able to use their chemical properties to make some useful potions.
+	Everyone needs to go pee sometimes. You can find toilets in many buildings. You need to first climb onto the toilet, then you can use it to empty your bladder and bowels and replenish your stamina.
+There are also beds in many buildings. You can only sleep in beds that are not owned or ones you pay for at inns. To sleep in a bed you need to first climb into it by pressing V.
+	You can use many items when not in the inventory menu. You first need to equip the item then press B to use the item when not in the menu. This can be very useful when drinking potions in the middle of battles.
+	There are many different books that have been written by the great Authors of Aroshay. There are also many books that have come here through the dragon portals from other worlds. Many of these books are spell tomes. If you read a spell tome you can learn a new magic spell. Be careful though, dark magic may consume your soul.
+	In your adventures you will run into many beings that ask for assistance. They may have a quest for you. You can access your active and completed quests in the quest menu by pressing J. Some quests are only available to certain races. Sometimes people will decide to be your companions after you complete quests for them. There are also different people who will join you if you pay them money. Be careful not to step between them an their targets though or they may accidentally stab or shoot you in the back.
+	Pressing O gives you access to the map of Arozhay found at the end of this book. Pay attention to your compass, since Arozhay is a sphere and maps are flat the south pole encircles the edges of the map while the north pole lies in the center of the map. Someone may give you cardinal directions, if so you will need to pay close attention to your compass as you travel.
+	Swimming is fun, you can catch fish and cross rivers and ponds, but pay attention to the fact that swimming uses stamina. If you use up your stamina while swimming then your health will start to drain until you drowned. You can recharge your stamina with potions and various kinds of foods. Keep this in mind if you need to swim long distances.
+	Some walls and obstacles can be climbed or jumped. So, be careful to pay attention to these.
+	Some animals are guarded by the people that surround them. Don’t be surprised if someone tries to kill you for attacking their chicken.
+	Many people will not respawn if you kill them. So, if I were you I would make sure not to kill the hands that feed you (i.e. shop keepers and people with quests you need to complete). If you kill someone that has a quest that is vital to completing the game you may have to start over or go back to a previously saved game.
+	Sometimes snakes pop out of bushes. They will bite you. So be careful.
+	Some animals are friendly and cute, but sometimes these animals can be slaughtered for precious ingredients. So, feel free to do so if you’re a terrible, awful person who doesn’t respect the lives of cute creatures.
+	
+
+

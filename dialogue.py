@@ -34,3 +34,5 @@ JAMAL_DLG = ["You look like you could use some help. If you pay me 1000 gold the
 JAMAL_DLG2 = ["Nice doing buisiness with you."]
 HAGITHA_DLG = ["I'm not in the mood to talk to the likes of you. Unless you are willing to find me some gold ore. Are you? YN"]
 HAGITHA_DLG2 = ["Hello friend. Find any gold lately?"]
+JOHN_DLG = ["SAMERACE I promised your father and mother I'd take care of you if anything were to happen to them, and part of taking care of you is teaching you how to work. I can't do as much as I used to since I took an arrow to the knee in the demon wars. Will you please go out and harvest the potatoes in the garden? YN"]
+JOHN_DLG2 = ["It's good to see you again kiddo. It's been a while."]

@@ -1984,6 +1984,7 @@ class Dialogue_Menu():
         self.YN = False
         self.inventory_check = False
         self.needed_item = None
+        self.needed_item_count = 1
         self.player_has_item = False
         self.gifted = False
         self.name = self.hit.kind['name']
@@ -1993,7 +1994,14 @@ class Dialogue_Menu():
                 # This is used for quests that involve giving the NPC an item.
                 if self.game.quests[self.quest]['inventory check']:
                     self.inventory_check = True
-                    self.needed_item = self.game.quests[self.quest]['needed item']
+                    if '&' in self.game.quests[self.quest]['needed item']:
+                        self.needed_item, needed_item_count  = self.game.quests[self.quest]['needed item'].split('&')
+                        try:
+                            self.needed_item_count = int(needed_item_count)
+                        except:
+                            pass
+                    else:
+                        self.needed_item = self.game.quests[self.quest]['needed item']
                 if self.game.quests[self.quest]['completed']:
                     if (self.game.quests[self.quest]['next quest'] != None) and (self.hit.talk_counter == 1):
                         self.hit.kind['dialogue'] = self.game.quests[self.quest]['next dialogue']
@@ -2060,6 +2068,7 @@ class Dialogue_Menu():
                 for choice in self.menu_sprites:
                     if choice in self.clicked_sprites:
                         if self.YN:
+                            self.game.effects_sounds['click'].play()
                             if choice.text == 'Yes':
                                 self.accept_quest()
                             if choice.text == 'No':
@@ -2124,17 +2133,21 @@ class Dialogue_Menu():
     def take_item(self):
         self.player_has_item = False
         self.inventory_check = False
-        if 'gold:c' not in self.needed_item:
+        count = 0
+        if 'gold:' not in self.needed_item:
             for item_type in ITEM_TYPE_LIST:
                 for i, item in enumerate(self.game.player.inventory[item_type]):
                     if item != None:
                         if self.needed_item in item:
-                            self.hit.inventory[item_type].append(item) # Adds item to NPCs inventory
-                            self.hit.kind['inventory'][item_type].append(item) # Adds the item to NPCs dictionary file so it loads when you leave the map and come back.
-                            change_clothing(self.hit, True)
-                            self.hit.body.update_animations()
-                            self.game.player.inventory[item_type][i] = None # Removes item from player's inventory
-                            remove_nones(self.game.player.inventory[item_type])
+                            count += 1
+                            if count <= self.needed_item_count:
+                                self.hit.inventory[item_type].append(item) # Adds item to NPCs inventory
+                                self.hit.kind['inventory'][item_type].append(item) # Adds the item to NPCs dictionary file so it loads when you leave the map and come back.
+                                self.game.player.inventory[item_type][i] = None  # Removes item from player's inventory
+                            if count >= self.needed_item_count:
+                                change_clothing(self.hit, True)
+                                self.hit.body.update_animations()
+                                remove_nones(self.game.player.inventory[item_type])
 
         else:
             gold = int(self.needed_item.replace('gold:', ''))
@@ -2149,11 +2162,13 @@ class Dialogue_Menu():
     def check_inventory(self):
         if 'gold:' not in self.needed_item:
             for item_type in ITEM_TYPE_LIST:
+                counter = Counter(self.game.player.inventory[item_type])
                 for item in self.game.player.inventory[item_type]:
                     if item != None:
                         if self.needed_item in item:
-                            self.player_has_item = True
-                            return True
+                            if counter[item] >= self.needed_item_count:
+                                self.player_has_item = True
+                                return True
         else:
             gold = int(self.needed_item.replace('gold:', ''))
             if gold < self.game.player.inventory['gold']:

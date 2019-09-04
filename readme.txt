@@ -59,7 +59,7 @@ Left Button - Left arm attack
 Right Button - Right arm attack
 Middle button - Forward (only works with some mice)
 
-Vehicle Controlls:
+Vehicle Controls:
 E - enter vehicle
 X - exit vehicle/dismount animal
 Z/C - rotate turret
