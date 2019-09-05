@@ -177,6 +177,15 @@ class Game:
         else:
             return True
 
+    def is_living(self, npc_kind):
+        if 'dead' in self.people[npc_kind]:
+            if self.people[npc_kind]['dead']:
+                return False
+            else:
+                return True
+        else:
+            return True
+
     def format_date(self):
         directive = "%m-%d-%Y_%H-%M-%S"
         return datetime.datetime.now().strftime(directive)
@@ -949,10 +958,7 @@ class Game:
                         if npc_type == 'animals':
                             Animal(self, obj_center.x, obj_center.y, map, tile_object.name)
                         else:
-                            if 'dead' in self.people[tile_object.name]:
-                                if not self.people[tile_object.name]['dead']:
-                                    Npc(self, obj_center.x, obj_center.y, map, tile_object.name)
-                            else:
+                            if self.is_living(tile_object.name):
                                 Npc(self, obj_center.x, obj_center.y, map, tile_object.name)
 
                 # Loads items, weapons, and armor placed on the map
@@ -979,7 +985,8 @@ class Game:
                         if quest_item in ANIMALS:
                             Animal(self, obj_center.x, obj_center.y, map, quest_item)
                         if quest_item in self.people:
-                            Npc(self, obj_center.x, obj_center.y, map, quest_item)
+                            if self.is_living(quest_item):
+                                Npc(self, obj_center.x, obj_center.y, map, quest_item)
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
                                 Dropped_Item(self, obj_center, item_type, quest_item, map)
@@ -992,7 +999,8 @@ class Game:
                         if quest_item in ANIMALS:
                             Animal(self, obj_center.x, obj_center.y, map, quest_item)
                         if quest_item in self.people:
-                            Npc(self, obj_center.x, obj_center.y, map, quest_item)
+                            if self.is_living(quest_item):
+                                Npc(self, obj_center.x, obj_center.y, map, quest_item)
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
                                 Dropped_Item(self, obj_center, item_type, quest_item, map)
@@ -1005,7 +1013,8 @@ class Game:
                         if quest_item in ANIMALS:
                             Animal(self, obj_center.x, obj_center.y, map, quest_item)
                         if quest_item in self.people:
-                            Npc(self, obj_center.x, obj_center.y, map, quest_item)
+                            if self.is_living(quest_item):
+                                Npc(self, obj_center.x, obj_center.y, map, quest_item)
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
                                 Dropped_Item(self, obj_center, item_type, quest_item, map)
@@ -1018,16 +1027,18 @@ class Game:
                         if quest_item in ANIMALS:
                             Animal(self, obj_center.x, obj_center.y, map, quest_item)
                         if quest_item in self.people:
-                            Npc(self, obj_center.x, obj_center.y, map, quest_item)
+                            if self.is_living(quest_item):
+                                Npc(self, obj_center.x, obj_center.y, map, quest_item)
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
                                 Dropped_Item(self, obj_center, item_type, quest_item, map)
                 if 'COMMAND' in tile_object.name: # I used this block of code for killing Alex's body: the character that the black wraith comes out of in the beginning.
                     _, command, npc = tile_object.name.split('_')
                     if npc != 'None':
-                        temp_npc = Npc(self, obj_center.x, obj_center.y, map, npc)
-                        if command == 'kill':
-                            temp_npc.death()
+                        if self.is_living(npc):
+                            temp_npc = Npc(self, obj_center.x, obj_center.y, map, npc)
+                            if command == 'kill':
+                                temp_npc.death()
                 if tile_object.name == 'fire':
                     Stationary_Animated(self, obj_center, 'fire')
                 if tile_object.name == 'shock':

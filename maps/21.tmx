@@ -1491,7 +1491,7 @@
   <object id="417" name="chicken" x="6442.97" y="5071.85" width="65.576" height="68.424"/>
   <object id="418" name="chicken" x="6663.3" y="5188" width="73.394" height="66.424"/>
   <object id="419" name="chicken" x="6828.79" y="4774.82" width="57.576" height="56.424"/>
-  <object id="422" name="blacksmith" x="5527.67" y="6332" width="54" height="56"/>
+  <object id="422" name="lafonda" x="5527.67" y="6332" width="54" height="56"/>
   <object id="424" name="villager" x="1706" y="3764" width="76" height="72"/>
   <object id="426" name="fire" x="6431.85" y="2212.73" width="63.6364" height="57.5758"/>
   <object id="429" name="fire" x="4010" y="7979" width="43" height="43"/>
