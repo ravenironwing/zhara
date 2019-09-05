@@ -206,7 +206,13 @@ ITEMS['old book'] = {'image': 117, 'weight': 1, 'value': 0, 'author': '', 'headi
 ITEMS['book: War of the Worlds'] = {'image': 117, 'weight': 0.2, 'value': 5, 'author': 'H. G. Wells', 'heading': 'War of the Worlds', 'spell words': '', 'font': 'SCRIPT_FONT'}
 ITEMS['book: A Tale of Two Cities'] = {'image': 117, 'weight': 0.3, 'value': 5, 'author': 'Charles Dickens', 'heading': 'A Tale of Two Cities', 'spell words': '', 'font': 'SCRIPT_FONT'}
 ITEMS['book of basic enchantments'] = {'image': 117, 'weight': 1, 'value': 5, 'author': 'Olrond Magarfindrel', 'heading': 'Book of Basic Enchantments', 'spell words': '', 'font': 'SCRIPT_FONT'}
-ITEMS['Guide book to Aroshay'] = {'image': 117, 'weight': 1, 'value': 0, 'author': 'King Dent', 'heading': "Hitchhiker's Guide to Aroshay" , 'spell words': '', 'font': 'SCRIPT_FONT'}
+ITEMS['Guide book to Arroshay'] = {'image': 117, 'weight': 1, 'value': 0, 'author': 'King Dent', 'heading': "Hitchhiker's Guide to Arroshay" , 'spell words': '', 'font': 'SCRIPT_FONT'}
+
+# Letters
+ITEMS['letter to Zeladria'] = {'image': 145, 'weight': 0.1, 'value': 0, 'author': 'King Draconius', 'heading': 'to Queen Zeladria', 'spell words': '', 'font': 'WRITING_FONT'}
+ITEMS['letter from Zeladria'] = {'image': 145, 'weight': 0.1, 'value': 0, 'author': 'Queen Zeladria', 'heading': 'to King Draconius', 'spell words': '', 'font': 'WRITING_FONT'}
+ITEMS['letter from Loella'] = {'image': 145, 'weight': 0.1, 'value': 0, 'author': 'Loella', 'heading': 'to Daddy', 'spell words': '', 'font': 'WRITING_FONT'}
+ITEMS['letter from Alex'] = {'image': 145, 'weight': 0.1, 'value': 0, 'author': 'Daddy', 'heading': 'to Loella', 'spell words': '', 'font': 'WRITING_FONT'}
 
 # Spell books
 ITEMS['book of demon secrets'] = {'image': 142, 'spell': 'demonic possession', 'weight': 1, 'sound': 'enchant', 'value': 9000, 'author': 'Lucious Captivarian', 'heading': "The Book of Demon Secrets", 'font': 'SCRIPT_FONT',

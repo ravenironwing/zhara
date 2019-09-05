@@ -1,8 +1,12 @@
 Special thanks to KidsCanCode
-I used his tutorials as a starting point this game.
+He really got me started with programming in pygame and I used his tutorials as a starting point to build on for this game.
 # Souces: Tilemap Demo, Shmup, and Jumpy
 
-Thanks to Kenny for providing the game art I used in early demos:
+Also, I'd like to say thank you to everyone in the pygame discord group:
+https://discordapp.com/channels/349505959032389632/423510449703878656
+They are the absolute best and have helped offer a lot of advice and programming wisdom which has enabled me to fix a lot of bugs and streamline various things in my code.
+
+Thanks to Kenny for providing the game art I used in early demos... though I don't think I'm using any of it anymore:
 "topdown shooter" art by Kenny.nl
 Weapon pickup by: Guns by Gary <http://fossilrecords.net/> licensed under CC-BY-SA 3.0 <http://creativecommons.org/licenses/by-sa/3.0/>
 

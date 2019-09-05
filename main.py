@@ -335,6 +335,8 @@ class Game:
         self.title_image = pg.image.load(path.join(img_folder, TITLE_IMAGE)).convert()
         self.open_book_image = pg.image.load(path.join(img_folder, 'open_book.png')).convert()
         self.open_book_image = pg.transform.scale(self.open_book_image, (self.screen_width, self.screen_height - 30))
+        self.open_letter_image = pg.image.load(path.join(img_folder, 'open_letter.png')).convert()
+        self.open_letter_image = pg.transform.scale(self.open_letter_image, (self.screen_width, self.screen_height - 30))
         self.over_minimap_image = pg.image.load(path.join(img_folder, OVERWORLD_MAP_IMAGE)).convert()
         self.over_minimap_image = pg.transform.scale(self.over_minimap_image, (self.screen_width, self.screen_height))
         self.compass_image = pg.image.load(path.join(img_folder, 'compass.png')).convert_alpha()
@@ -994,7 +996,38 @@ class Game:
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
                                 Dropped_Item(self, obj_center, item_type, quest_item, map)
-
+                # Loads items/npcs that only appear after a quest has been accepted.
+                if 'QA' in tile_object.name:
+                    _, quest, quest_item = tile_object.name.split('_')
+                    if self.quests[quest]['accepted']:
+                        if quest_item in VEHICLES:
+                            Vehicle(self, obj_center, quest_item, map)
+                        if quest_item in ANIMALS:
+                            Animal(self, obj_center.x, obj_center.y, map, quest_item)
+                        if quest_item in self.people:
+                            Npc(self, obj_center.x, obj_center.y, map, quest_item)
+                        for item_type in ITEM_TYPE_LIST:
+                            if quest_item in eval(item_type.upper()):
+                                Dropped_Item(self, obj_center, item_type, quest_item, map)
+                # Loads items/npcs that should only be there if a quest hasn't been accepted
+                if 'QN' in tile_object.name:
+                    _, quest, quest_item = tile_object.name.split('_')
+                    if not self.quests[quest]['accepted']:
+                        if quest_item in VEHICLES:
+                            Vehicle(self, obj_center, quest_item, map)
+                        if quest_item in ANIMALS:
+                            Animal(self, obj_center.x, obj_center.y, map, quest_item)
+                        if quest_item in self.people:
+                            Npc(self, obj_center.x, obj_center.y, map, quest_item)
+                        for item_type in ITEM_TYPE_LIST:
+                            if quest_item in eval(item_type.upper()):
+                                Dropped_Item(self, obj_center, item_type, quest_item, map)
+                if 'COMMAND' in tile_object.name: # I used this block of code for killing Alex's body: the character that the black wraith comes out of in the beginning.
+                    _, command, npc = tile_object.name.split('_')
+                    if npc != 'None':
+                        temp_npc = Npc(self, obj_center.x, obj_center.y, map, npc)
+                        if command == 'kill':
+                            temp_npc.death()
                 if tile_object.name == 'fire':
                     Stationary_Animated(self, obj_center, 'fire')
                 if tile_object.name == 'shock':
@@ -1256,7 +1289,6 @@ class Game:
                 self.load_map(hits[0].map)
 
             # player hits charger
-            self.bed_text = False
             hits = pg.sprite.spritecollide(self.player, self.chargers, False)
             if hits:
                 if 'mechanima' in self.player.race:
@@ -1525,7 +1557,6 @@ class Game:
                             self.player.gets_hit(0, hit.knockback, hits[0].rot)
 
         # NPC hits charger
-        self.bed_text = False
         hits = pg.sprite.groupcollide(self.npcs, self.chargers, False, False)
         for npc in hits:
             if npc.race in ['mechanima', 'mech_suit']:
@@ -1987,8 +2018,6 @@ class Game:
                     self.draw_debug = not self.draw_debug
                 if event.key == pg.K_p:
                     trace_mem()
-                    print(self.group.get_layer_of_sprite(self.player.body))
-                    #print(self.player.body._layer)
                     if self.player.vehicle != None:
                         print(self.group.get_layer_of_sprite(self.player.vehicle))
                     self.paused = not self.paused

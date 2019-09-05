@@ -16,6 +16,7 @@ from dialogue import *
 import re
 from npc_design import Npc_Info_Designer
 from math import ceil
+from sprites import Npc, Animal
 
 vec = pg.math.Vector2
 
@@ -461,8 +462,9 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
 
     def use_item(self):
         if self.item_type == 'items':
-            if 'book' in self.selected_item.text or 'tome' in self.selected_item.text:
-                self.read_book()
+            for x in ['book', 'tome', 'letter']:
+                if x in self.selected_item.text:
+                    self.read_book()
             self.character.equipped['items'] = self.selected_item.text
             if self.character == self.game.player:
                 self.character.use_item()
@@ -470,6 +472,12 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
             self.list_items()
 
     def read_book(self):
+        self.letter = False
+        if 'letter' in self.selected_item.text:
+            self.book_image = self.game.open_letter_image
+            self.letter = True
+        else:
+            self.book_image = self.game.open_book_image
         self.page = 0
         self.wrap_factor = int(ceil((self.game.screen_width / 2) / 19))
         self.number_of_lines = int(ceil((self.game.screen_height / 54)))
@@ -539,11 +547,18 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
 
     def display_page(self):
         self.game.screen.fill(BLACK)
-        self.game.screen.blit(self.game.open_book_image, (0, 0))
+        self.game.screen.blit(self.book_image, (0, 0))
         self.draw_text("Press SPACE to turn page or RIGHT and LEFT Arrow Keys, E to exit.", default_font, 20, WHITE, self.game.screen_width / 2, self.game.screen_height - 15, "center")
+        font_size = 25
+        byword = 'by'
+        if self.book_font == WRITING_FONT:
+            font_size = 35
+            self.heading_font = WRITING_FONT
+        if self.letter:
+            byword = 'from'
         if self.page == 0:
             self.draw_text(self.book_heading, self.heading_font, 40, BLACK, self.game.screen_width * (3/4), self.game.screen_height * (1/5), "center")
-            self.draw_text('by', self.book_font, 28, BLACK, self.game.screen_width * (3/4), self.game.screen_height * (2/5), "center")
+            self.draw_text(byword, self.book_font, 28, BLACK, self.game.screen_width * (3/4), self.game.screen_height * (2/5), "center")
             self.draw_text(self.book_author, self.book_font, 28, BLACK, self.game.screen_width * (3/4), self.game.screen_height * (3/5), "center")
         else:
             if self.page > len(self.book_data):
@@ -556,11 +571,11 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
             right_margin = self.game.screen_width/2 + 50
             j = 0
             for i, line in enumerate(self.book_data[self.page - 1]):
-                self.draw_text(line, self.book_font, 25, BLACK, left_margin, top_margin + (45 * i), "topleft")
+                self.draw_text(line, self.book_font, font_size, BLACK, left_margin, top_margin + (45 * i), "topleft")
                 j += 1
             if self.page == len(self.book_data):
                 for line in self.book_spellwords:
-                    self.draw_text(line, KAWTHI_FONT, 25, BLACK, left_margin, top_margin + (45 * j), "topleft")
+                    self.draw_text(line, KAWTHI_FONT, font_size, BLACK, left_margin, top_margin + (45 * j), "topleft")
                     j += 1
             self.page += 1
             if self.page > len(self.book_data):
@@ -569,11 +584,11 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                 return
             j = 0
             for i, line in enumerate(self.book_data[self.page - 1]):
-                self.draw_text(line, self.book_font, 25, BLACK, right_margin, top_margin + (45 * i), "topleft")
+                self.draw_text(line, self.book_font, font_size, BLACK, right_margin, top_margin + (45 * i), "topleft")
                 j += 1
             if self.page == len(self.book_data):
                 for line in self.book_spellwords:
-                    self.draw_text(line, KAWTHI_FONT, 25, BLACK, right_margin, top_margin + (45 * j), "topleft")
+                    self.draw_text(line, KAWTHI_FONT, font_size, BLACK, right_margin, top_margin + (45 * j), "topleft")
                     j += 1
         pg.display.flip()
 
@@ -1988,52 +2003,62 @@ class Dialogue_Menu():
         self.player_has_item = False
         self.gifted = False
         self.name = self.hit.kind['name']
-        if 'quest' in self.hit.kind.keys():
+        self.do_action = False # Used so the NPC does the after quest action at the right time.
+        self.previous_quest = None
+        if self.game.player.race in self.hit.kind.keys(): # Checks for race specific dialogue and quests
+            self.quest = self.hit.kind[self.game.player.race]['quest']
+            self.hit.kind['dialogue'] = self.hit.kind[self.game.player.race]['dialogue']
+            self.assign_quest_info()
+
+        elif 'quest' in self.hit.kind.keys():
             self.quest = self.hit.kind['quest']
-            if self.quest != None:
-                # This is used for quests that involve giving the NPC an item.
-                if self.game.quests[self.quest]['inventory check']:
-                    self.inventory_check = True
-                    if '&' in self.game.quests[self.quest]['needed item']:
-                        self.needed_item, needed_item_count  = self.game.quests[self.quest]['needed item'].split('&')
-                        try:
-                            self.needed_item_count = int(needed_item_count)
-                        except:
-                            pass
-                    else:
-                        self.needed_item = self.game.quests[self.quest]['needed item']
-                if self.game.quests[self.quest]['completed']:
-                    if (self.game.quests[self.quest]['next quest'] != None) and (self.hit.talk_counter == 1):
-                        self.hit.kind['dialogue'] = self.game.quests[self.quest]['next dialogue']
-                        self.quest = self.hit.kind['quest'] = self.game.quests[self.quest]['next quest']
-                        self.hit.talk_counter = 0
-                        self.format_text()
-                    if not self.game.quests[self.quest]['rewarded']:
-                        self.game.quests[self.quest]['rewarded'] = True
-                        self.game.effects_sounds['fanfare'].play()
-                        self.format_response(self.game.quests[self.quest]['reward text'])
-                        self.add_reward(self.game.quests[self.quest]['reward'])
-                    else:
-                        self.format_response(self.game.quests[self.quest]['completed text'])
-                        hit.talk_counter += 1
-                elif self.game.quests[self.quest]['accepted']:
-                    if self.inventory_check:
-                        if self.check_inventory():
-                            self.format_response(self.game.quests[self.quest]['has item text'])
-                        else:
-                            self.format_response(self.game.quests[self.quest]['waiting text'])
-                    else:
-                        self.format_response(self.game.quests[self.quest]['waiting text'])
-                else:
-                    self.format_text()
-            else:
-                self.format_text()
+            self.assign_quest_info()
         else:
             self.quest = None
             self.format_text()
         self.store = self.hit.kind['store']
 
         self.lines = 0
+
+    def assign_quest_info(self):
+        if self.quest != None:
+            # This is used for quests that involve giving the NPC an item.
+            if self.game.quests[self.quest]['inventory check']:
+                self.inventory_check = True
+                if '&' in self.game.quests[self.quest]['needed item']:
+                    self.needed_item, needed_item_count = self.game.quests[self.quest]['needed item'].split('&')
+                    try:
+                        self.needed_item_count = int(needed_item_count)
+                    except:
+                        pass
+                else:
+                    self.needed_item = self.game.quests[self.quest]['needed item']
+            if self.game.quests[self.quest]['completed']:
+                if (self.game.quests[self.quest]['next quest'] != None) and (self.hit.talk_counter == 1):
+                    self.hit.kind['dialogue'] = self.game.quests[self.quest]['next dialogue']
+                    self.quest = self.hit.kind['quest'] = self.game.quests[self.quest]['next quest']
+                    self.hit.talk_counter = 0
+                    self.format_text()
+                if not self.game.quests[self.quest]['rewarded']:
+                    self.game.quests[self.quest]['rewarded'] = True
+                    self.game.effects_sounds['fanfare'].play()
+                    self.format_response(self.game.quests[self.quest]['reward text'])
+                    self.add_reward(self.game.quests[self.quest]['reward'])
+                else:
+                    self.format_response(self.game.quests[self.quest]['completed text'])
+                    self.hit.talk_counter += 1
+            elif self.game.quests[self.quest]['accepted']:
+                if self.inventory_check:
+                    if self.check_inventory():
+                        self.format_response(self.game.quests[self.quest]['has item text'])
+                    else:
+                        self.format_response(self.game.quests[self.quest]['waiting text'])
+                else:
+                    self.format_response(self.game.quests[self.quest]['waiting text'])
+            else:
+                self.format_text()
+        else:
+            self.format_text()
 
     def events(self):
         # catch all events here
@@ -2085,6 +2110,15 @@ class Dialogue_Menu():
 
     def accept_quest(self):
         if self.quest != None:
+            if self.game.quests[self.quest]['accepted'] == True: #This block of code is used for a second quesiton in the 'accept text' section. For NPCs who don't want to go through the bother of asking you to give them the item later
+                if not self.player_has_item:
+                    self.check_inventory()
+                if not self.player_has_item:
+                    self.response_text = self.game.quests[self.quest]['lie text']
+                    self.format_response()
+                    self.clear_menu()
+                    self.YN = False
+
             if self.player_has_item:
                 self.take_item()
                 self.game.quests[self.quest]['rewarded'] = True
@@ -2104,7 +2138,7 @@ class Dialogue_Menu():
                     if 'autoaccept' in self.game.quests[self.quest]:
                         if self.game.quests[self.quest]['autoaccept']:
                             self.game.quests[self.quest]['accepted'] = True
-            else:
+            elif self.game.quests[self.quest]['accepted'] != True:
                 self.game.quests[self.quest]['accepted'] = True
                 self.response_text = self.game.quests[self.quest]['accept text']
                 self.format_response()
@@ -2114,7 +2148,8 @@ class Dialogue_Menu():
                     if 'autocomplete' in self.game.quests[self.quest]:
                         if self.game.quests[self.quest]['autocomplete']:
                             self.game.quests[self.quest]['completed'] = True
-                            self.action()
+                            self.do_action = True
+                            self.previous_quest = self.quest
 
     def deny_quest(self):
         if self.quest != None:
@@ -2156,7 +2191,8 @@ class Dialogue_Menu():
                 self.hit.inventory['gold'] += gold
         self.game.quests[self.quest]['completed'] = True
         if 'action' in self.game.quests[self.quest]:
-            self.action()
+            self.do_action = True
+            self.previous_quest = self.quest
 
 
     def check_inventory(self):
@@ -2176,10 +2212,19 @@ class Dialogue_Menu():
                 return True
 
     def action(self):
-        if self.game.quests[self.quest]['action'] == 'companion':
+        if 'summon' in self.game.quests[self.previous_quest]['action']:
+            _, creature = self.game.quests[self.previous_quest]['action'].split(':')
+            if creature in PEOPLE:
+                self.game.effects_sounds['enchant'].play()
+                summoned = Npc(self.game, self.hit.pos.x + 128, self.hit.pos.y, self.game.map, creature)
+                summoned.make_companion()
+            elif creature in ANIMALS:
+                self.game.effects_sounds['enchant'].play()
+                Animal(self.game, pos.x, pos.y, self.game.map, creature)
+        if self.game.quests[self.previous_quest]['action'] == 'companion':
             self.hit.make_companion()
 
-        if self.game.quests[self.quest]['action'] == 'unfollow':
+        if self.game.quests[self.previous_quest]['action'] == 'unfollow':
             self.hit.remove(self.game.companions)
             try:
                 self.hit.body.remove(self.game.companion_bodies)
@@ -2270,6 +2315,8 @@ class Dialogue_Menu():
         if self.text_screen > len(self.text_data) - 1:
             self.text_screen = 0
             self.running = False
+            if self.do_action: # Only does the after quest action after you finish talking to them.
+                self.action()
             return
         self.lines = len(self.text_data[self.text_screen])
         for i, text_screens in enumerate(self.text_data[self.text_screen]):

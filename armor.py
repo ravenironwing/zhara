@@ -160,6 +160,7 @@ GLOVES['aetherial gauntlets'] = {'armor': 15, 'reinforce magica': 15, 'reinforce
 TOPS = {}
 TOPS['aetherial armor'] = {'armor': 45, 'reinforce magica': 50, 'reinforce stamina': 50, 'image': 32, 'gender': 'other', 'weight': 0, 'value': 2100, 'materials': {'demon dust': 2, 'ectoplasm': 3, 'sage': 1, 'blue crystal': 2}, 'upgrade': {'blue crystal': 1, 'ectoplasm': 1}}
 TOPS['bronze armor'] = {'armor': 26, 'image': 0, 'gender': 'other', 'weight': 7, 'materials': {'bronze ingot': 5, 'leather': 2}, 'upgrade': {'bronze ingot': 3, 'leather strips': 1}, 'value': 250}
+TOPS['gold plated royal armor'] = {'armor': 42, 'image': 33, 'gender': 'other', 'weight': 10, 'materials': {'bronze ingot': 1, 'gold ingot':2, 'steel ingot': 3, 'leather': 3}, 'upgrade': {'steel ingot': 1, 'gold ingot': 1, 'leather strips': 1}, 'value': 250}
 TOPS['grey racerback tank top'] = {'armor': 2,'image': 1,'gender': 'female', 'weight': 0.3, 'value': 5}
 TOPS['black racerback tank top'] = {'armor': 2, 'image': 2,'gender': 'female', 'weight': 0.3, 'value': 5}
 TOPS['decayed shirt F'] = {'armor': 1, 'image': 3, 'gender': 'female', 'weight': 0.4, 'value': 1}
