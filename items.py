@@ -23,6 +23,9 @@ ITEMS['potion of zombie cure'] = {'alchemy': True, 'change race': 'human', 'imag
 ITEMS['potion of feminization'] = {'alchemy': True, 'change sex': 'female', 'image': 8, 'weight': 0.5, 'materials': {'dead pink moth':1, 'giant ant eggs':1, 'rosemary':1, 'empty bottle':1}, 'value': 5000}
 ITEMS['potion of masculinization'] = {'alchemy': True, 'change sex': 'male', 'image': 7, 'weight': 0.5, 'materials': {'dead bluefish':1, 'sulphur':1, 'dead snake':1, 'empty bottle':1}, 'value': 5000}
 
+ITEMS['ale'] = {'alchemy': True, 'stamina': 40, 'health': -10, 'image': 146, 'weight': 0.7, 'materials': {'hops':1, 'barley':1, 'bottled water':1, 'empty mug':1}, 'value': 10}
+ITEMS['ale of the gods'] = {'alchemy': True, 'stamina': 40, 'health': 15, 'image': 146, 'weight': 0.7, 'materials': {'hops':1, 'barley':1, 'living water':1, 'empty mug':1}, 'value': 20}
+
 # Tools
 ITEMS['lock pick'] = {'image': 11, 'weight': 0.2, 'value': 120}
 
@@ -39,6 +42,7 @@ ITEMS['empty bottle'] = {'image': 64, 'weight': 0.2, 'value': 10, 'random drop':
 ITEMS['pedestal and mortar'] = {'image': 60, 'weight': 1, 'value': 200}
 ITEMS['coffee pot'] = {'image': 108, 'weight': 1, 'value': 5}
 ITEMS['empty barrel'] = {'image': 131, 'weight': 10, 'value': 100}
+ITEMS['empty mug'] = {'image': 147, 'weight': 0.4, 'value': 1}
 
 # Misc items
 ITEMS['candle burner'] = {'image': 61, 'weight': 1, 'value': 250}
@@ -55,6 +59,8 @@ ITEMS['pine branch'] = {'image': 138, 'weight': 0.6, 'value': 3}
 ITEMS['brick'] = {'image': 97, 'weight': 1, 'value': 0, 'random drop': 60}
 
 # Foods
+ITEMS['barley'] = {'image': 148, 'health': 5, 'stamina': 3, 'weight': 0.6, 'food': True, 'value': 3}
+ITEMS['hops'] = {'image': 149, 'health': 3, 'stamina': 6, 'weight': 0.6, 'food': True, 'value': 10}
 ITEMS['coconut'] = {'image': 136, 'health': 10, 'stamina': 10, 'weight': 0.9, 'food': True, 'value': 4}
 ITEMS['cheese wedge'] = {'image': 38, 'health': 15, 'stamina': 5, 'weight': 0.8, 'food': True, 'value': 5}
 ITEMS['roasted chicken'] = {'image': 35, 'health': 20, 'stamina': 15, 'weight': 3, 'materials': {'dead chicken':1}, 'food': True, 'value': 25}
@@ -125,6 +131,7 @@ ITEMS['squid tentacle'] = {'image': 101, 'weight': 2, 'value': 28}
 ITEMS['squid eye'] = {'image': 102, 'weight': 0.5, 'value': 65}
 ITEMS['squid ink'] = {'health': 5, 'image': 10, 'weight': 0.5, 'value': 25}
 ITEMS['living water'] = {'health': 15, 'image': 7, 'weight': 0.2, 'value': 50}
+ITEMS['bottled water'] = {'health': 5, 'image': 7, 'weight': 0.2, 'value': 2}
 ITEMS['distilled alcohol'] = {'health': -20, 'image': 6, 'weight': 0.2, 'value': 100}
 ITEMS['whale oil'] = {'image': 4, 'weight': 0.2, 'value': 100}
 ITEMS['sea turtle shell'] = {'image': 112, 'weight': 200, 'value': 300}

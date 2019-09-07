@@ -40,3 +40,4 @@ JOHN_DLG = ["SAMERACE I promised your father and mother I'd take care of you if 
 JOHN_DLG2 = ["It's good to see you again kiddo. It's been a while."]
 KING_DRACONIUS_DLG = ["SAMERACE I see you've come here to join the royal guard. Well, you certainly don't look like much of a warrior, but we've been low on men ever since the demon wars. So, I suppose we could use your help. You'll have to prove yourself first though. Our last messenger died durring one of her deliveries. So, you're in luck because I'm in need of a new messenger. If you deliver this letter to Zeladria the elf queen then I will let you become one of my royal guards. Do you accept this mission? YN", "DIFFRACE Hello traveler what brings you to my kingdom? You are welcome among my people so long as you don't cause any trouble."]
 KING_DRACONIUS_DLG2 = ["Hello my faithful servant. You are always welcome here at the palace."]
+MAX_DLG = ["Welcome to the Dancing Dragon. What can I get for you today?"]
