@@ -2315,8 +2315,6 @@ class Dialogue_Menu():
         if self.text_screen > len(self.text_data) - 1:
             self.text_screen = 0
             self.running = False
-            if self.do_action: # Only does the after quest action after you finish talking to them.
-                self.action()
             return
         self.lines = len(self.text_data[self.text_screen])
         for i, text_screens in enumerate(self.text_data[self.text_screen]):
@@ -2349,6 +2347,8 @@ class Dialogue_Menu():
         self.update_external_variables()
 
     def update_external_variables(self):
+        if self.do_action:  # Only does the after quest action after you finish talking to them.
+            self.action()
         self.game.in_dialogue_menu = False
         self.game.in_menu = False
         self.game.last_dialogue = pg.time.get_ticks() # Gets the time you exited the menu. This is used so that the menu doesn't keep popping up.

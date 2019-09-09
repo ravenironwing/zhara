@@ -95,7 +95,7 @@ HUMAN_RACES = ['shaktele', 'osidine']
 PEOPLE['immortui'] = {'name': 'Immortui', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 600, 'avoid radius': 50, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'random', 'race': 'immortui',
-    'dialogue': None, 'store': None,
+    'dialogue': 'random IMMORTUI_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random IMMORTUI_'], 'bottoms': ['random IMMORTUI_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random IMMORTUI_'], 'magic': [None]},
     'animations': {'walk': ZOMBIE_WALK}}
 IMMORTUI_TOPS = ['decayed shirt F', 'decayed shirt M', 'tshirt M', 'tshirt F', 'dark tshirt M', 'dark tshirt F']

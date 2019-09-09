@@ -161,14 +161,6 @@ class Game:
         self.clock = pg.time.Clock()
         self.load_data()
 
-    def load_npc(self, npc_data):
-        # npc_data = [npc_type, npc, obj_center.x, obj_center.y, map]
-
-        if npc_data[0] == 'animals':
-            Animal(self, npc_data[2], npc_data[3], npc_data[4], npc_data[1])
-        else:
-            Npc(self, npc_data[2], npc_data[3], npc_data[4], npc_data[1])
-
     def on_screen(self, sprite):
         rect = self.camera.apply(sprite)
         threshold = 50
@@ -190,7 +182,27 @@ class Game:
         directive = "%m-%d-%Y_%H-%M-%S"
         return datetime.datetime.now().strftime(directive)
 
+    def save_sprite_locs(self):
+        # This block stores all sprite locations and their health in the map_sprite_data_list so the game remembers where everything is.
+        npc_list = []
+        animal_list = []
+        item_list = []
+        vehicle_list = []
+        for npc in self.npcs:
+            npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
+            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs = npc_list
+        for animal in self.animals:
+            animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
+            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals = animal_list
+        for item in self.dropped_items:
+            item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
+            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].items = item_list
+        for vehicle in self.vehicles:
+            vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
+            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles = vehicle_list
+
     def save(self):
+        self.save_sprite_locs()
         possessing = self.player.possessing
         if self.player.possessing != None:
             self.player.possessing.depossess()
@@ -215,7 +227,7 @@ class Game:
             companion_list.append(companion.species)
 
         updated_equipment = [UPGRADED_WEAPONS, UPGRADED_HATS, UPGRADED_TOPS, UPGRADED_GLOVES, UPGRADED_BOTTOMS, UPGRADED_SHOES]
-        save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list]
+        save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list, self.map_sprite_data_list]
         with open(path.join(saves_folder, self.player.race + "_" + self.format_date() + ".sav"), "wb", -1) as FILE:
             pickle.dump(save_list, FILE)
         if possessing != None:
@@ -232,6 +244,7 @@ class Game:
         self.saved_vehicle = load_file[12]
         self.chests = load_file[6] # Updates chests from dave
         self.saved_companions = load_file[13]
+        self.map_sprite_data_list = load_file[14]
         updated_equipment = load_file[8]
         UPGRADED_WEAPONS = updated_equipment[0]
         UPGRADED_HATS = updated_equipment[1]
@@ -633,6 +646,7 @@ class Game:
                 i = 255
 
         # initialize all variables and do all the setup for a new game
+        self.map_sprite_data_list = []
         self._player_inside = False
         self.compass_rot = 0
         self.people = PEOPLE
@@ -723,7 +737,7 @@ class Game:
         self.previous_map = "1.tmx"
         self.world_location = vec(1, 1)
         self.player = Player(self) # Creates initial player object
-        if self.new_game:
+        if self.new_game:  # Why do I have to variables: new_game and conitnued_game
             self.in_character_menu = True
         self.character_menu = Character_Design_Menu(self)
         self.generic_npc = Npc(self, 0, 0, map, 'generic')  # Spawns a generic villager npc to be modified
@@ -808,11 +822,22 @@ class Game:
                 self.map_data_list.append(row)
         self.world_width = len(self.map_data_list[0])
         self.world_height = len(self.map_data_list)
+
+        # This creates a map data object to store which sprites are on each map. This keeps track of where sprites are when they more around or when you drop things.
+        if self.map_sprite_data_list == []:
+            for x in range(0, self.world_width):
+                row = []
+                for y in range(0, self.world_height):
+                    map_data_store = MapData(x, y)
+                    row.append(map_data_store)
+                self.map_sprite_data_list.append(row)
+
         #world_mini_map = WorldMiniMap(self, self.map_data_list) # Only uncomment this to create a new overworld map if you edit the old one. Otherwise it will take literally forever to load every time.
         #self.load_map(str(self.map_data_list[int(self.world_location.y)][int(self.world_location.x)]) + '.tmx')
 
     # Used for switching to the next map after you go north, south, east or west at the end of the current map.
     def change_map(self, cardinal = None, coordinate = None, location = None):
+        self.save_sprite_locs()
         self.guard_alerted = False # Makes it so guards stop attacking you after you change maps
         self.player.vel = vec(0, 0)
         self.player.acc = vec(0, 0)
@@ -916,6 +941,7 @@ class Game:
         gc.collect()  # Forces garbage collection. Without this the game will quickly run out of memory.
 
     def load_map(self, temp_map):
+        self.sprite_data = self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)]
         self.compass_rot = -math.atan2(49 - self.world_location.y, 89 - self.world_location.x)
         self.compass_rot = math.degrees(self.compass_rot)
         map = temp_map
@@ -945,6 +971,22 @@ class Game:
             for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
                 Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
 
+        if self.sprite_data.visited: # Loads stored map data for sprites if you have visited before.
+            companion_names = []
+            for companion in self.companions:
+                companion_names.append(companion.species)
+            for npc in self.sprite_data.npcs:
+                if npc['name'] not in companion_names: # Makes it so it doesn't double load your companions.
+                    Npc(self, npc['location'].x, npc['location'].y, map, npc['name'], npc['health'])
+            for animal in self.sprite_data.animals:
+                Animal(self, animal['location'].x, animal['location'].y, map, animal['name'], animal['health'])
+            for vehicle in self.sprite_data.vehicles:
+                Vehicle(self, vehicle['location'], vehicle['name'], map, vehicle['health'])
+            for item in self.sprite_data.items:
+                for item_type in ITEM_TYPE_LIST:
+                    if item['name'] in eval(item_type.upper()):
+                        Dropped_Item(self, item['location'], item_type, item['name'], map, item['rotation'])
+
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name != None:
                 obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
@@ -952,26 +994,27 @@ class Game:
                     self.player.pos = vec(obj_center)
                     self.player.rect.center = self.player.pos
 
-                # Loads NPCs from NPC_TYPE_LIST
-                for npc_type in NPC_TYPE_LIST:
-                    if tile_object.name in eval(npc_type.upper()):
-                        if npc_type == 'animals':
-                            Animal(self, obj_center.x, obj_center.y, map, tile_object.name)
-                        else:
-                            if self.is_living(tile_object.name):
-                                Npc(self, obj_center.x, obj_center.y, map, tile_object.name)
+                if not self.sprite_data.visited: # Only executes if you have never been to this map before. Otherwise it pulls the data from the stored list.
+                    # Loads NPCs from NPC_TYPE_LIST
+                    for npc_type in NPC_TYPE_LIST:
+                        if tile_object.name in eval(npc_type.upper()):
+                            if npc_type == 'animals':
+                                Animal(self, obj_center.x, obj_center.y, map, tile_object.name)
+                            else:
+                                if self.is_living(tile_object.name):
+                                    Npc(self, obj_center.x, obj_center.y, map, tile_object.name)
 
-                # Loads items, weapons, and armor placed on the map
-                for item_type in ITEM_TYPE_LIST:
-                    if tile_object.name in eval(item_type.upper()):
-                        Dropped_Item(self, obj_center, item_type, tile_object.name, map)
-                # Loads fixed roated items:
-                if '@' in tile_object.name:
-                    item, rot = tile_object.name.split('@')
-                    rot = int(rot)
+                    # Loads items, weapons, and armor placed on the map
                     for item_type in ITEM_TYPE_LIST:
-                        if item in eval(item_type.upper()):
-                            Dropped_Item(self, obj_center, item_type, item, map, rot)
+                        if tile_object.name in eval(item_type.upper()):
+                            Dropped_Item(self, obj_center, item_type, tile_object.name, map)
+                    # Loads fixed roated items:
+                    if '@' in tile_object.name:
+                        item, rot = tile_object.name.split('@')
+                        rot = int(rot)
+                        for item_type in ITEM_TYPE_LIST:
+                            if item in eval(item_type.upper()):
+                                Dropped_Item(self, obj_center, item_type, item, map, rot)
 
                 # Loads detectors used to detect whether quest items have be delivered to the correct locations.
                 if 'detector' in tile_object.name:  # These are invisible objects used to detect other objects touching them.
@@ -1230,7 +1273,7 @@ class Game:
         #    self.group.add(self.player.vehicle)
         #    if self.player.vehicle.cat == 'tank':
         #        self.group.add(self.player.vehicle.turret)
-
+        self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].visited = True
         self.previous_map = map
         self.respawn = False
         if self.new_game:

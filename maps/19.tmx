@@ -24,10 +24,10 @@
  <tileset firstgid="845" name="water_and_ice" tilewidth="128" tileheight="128" tilecount="225" columns="15">
   <image source="../img/map_textures/water_and_ice.png" width="1920" height="1920"/>
  </tileset>
- <tileset firstgid="1070" name="furnishings" tilewidth="128" tileheight="128" tilecount="90" columns="10">
-  <image source="../img/map_textures/furnishings.png" width="1280" height="1152"/>
+ <tileset firstgid="1070" name="furnishings" tilewidth="128" tileheight="128" tilecount="110" columns="10">
+  <image source="../img/map_textures/furnishings.png" width="1280" height="1408"/>
  </tileset>
- <tileset firstgid="1160" name="overmap_temp_textures" tilewidth="32" tileheight="32" tilecount="96" columns="4">
+ <tileset firstgid="1180" name="overmap_temp_textures" tilewidth="32" tileheight="32" tilecount="96" columns="4">
   <image source="../img/map_textures/overmap_temp_textures.png" width="128" height="768"/>
  </tileset>
  <layer id="1" name="groundcover0" width="64" height="64">
@@ -1119,9 +1119,6 @@
 </data>
  </layer>
  <objectgroup id="16" name="Object Layer 1">
-  <object id="29" name="wall" x="3731.82" y="2196.97" width="57.5758" height="48.4849"/>
-  <object id="30" name="wall" x="4268.18" y="1333.33" width="57.5758" height="48.4849"/>
-  <object id="33" name="wall" x="3492.42" y="1296.97" width="57.5758" height="48.4849"/>
   <object id="34" name="wall" x="3301.52" y="1663.64" width="57.5758" height="48.4849"/>
   <object id="45" name="immortui" x="4206" y="5862" width="82" height="74"/>
   <object id="59" name="rabbit" x="5003.03" y="457.576" width="66.6667" height="63.6364"/>

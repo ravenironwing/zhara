@@ -321,7 +321,7 @@ class Turret(pg.sprite.Sprite):
             self.kill()
 
 class Vehicle(pg.sprite.Sprite):
-    def __init__(self, game, center, kind, map):
+    def __init__(self, game, center, kind, map, health = None):
         self.kind = self.race = self.species = kind
         self.data = VEHICLES[kind]
         self._layer = self.data['layer']
@@ -364,7 +364,10 @@ class Vehicle(pg.sprite.Sprite):
         self.immaterial = False
         self.protected = False
         self.in_vehicle = self.in_player_vehicle = False
-        self.health = self.maxhealth = self.data['hp']
+        if health == None:
+            self.health = self.max_health = self.data['hp']
+        else:
+            self.health = self.max_health = health
         self.last_hit = 0
         self.last_drain = 0
         self.living = True
@@ -2275,7 +2278,7 @@ class Player(pg.sprite.Sprite):
 
 
 class Npc(pg.sprite.Sprite):
-    def __init__(self, game, x, y, map, kind):
+    def __init__(self, game, x, y, map, kind, health = None):
         self._layer = ITEMS_LAYER # The NPC's body is set to the PLAYER LAYER, but the NPC is set to the ITEMS_LAYER so its corpse appears under the player when it dies.
         self.game = game
         if kind == 'mech suit':
@@ -2358,7 +2361,10 @@ class Npc(pg.sprite.Sprite):
         self.dialogue = self.kind['dialogue']
         self.aggression = self.kind['aggression']
         self.touch_damage = self.kind['touch damage']
-        self.health = self.max_health = self.kind['health']
+        if health == None:
+            self.health = self.max_health = self.kind['health']
+        else:
+            self.health = self.max_health = health
         self.speed = randrange(self.kind['walk speed'][0], self.kind['walk speed'][1])
         self.run_speed = self.kind['run speed']
         self.armed = self.kind['armed']
@@ -2580,6 +2586,12 @@ class Npc(pg.sprite.Sprite):
                 elif self.aggression in ['awp', 'sap', 'fup']:
                     if not self.provoked:
                         self.offensive = False
+                    if self.race in ['osidine', 'shaktele', 'elf']: # Makes it so humans and elves attack you if you are zombie or skeleton.
+                        if self.target == self.game.player:
+                            if self.game.player.race in ['immortui', 'skeleton']:
+                                self.provoked = True
+                                self.offensive = True
+                                self.approach_vector = vec(1, 0)
 
                 if self in self.game.companions:
                     if self.target == self.game.player:
@@ -3117,7 +3129,7 @@ class Npc(pg.sprite.Sprite):
 
 
 class Animal(pg.sprite.Sprite):
-    def __init__(self, game, x, y, map, species):
+    def __init__(self, game, x, y, map, species, health = None):
         self.game = game
         self.species = self.race = species
         self.kind = self.cat = ANIMALS[species]
@@ -3149,8 +3161,10 @@ class Animal(pg.sprite.Sprite):
         self.knockback = self.kind['knockback']
         self.detect_radius = self.kind['detect radius']
         self.avoid_radius = self.kind['avoid radius']
-        self.health = self.kind['health']
-        self.maxhealth = self.kind['health']
+        if health == None:
+            self.health = self.max_health = self.kind['health']
+        else:
+            self.health = self.max_health = health
         self.mountable = self.kind['mountable']
         self.occupied = False
         self.run_speed = self.kind['run speed'] * (randrange(7, 10)/10)
@@ -3663,9 +3677,8 @@ class Dropped_Item(pg.sprite.Sprite):
         else:
             image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item + "']['image']]"
         if self.rot == None:
-            self.image =  pg.transform.rotate(eval(image_path), randrange(0, 360))
-        else:
-            self.image = pg.transform.rotate(eval(image_path), self.rot)
+            self.rot = randrange(0, 360)
+        self.image = pg.transform.rotate(eval(image_path), self.rot)
         self.rect = self.hit_rect = self.image.get_rect()
         if self.random_spread:
             self.pos = self.pos + (randrange(-50, 50), randrange(-50, 50))

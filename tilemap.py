@@ -8,6 +8,16 @@ import logging
 logger = logging.getLogger('orthographic')
 logger.setLevel(logging.ERROR)
 
+class MapData: #Used to keep track of what NPCs, animals and objects move to what maps, and are still alive.
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.npcs = []
+        self.animals = []
+        self.items = []
+        self.vehicles = []
+        self.visited = False
+
 class TiledMap:
     def __init__(self, game, filename):
         self.game = game
