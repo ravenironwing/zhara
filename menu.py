@@ -2039,7 +2039,7 @@ class Dialogue_Menu():
                     self.quest = self.hit.kind['quest'] = self.game.quests[self.quest]['next quest']
                     self.hit.talk_counter = 0
                     self.format_text()
-                if not self.game.quests[self.quest]['rewarded']:
+                elif not self.game.quests[self.quest]['rewarded']:
                     self.game.quests[self.quest]['rewarded'] = True
                     self.game.effects_sounds['fanfare'].play()
                     self.format_response(self.game.quests[self.quest]['reward text'])

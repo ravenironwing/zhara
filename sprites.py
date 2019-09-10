@@ -4047,7 +4047,7 @@ class Portal(pg.sprite.Sprite):
             self.frame = 0
 
 class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
-    def __init__(self, game, obj_center, x, y, w, h, kind, name, map, fixed_rot = None):
+    def __init__(self, game, obj_center, w, h, name, map, fixed_rot = None):
         if 'palm tree' in name:
             self._layer = EFFECTS_LAYER
         elif 'tree' in name:
@@ -4055,10 +4055,14 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         else:
             self._layer = WALL_LAYER
         self.game = game
+        self.w = w
+        self.h = h
         self.map = map
         self.center = obj_center
-        self.kind = kind
+        x = int(self.center.x - (w/2))
+        y = int(self.center.y - (h/2))
         self.name = name
+        self.kind =  BREAKABLES[self.name]
         #if 'large ' in self.name
         self.image_list = self.game.breakable_images[self.name]
         self.scale_factor = 1
@@ -4090,9 +4094,9 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.hit_sound = self.game.effects_sounds[self.kind['hit sound']]
         self.right_hit_sound = self.game.effects_sounds[self.kind['right weapon hit sound']]
         self.break_sound = self.game.effects_sounds[self.kind['break sound']]
-        self.protected = self,kind['protected']
-        self.damage = self,kind['damage']
-        self.knockback = self,kind['knockback']
+        self.protected = self.kind['protected']
+        self.damage = self.kind['damage']
+        self.knockback = self.kind['knockback']
         self.hp = self.kind['health']
         self.items = self.kind['items']
         self.rare_items = self.kind['rare items']

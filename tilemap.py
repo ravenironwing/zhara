@@ -14,8 +14,11 @@ class MapData: #Used to keep track of what NPCs, animals and objects move to wha
         self.y = y
         self.npcs = []
         self.animals = []
+        self.moved_npcs = []
+        self.moved_animals = []
         self.items = []
         self.vehicles = []
+        self.breakable = []
         self.visited = False
 
 class TiledMap:

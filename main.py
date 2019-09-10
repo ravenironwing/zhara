@@ -188,6 +188,7 @@ class Game:
         animal_list = []
         item_list = []
         vehicle_list = []
+        breakable_list = []
         for npc in self.npcs:
             npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
             self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs = npc_list
@@ -200,6 +201,9 @@ class Game:
         for vehicle in self.vehicles:
             vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
             self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles = vehicle_list
+        for breakable in self.breakable:
+            breakable_list.append({'name': breakable.name, 'location': breakable.center, 'w': breakable.w, 'h': breakable.h,  'rotation': breakable.rot})
+            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].breakable = breakable_list
 
     def save(self):
         self.save_sprite_locs()
@@ -835,9 +839,43 @@ class Game:
         #world_mini_map = WorldMiniMap(self, self.map_data_list) # Only uncomment this to create a new overworld map if you edit the old one. Otherwise it will take literally forever to load every time.
         #self.load_map(str(self.map_data_list[int(self.world_location.y)][int(self.world_location.x)]) + '.tmx')
 
+    def on_map(self, sprite):
+        offset = 0
+        if sprite['location'].x <= 0:
+            sprite['location'].x = self.map.width - offset
+            return [False, -1, 0]
+        if sprite['location'].y <= 0:
+            sprite['location'].y = self.map.height - offset
+            return [False, 0, -1]
+        if sprite['location'].x >= self.map.width:
+            sprite['location'].x = offset
+            return [False, 1, 0]
+        if sprite['location'].y >= self.map.height:
+            sprite['location'].y = offset
+            return [False, 0, 1]
+        return [True, 0, 0]
+
     # Used for switching to the next map after you go north, south, east or west at the end of the current map.
     def change_map(self, cardinal = None, coordinate = None, location = None):
         self.save_sprite_locs()
+        # This for loop moves npcs and animals to other maps when they go off the screen.
+        for npc in self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs:
+            temp_loc = self.on_map(npc)
+            if not temp_loc[0]:
+                if self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].visited:
+                    self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].npcs.append(npc)
+                else:
+                    self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].moved_npcs.append(npc)
+                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs.remove(npc)
+        for animal in self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals:
+            temp_loc = self.on_map(animal)
+            if not temp_loc[0]:
+                if self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].visited:
+                    self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].animals.append(animal)
+                else:
+                    self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].moved_animals.append(animal)
+                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals.remove(animal)
+
         self.guard_alerted = False # Makes it so guards stop attacking you after you change maps
         self.player.vel = vec(0, 0)
         self.player.acc = vec(0, 0)
@@ -982,10 +1020,20 @@ class Game:
                 Animal(self, animal['location'].x, animal['location'].y, map, animal['name'], animal['health'])
             for vehicle in self.sprite_data.vehicles:
                 Vehicle(self, vehicle['location'], vehicle['name'], map, vehicle['health'])
+            for breakable in self.sprite_data.breakable:
+                Breakable(self, breakable['location'], breakable['w'], breakable['h'], breakable['name'], map, breakable['rotation'])
             for item in self.sprite_data.items:
                 for item_type in ITEM_TYPE_LIST:
                     if item['name'] in eval(item_type.upper()):
                         Dropped_Item(self, item['location'], item_type, item['name'], map, item['rotation'])
+        else: # Loads animals and NPCs that have moved onto unvisited maps.
+            for npc in self.sprite_data.moved_npcs:
+                if npc['name'] not in companion_names: # Makes it so it doesn't double load your companions.
+                    Npc(self, npc['location'].x, npc['location'].y, map, npc['name'], npc['health'])
+            self.sprite_data.moved_npcs = []
+            for animal in self.sprite_data.moved_animals:
+                Animal(self, animal['location'].x, animal['location'].y, map, animal['name'], animal['health'])
+            self.sprite_data.moved_animals = []
 
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name != None:
@@ -1015,6 +1063,15 @@ class Game:
                         for item_type in ITEM_TYPE_LIST:
                             if item in eval(item_type.upper()):
                                 Dropped_Item(self, obj_center, item_type, item, map, rot)
+                    # Used for destructable plants, rocks, ore veins, walls, etc
+                    for item in BREAKABLES:
+                        if item in tile_object.name:
+                            if '@' in tile_object.name:
+                                temp_item, rot = tile_object.name.split('@')
+                                rot = int(rot)
+                            else:
+                                rot = None
+                            Breakable(self, obj_center, tile_object.width, tile_object.height, item, map, rot)
 
                 # Loads detectors used to detect whether quest items have be delivered to the correct locations.
                 if 'detector' in tile_object.name:  # These are invisible objects used to detect other objects touching them.
@@ -1129,14 +1186,6 @@ class Game:
                 if 'toilet' in tile_object.name:
                     Toilet(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
-                for item in BREAKABLES: # Used for destructable plants, rocks, ore veins, walls, etc
-                    if item in tile_object.name:
-                        if '@' in tile_object.name:
-                            temp_item, rot = tile_object.name.split('@')
-                            rot = int(rot)
-                        else:
-                            rot = None
-                        Breakable(self, obj_center, tile_object.x, tile_object.y, tile_object.width, tile_object.height, BREAKABLES[item], item, map, rot)
                 if 'door' in tile_object.name:  # This block of code positions the player at the correct door when changing maps
                     door = Door(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height, tile_object.name)
@@ -1203,7 +1252,7 @@ class Game:
                         objectx = int(centerx - object_width / 2)
                         objecty = int(centery - object_height / 2)
                         center = vec(centerx, centery)
-                        Breakable(self, center, objectx, objecty, object_width, object_height, BREAKABLES[vein], vein, map)
+                        Breakable(self, center, object_width, object_height, vein, map)
                     for i in range(0, rand_trees):
                         tree = choice(TREE_LIST)
                         centerx = randrange(200, self.map.width - 200)
@@ -1212,7 +1261,7 @@ class Game:
                         objectx = int(centerx - object_width / 2)
                         objecty = int(centery - object_height / 2)
                         center = vec(centerx, centery)
-                        Breakable(self, center, objectx, objecty, object_width, object_height, BREAKABLES[tree], tree, map)
+                        Breakable(self, center, object_width, object_height, tree, map)
                 if self.map_type in ['mountain', 'forest', 'grassland']:
                     rand_plants = randrange(15, 35)
                     for i in range(0, rand_plants):
@@ -1223,7 +1272,7 @@ class Game:
                         objectx = int(centerx - object_width / 2)
                         objecty = int(centery - object_height / 2)
                         center = vec(centerx, centery)
-                        Breakable(self, center, objectx, objecty, object_width, object_height, BREAKABLES[plant], plant, map)
+                        Breakable(self, center, object_width, object_height, plant, map)
                 if self.map_type in ['beach']:
                     rand_plants = randrange(15, 35)
                     for i in range(0, rand_plants):
@@ -1234,7 +1283,7 @@ class Game:
                         objectx = int(centerx - object_width / 2)
                         objecty = int(centery - object_height / 2)
                         center = vec(centerx, centery)
-                        Breakable(self, center, objectx, objecty, object_width, object_height, BREAKABLES[tree], tree, map)
+                        Breakable(self, center, object_width, object_height, tree, map)
                 if self.map_type in ['tundra']:
                     rand_plants = randrange(10, 25)
                     for i in range(0, rand_plants):
@@ -1245,7 +1294,7 @@ class Game:
                         objectx = int(centerx - object_width / 2)
                         objecty = int(centery - object_height / 2)
                         center = vec(centerx, centery)
-                        Breakable(self, center, objectx, objecty, object_width, object_height, BREAKABLES[tree], tree, map)
+                        Breakable(self, center, object_width, object_height, tree, map)
         # Kills breakables that spawn in water
         hits = pg.sprite.groupcollide(self.breakable, self.water, True, False)
         hits = pg.sprite.groupcollide(self.breakable, self.shallows, True, False)

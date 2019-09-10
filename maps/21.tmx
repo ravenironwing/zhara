@@ -1495,7 +1495,7 @@
   <object id="426" name="fire" x="6431.85" y="2212.73" width="63.6364" height="57.5758"/>
   <object id="429" name="fire" x="4010" y="7979" width="43" height="43"/>
   <object id="430" name="fire" x="4395.5" y="7978.5" width="43" height="43"/>
-  <object id="431" name="QU_A friend for Loella_kimmy" x="2849.55" y="1461.06" width="90.9092" height="87.8789"/>
+  <object id="431" name="kimmy" x="2849.55" y="1461.06" width="90.9092" height="87.8789"/>
   <object id="435" name="butterfly ideopsis" x="1792.24" y="6243.85" width="29" height="27"/>
   <object id="436" name="butterfly ideopsis" x="4615.65" y="5947.5" width="29" height="27"/>
   <object id="457" name="sheep" x="6532" y="6315" width="36" height="34"/>
@@ -1560,8 +1560,6 @@
   <object id="660" name="carrot plant" x="2058" y="6383.33" width="41.3333" height="41.3333"/>
   <object id="661" name="carrot plant" x="2047.33" y="6530" width="41.3333" height="41.3333"/>
   <object id="693" name="tamolin" x="3234" y="6303" width="60" height="62"/>
-  <object id="730" name="QC_A fish for Loella_goldfish" x="6832" y="4127" width="25" height="24"/>
-  <object id="731" name="QC_A friend for Loella_kimmy" x="6647" y="3654" width="72" height="61"/>
   <object id="743" name="jamal" x="4828" y="7606" width="66" height="64"/>
   <object id="768" name="green tree" x="6306.5" y="6836.33" width="45" height="42"/>
   <object id="771" name="green tree" x="1413.5" y="147" width="45" height="42"/>
