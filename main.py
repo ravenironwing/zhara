@@ -1027,6 +1027,9 @@ class Game:
                     if item['name'] in eval(item_type.upper()):
                         Dropped_Item(self, item['location'], item_type, item['name'], map, item['rotation'])
         else: # Loads animals and NPCs that have moved onto unvisited maps.
+            companion_names = []
+            for companion in self.companions:
+                companion_names.append(companion.species)
             for npc in self.sprite_data.moved_npcs:
                 if npc['name'] not in companion_names: # Makes it so it doesn't double load your companions.
                     Npc(self, npc['location'].x, npc['location'].y, map, npc['name'], npc['health'])
@@ -1981,7 +1984,7 @@ class Game:
         now = pg.time.get_ticks() # Only updates HUD info every 10 cycles to help reduce lag.
         if now - self.last_hud_update > FPS * 10:
             if self.player.in_vehicle:
-                self.hud_health = self.player.vehicle.health / self.player.vehicle.maxhealth
+                self.hud_health = self.player.vehicle.health / self.player.vehicle.max_health
                 self.hud_health_num = self.player.vehicle.health
             elif self.player.possessing != None:
                 self.hud_health = self.player.possessing.health / self.player.possessing.max_health
