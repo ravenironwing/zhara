@@ -371,6 +371,8 @@ class Game:
         #self.tank_in_water = pg.image.load(path.join(img_folder, TANK_IN_WATER)).convert_alpha()
         #self.sunken_tank = pg.image.load(path.join(img_folder, SUNKEN_TANK)).convert_alpha()
         self.lock_image = pg.image.load(path.join(img_folder, 'lock.png')).convert_alpha()
+        self.lock_keyway_image = pg.image.load(path.join(img_folder, 'lock_keyway.png')).convert_alpha()
+        self.keyed_keyway_image = pg.image.load(path.join(img_folder, 'keyed_keyway.png')).convert_alpha()
         self.lock_pick_image = pg.image.load(path.join(img_folder, 'lock_pick.png')).convert_alpha()
         # creates a dictionary of animal images. This is not in the settings file like the others because of the order it needs to import info.
         ANIMAL_IMAGES = {}

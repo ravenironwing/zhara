@@ -1029,8 +1029,10 @@ class Lock_Menu():
         self.lock = lock
         self.key_name = self.lock.name + ' chest key'
         self.menu_sprites = pg.sprite.Group()
+        self.keyway_sprite = pg.sprite.Group()
         self.running = True
         self.key_unlocked = False
+        self.lock_radius = self.game.lock_image.get_width() / 2
         if not self.lock.inventory['locked']: # Guards against bugs that might trigger the lock menu for unlocked chests
             self.running = False
         if self.key_name in self.game.player.inventory['items']:
@@ -1038,10 +1040,13 @@ class Lock_Menu():
             self.lock.inventory['locked'] = False
             self.game.effects_sounds['unlock'].play()
             self.game.player.stats['lock picking'] += 2
+            self.keyway = Lock_Keyway(self.game, self, True)
+            self.keyway.turn = True
             self.label_menu = Text(self, "It looks like you have the right key.", default_font, 30, WHITE, 30, 10, "topleft")
         elif 'lock pick' in self.game.player.inventory['items']:
+            self.keyway = Lock_Keyway(self.game, self)
             self.pick = Lock_Pick(self.game, self)
-            self.label_menu = Text(self, "Pick Lock: Use A/D to rotate lock pick and SPACE to try to open the lock.", default_font, 30, WHITE, 30, 10, "topleft")
+            self.label_menu = Text(self, "Pick Lock: Use W/S to move lock pick and SPACE to try to open the lock.", default_font, 30, WHITE, 30, 10, "topleft")
         else:
             self.label_menu = Text(self, 'You need a key or lock pick to open this lock!', default_font, 30, WHITE, 30, 100, "topleft")
         self.menu_sprites.add(self.label_menu)
@@ -1069,6 +1074,11 @@ class Lock_Menu():
                     self.pick.update()
             except:
                 pass
+            try:
+                if self.keyway.alive():
+                    self.keyway.update()
+            except:
+                pass
             self.events()
             self.draw()
         self.game.in_lock_menu = self.game.in_menu = False
@@ -1078,7 +1088,8 @@ class Lock_Menu():
 
     def draw(self):
         self.game.screen.fill(BLACK)
-        self.game.screen.blit(self.game.lock_image, (self.game.screen_width/2 - 195, self.game.screen_height/2 - 275))
+        self.game.screen.blit(self.game.lock_image, (self.game.screen_width/2 - self.lock_radius, self.game.screen_height/2 - self.lock_radius))
+        self.keyway_sprite.draw(self.game.screen)
         self.menu_sprites.draw(self.game.screen)
         if self.key_unlocked:
             self.draw_text("You unlocked the chest with the key.", default_font, 60, WHITE, 120, self.game.screen_height/2, "topleft")
@@ -1101,10 +1112,18 @@ class Lock_Pick(pg.sprite.Sprite):
         self.groups = self.mother.menu_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        self.surface_width = 30
+        self.surface_height = 600
+        self.surface = pg.Surface((self.surface_width, self.surface_height)).convert()
+        self.surface.fill(TRANSPARENT)
+        self.surface.set_colorkey(TRANSPARENT)  # makes transparent
         self.image_orig = self.game.lock_pick_image
-        self.image = self.image_orig.copy()
+        #self.surface.blit(self.image_orig, (5, -100))
+        self.image = self.surface
         self.rect = self.image.get_rect()
-        self.rect.center = (self.game.screen_width/2, self.game.screen_height/2)
+        self.rect.center = (self.game.screen_width/2, self.game.screen_height/2 + self.surface_height/2 + 3)
+        self.old_center = self.rect.center
+        self.pos = vec(0, self.rect.center[1])
         self.rot = 0
         self.rot_speed = 0
         self.combo = self.mother.lock.inventory['combo']
@@ -1112,18 +1131,21 @@ class Lock_Pick(pg.sprite.Sprite):
         self.move = False
         self.last_move = 0
         self.hp = 25
+        self.toggle = 5
+        self.y_offset = 0
 
     def get_keys(self):
         self.rot_speed = 0
         self.move = False
         keys = pg.key.get_pressed()
-        if keys[pg.K_a]:
-            self.rot_speed = PLAYER_ROT_SPEED
-            self.move = True
-        if keys[pg.K_d]:
+        if keys[pg.K_w]:
             self.rot_speed = -PLAYER_ROT_SPEED
             self.move = True
+        if keys[pg.K_s]:
+            self.rot_speed = PLAYER_ROT_SPEED
+            self.move = True
         if keys[pg.K_SPACE]:
+            self.toggle = -self.toggle
             self.pick()
         if self.move:
             now = pg.time.get_ticks()
@@ -1135,11 +1157,10 @@ class Lock_Pick(pg.sprite.Sprite):
                     choice(self.game.lock_picking_sounds).play()
 
     def pick(self):
+        self.pos.x += self.toggle
+        self.y_offset += self.toggle
         if abs(self.rot - self.combo) < self.difficulty:
-            self.mother.lock.inventory['locked'] = False
-            self.game.effects_sounds['unlock'].play()
-            self.game.player.stats['lock picking'] += 20 / self.difficulty
-            self.kill()
+            self.mother.keyway.turn = True
         else:
             self.hp -= 1
             choice(self.game.lock_picking_sounds).play()
@@ -1147,11 +1168,61 @@ class Lock_Pick(pg.sprite.Sprite):
                 self.game.player.inventory['items'].remove('lock pick')
                 self.mother.broken = True
                 choice(self.game.lock_picking_sounds).play()
+                self.mother.keyway.kill()
                 self.kill()
 
     def update(self):
+        if self.mother.keyway.open:
+            self.mother.lock.inventory['locked'] = False
+            self.game.effects_sounds['unlock'].play()
+            self.game.player.stats['lock picking'] += 20 / self.difficulty
+            self.kill()
         self.get_keys()
         self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+        y_disp = abs(self.rot - 180) + 160
+        self.pos.y = self.old_center[1] + y_disp + self.y_offset
+        self.surface.fill(BLACK)
+        self.surface.set_colorkey(BLACK)  # makes transparent
+        self.surface.blit(self.image_orig, (5, 70 -y_disp))
+        self.image = self.surface
+        self.rect = self.image.get_rect()
+        pos =  (self.old_center) + vec(self.pos.x, 0)
+        self.rect.center = pos
+
+
+class Lock_Keyway(pg.sprite.Sprite):
+    def __init__(self, game, mother, key = False):
+        self.mother = mother
+        self.groups = self.mother.keyway_sprite
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.keyway_radius = self.game.lock_keyway_image.get_width() / 2
+        if key:
+            self.image_orig = self.game.keyed_keyway_image
+        else:
+            self.image_orig = self.game.lock_keyway_image
+        self.image = self.image_orig.copy()
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.game.screen_width/2 - 2, self.game.screen_height/2 + 17)
+        self.rot = 0
+        self.last_frame = 0
+        self.turn = False
+        self.open = False
+
+    def animate(self):
+        if self.rot > -90:
+            self.rot -= 5
+            if self.rot < -91:
+                self.rot = -91
+        else:
+            self.open = True
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if self.turn:
+            if now - self.last_frame > 1:
+                self.last_fram = now
+                self.animate()
         self.image = pg.transform.rotate(self.game.lock_pick_image, self.rot)
         new_image = pg.transform.rotate(self.image_orig, self.rot)
         old_center = self.rect.center
