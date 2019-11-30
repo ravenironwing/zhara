@@ -42,3 +42,5 @@ KING_DRACONIUS_DLG = ["SAMERACE I see you've come here to join the royal guard. 
 KING_DRACONIUS_DLG2 = ["Hello my faithful servant. You are always welcome here at the palace."]
 MAX_DLG = ["Welcome to the Dancing Dragon. What can I get for you today?"]
 IMMORTUI_DLG = ["SAMERACE Brains! Brains! Must eat brains!", "SAMERACE Grrr, grr, grrr!", "SAMERACE Brains, grrr."]
+MACFARLEY_DLG = ["Go away. I am a fish person. I will eat your face!"]
+MACFARLEY_DLG2 = ["I said go away!"]

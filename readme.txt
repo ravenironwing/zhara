@@ -16,7 +16,7 @@ You also need the following libraries:
 pytmx
 pyscroll
 To install run these commands in the command prompt/terminal:
-  pip3 install pygame 2.0.0dev3
+  pip3 install pygame==2.0.0dev4
 	pip3 install pytmx
   pip3 install pyscroll
 Game Play:

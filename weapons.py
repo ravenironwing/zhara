@@ -2,7 +2,8 @@ import pygame as pg
 vec = pg.math.Vector2
 
 BULLET_SIZES = ['sm', 'md', 'lg', 'xl', 'ar']
-ENCHANTED_BULLETS = ['2', '3', '5', '6', '7', '8', '9']
+ENCHANTED_BULLETS = ['2', '3', '5', '6', '7', '8', '9', '12']
+ROB_HEALTH_BULLETS = ['12']
 FIRE_BULLETS = ['3', '5', '6', '9']
 SHOCK_BULLETS = ['2', '7', '8', '9']
 EXPLOSIVE_BULLETS = ['4', '5', '8', '10']
@@ -443,6 +444,30 @@ WEAPONS['steel sword'] = {'type': 'sword','gun': False, 'value': 200,
                       'armor': 0,
                       'materials': {'steel ingot': 2}, 'upgrade': {'steel ingot': 1},
                       'weight': 4}
+
+WEAPONS['damascus steel sword'] = {'type': 'sword','gun': False, 'value': 400,
+                      'bullet_speed': 0,
+                      'bullet_lifetime': 0,
+                      'magazine size': 0,
+                      'reload speed': 0,
+                      'rate': 180,
+                      'auto': False,
+                      'kickback': 0,
+                      'knockback': 13,
+                      'spread': 0,
+                      'damage': 5,
+                      'melee damage': 30,
+                      'bullet_size': 'sm1',
+                      'bullet_count': 0,
+                      'walk': 'WALK',
+                      'melee animation': 'PUNCH',
+                      'grip': 'CP_SWORD_GRIP',
+                      'image': 42,
+                      'offset': vec(0, 0),
+                      'armor': 0,
+                      'materials': {'steel ingot': 2, 'iron ingot': 1, 'cole': 2}, 'upgrade': {'steel ingot': 2},
+                      'weight': 3.5}
+
 WEAPONS['shovel'] = {'type': 'sword','gun': False, 'value': 20,
                       'bullet_speed': 0,
                       'bullet_lifetime': 0,
@@ -487,6 +512,29 @@ WEAPONS['aetherial sword'] = {'type': 'sword','gun': False, 'value': 1700,
                       'armor': 0,
                       'materials': {'demon dust': 1, 'ectoplasm': 3, 'sage': 1, 'white crystal': 3}, 'upgrade': {'white crystal': 1, 'ectoplasm': 1},
                       'weight': 0}
+
+WEAPONS['enchanted wraith sword'] = {'type': 'sword','gun': False, 'value': 1000,
+                      'bullet_speed': 400,
+                      'bullet_lifetime': 200,
+                      'magazine size': 20,
+                      'reload speed': 1,
+                      'rate': 100,
+                      'auto': False,
+                      'kickback': 0,
+                      'knockback': 12,
+                      'spread': 10,
+                      'damage': 10,
+                      'melee damage': 20,
+                      'bullet_size': 'md12',
+                      'bullet_count': 2,
+                      'walk': 'WALK',
+                      'melee animation': 'PUNCH',
+                      'grip': 'CP_SWORD_GRIP',
+                      'image': 41,
+                      'offset': vec(0, 0),
+                      'armor': 0,
+                      'weight': 0}
+
 WEAPONS['Yaizhang'] = {'type': 'sword','gun': False,
                       'bullet_speed': 0,
                       'bullet_lifetime': 0,

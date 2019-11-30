@@ -301,7 +301,8 @@ class Turret(pg.sprite.Sprite):
                 if snd.get_num_channels() > 2:
                     snd.stop()
                 snd.play()
-            MuzzleFlash(self.game, pos)
+            if WEAPONS[self.equipped]['gun']:
+                MuzzleFlash(self.game, pos)
 
     def update(self):
         if self.occupied == True:
@@ -1359,7 +1360,8 @@ class Player(pg.sprite.Sprite):
                 self.play_weapon_sound()
                 self.stats['marksmanship shots fired'] += 1
                 self.stats['marksmanship accuracy'] = self.stats['marksmanship hits'] / self.stats['marksmanship shots fired']
-            MuzzleFlash(self.game, pos)
+            if WEAPONS[self.equipped[self.weapon_hand]]['gun']:
+                MuzzleFlash(self.game, pos)
         else:
             self.out_of_ammo()
 
@@ -2675,40 +2677,54 @@ class Npc(pg.sprite.Sprite):
                         collide(self)
 
                         if self.offensive:
-                            if target_dist.length_squared() < self.melee_range**2:
-                                self.approach_vector = vec(1, 0)
-                                now = pg.time.get_ticks()
-                                if now - self.last_melee > randrange(1000, 3000):
-                                    self.last_melee = now
-                                    self.pre_melee()
-                            elif True not in [self.reloading, self.hit_wall, self.swimming]:
-                                if self.gun:
-                                    if target_dist.length_squared() < self.weapon_range ** 2:
-                                        if self.bow:
-                                            if self.arrow != None:
-                                                self.shoot()
-                                                self.arrow.kill()
-                                                self.arrow = None
-                                            else:
-                                                self.reloading = True
-                                                self.animating_reload = True
-                                        else:
-                                            self.shoot()
-                                        if self.bullets_shot >= self.mag_size:
-                                            self.bullets_shot = 0
-                                            self.reloading = True
-                                            self.animating_reload = True
-                                else:
-                                    if target_dist.length_squared() < self.detect_radius ** 2:
-                                        magic_chance = randrange(0, 100)
-                                        if magic_chance == 1:
-                                            self.cast_spell()
-                            if self.game.player.in_vehicle:
-                                if target_dist.length_squared() < 3*self.melee_range**2:
+                            if self.aggression not in ['fwd', 'fwp']:
+                                if target_dist.length_squared() < self.melee_range**2:
+                                    self.approach_vector = vec(1, 0)
                                     now = pg.time.get_ticks()
                                     if now - self.last_melee > randrange(1000, 3000):
                                         self.last_melee = now
                                         self.pre_melee()
+                                elif True not in [self.reloading, self.hit_wall, self.swimming]:
+                                    if self.gun:
+                                        if target_dist.length_squared() < self.weapon_range ** 2:
+                                            if self.bow:
+                                                if self.arrow != None:
+                                                    self.shoot()
+                                                    self.arrow.kill()
+                                                    self.arrow = None
+                                                else:
+                                                    self.reloading = True
+                                                    self.animating_reload = True
+                                            else:
+                                                self.shoot()
+                                            if self.bullets_shot >= self.mag_size:
+                                                self.bullets_shot = 0
+                                                self.reloading = True
+                                                self.animating_reload = True
+                                    else:
+                                        if target_dist.length_squared() < self.detect_radius ** 2:
+                                            magic_chance = randrange(0, 100)
+                                            if magic_chance == 1:
+                                                self.cast_spell()
+                                if self.game.player.in_vehicle:
+                                    if target_dist.length_squared() < 3*self.melee_range**2:
+                                        now = pg.time.get_ticks()
+                                        if now - self.last_melee > randrange(1000, 3000):
+                                            self.last_melee = now
+                                            self.pre_melee()
+                            elif not self.running:
+                                if target_dist.length_squared() < self.melee_range**2:
+                                    self.approach_vector = vec(1, 0)
+                                    now = pg.time.get_ticks()
+                                    if self.last_melee != 0:
+                                        if now - self.last_melee > 20000: # Makes it so the villagers stop attacking you if you've left them alone for 20 seconds.
+                                            self.offensive = False
+                                            self.last_melee = 0
+                                    if self.offensive:
+                                        if now - self.last_melee > 3000:
+                                            self.last_melee = now
+                                            self.pre_melee()
+
                 if self.health <= 0:
                     self.death()
 
@@ -2771,6 +2787,7 @@ class Npc(pg.sprite.Sprite):
                 self.driver.temp_equipped = copy.deepcopy(self.driver.equipped)
                 self.driver.equipped = self.equipped
                 self.driver.equipped['magic'] = self.driver.temp_equipped['magic']
+                self.driver.rot = self.rot
                 if demon:
                     for item_type in ITEM_TYPE_LIST:
                         for item in self.inventory[item_type]:
@@ -2810,7 +2827,10 @@ class Npc(pg.sprite.Sprite):
             self.driver.human_body.update_animations()
             if self.driver.has_dragon_body:
                 self.driver.dragon_body.update_animations()
-            self.driver.pos = self.driver.pos + (80, 80)
+            self.pos = self.driver.pos
+            self.rect.center = self.driver.pos
+            self.driver.pos = self.driver.pos + vec(40, 0).rotate(-self.driver.rot)
+            self.rot = self.driver.rot
             self.driver = None
             self.game.group.change_layer(self.body, MOB_LAYER)
             self.body.update_animations()
@@ -2950,6 +2970,8 @@ class Npc(pg.sprite.Sprite):
                     Spell_Animation(self.game, self.equipped['magic'], self.pos, self.rot, self.vel)
 
             else:
+                pos = vec(0, 0)
+                pos = self.pos + vec(60, 0).rotate(-self.rot)
                 self.game.effects_sounds[MAGIC[self.equipped['magic']]['sound']].play()
                 Spell_Animation(self.game, self.equipped['magic'], self.pos, self.rot, self.vel)
                 if 'fireballs' in MAGIC[self.equipped['magic']]:
@@ -2957,6 +2979,12 @@ class Npc(pg.sprite.Sprite):
                     damage = MAGIC[self.equipped['magic']]['damage']
                     for i in range(0, balls):
                         Fireball(self, self.game, self.pos, self.rot + (36 * i), damage, 30, 1300, 500, self.vel, 'fire', True, self.in_flying_vehicle)
+                if 'summon' in MAGIC[self.equipped['magic']]:
+                    if MAGIC[self.equipped['magic']]['summon'] in PEOPLE:
+                        summoned = Npc(self.game, self.pos.x + 128, self.pos.y, self.game.map, MAGIC[self.equipped['magic']]['summon'])
+                        summoned.make_companion()
+                    elif MAGIC[self.equipped['magic']]['summon'] in ANIMALS:
+                        Animal(self.game, pos.x, pos.y, self.game.map, MAGIC[self.equipped['magic']]['summon'])
 
     def death(self):
         if self in self.game.companions:
@@ -3106,7 +3134,8 @@ class Npc(pg.sprite.Sprite):
             Bullet(self, self.game, pos, dir, self.rot, self.equipped[self.weapon_hand], True, self.in_flying_vehicle)
             self.bullets_shot += 1
             self.play_weapon_sound()
-        MuzzleFlash(self.game, pos)
+        if WEAPONS[self.equipped[self.weapon_hand]]['gun']:
+            MuzzleFlash(self.game, pos)
 
 
     def play_weapon_sound(self, default = ''):
@@ -3580,6 +3609,7 @@ class Bullet(pg.sprite.Sprite):
         self.energy = False
         self.fire = False
         self.shock = False
+        self.rob_health = False
         for bullet in EXPLOSIVE_BULLETS:
             if bullet in self.size:
                 self.exp = True
@@ -3590,12 +3620,16 @@ class Bullet(pg.sprite.Sprite):
         for bullet in ENCHANTED_BULLETS:
             if bullet in self.size:
                 self.energy = True
+        for bullet in ROB_HEALTH_BULLETS:
+            if bullet in self.size:
+                self.rob_health = True
         for bullet in FIRE_BULLETS:
             if bullet in self.size:
                 self.fire = True
         for bullet in SHOCK_BULLETS:
             if bullet in self.size:
-                self.shock = True
+                if '12' not in self.size:
+                    self.shock = True
 
 
     def update(self):
@@ -3620,6 +3654,10 @@ class Bullet(pg.sprite.Sprite):
                 self.explode('fire')
             elif self.shock:
                 self.explode('shock')
+            elif self.rob_health:
+                if self.target != self:
+                    self.mother.add_health(int(self.damage / 2))
+                self.explode()
             else:
                 self.explode()
         else:
@@ -3627,6 +3665,9 @@ class Bullet(pg.sprite.Sprite):
                 Stationary_Animated(self.game, self.target.pos, 'fire', 1000, True)
             if self.shock:
                 Stationary_Animated(self.game, self.target.pos, 'shock', 333)
+            if self.rob_health:
+                if self.target != self:
+                    self.mother.add_health(int(self.damage / 2))
             self.kill()
 
     def explode(self, after_effect = None):
@@ -3692,7 +3733,7 @@ class Dropped_Item(pg.sprite.Sprite):
             self.floats = True
 
         # Controls dropping live animals
-        if 'live' in self.item:
+        if self.item[:4] == 'live':
             temp_item = self.item.replace('live ', '')
             if 'enchanted' in temp_item:
                 temp_item = temp_item[:-5]
@@ -4104,9 +4145,9 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.break_type = self.kind['break type']
         self.wobble = self.kind['wobble']
         self.random_drop_number = self.kind['random drop number']
+        self.rect.center = self.trunk.rect.center
 
     def update(self):
-        self.rect.center = self.trunk.rect.center
         if self.hit and not self.dead:
             now = pg.time.get_ticks()
             if now - self.last_move > 80:

@@ -169,7 +169,7 @@ GUARD_WEAPONS = ['steel sword', 'steel mace']
 GUARD_HATS = ['guard helmet', 'steel helmet']
 GUARD_GLOVES = ['steel gauntlets', 'leather gauntlets']
 GUARD_BOTTOMS = ['chainmail leggings F', 'leather leggings F', 'chainmail leggings M', 'leather leggings M']
-PEOPLE['villager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
+PEOPLE['villager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 5, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'osidine',
     'dialogue': 'random VILLAGER_DLG', 'store': None,

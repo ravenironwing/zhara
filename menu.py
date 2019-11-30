@@ -594,24 +594,25 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
 
 
     def drop_item(self):
-        # Unequips item if you drop one you are equipping and don't have another one.
-        number_of_each = 0
-        for i, item in enumerate(self.character.inventory[self.item_type]):
-            if item == self.selected_item.text:
-                number_of_each += 1
-        if number_of_each == 1:
-            if self.character.equipped[self.item_type] == self.selected_item.text:
-                self.character.equipped[self.item_type] = None
-            elif self.character.equipped['weapons2'] == self.selected_item.text: # Unequips dropped secondary weapon.
-                self.character.equipped['weapons2'] = None
-        # Removes dropped item from inventory
-        for i, item in enumerate(self.character.inventory[self.item_type]):
-            if item == self.selected_item.text:
-                dropped_item = Dropped_Item(self.game, self.character.pos + vec(randrange(-50, 50), randrange(-100, 100)), self.item_type, item, self.game.previous_map)
-                self.character.inventory[self.item_type][i] = None
-                self.selected_item.text = 'None'  # Makes it so it doesn't drop more than one of the same item.
-        remove_nones(self.character.inventory[self.item_type])
-        self.list_items()
+        if self.item_type != 'magic':
+            # Unequips item if you drop one you are equipping and don't have another one.
+            number_of_each = 0
+            for i, item in enumerate(self.character.inventory[self.item_type]):
+                if item == self.selected_item.text:
+                    number_of_each += 1
+            if number_of_each == 1:
+                if self.character.equipped[self.item_type] == self.selected_item.text:
+                    self.character.equipped[self.item_type] = None
+                elif self.character.equipped['weapons2'] == self.selected_item.text: # Unequips dropped secondary weapon.
+                    self.character.equipped['weapons2'] = None
+            # Removes dropped item from inventory
+            for i, item in enumerate(self.character.inventory[self.item_type]):
+                if item == self.selected_item.text:
+                    dropped_item = Dropped_Item(self.game, self.character.pos + vec(randrange(-50, 50), randrange(-100, 100)), self.item_type, item, self.game.previous_map)
+                    self.character.inventory[self.item_type][i] = None
+                    self.selected_item.text = 'None'  # Makes it so it doesn't drop more than one of the same item.
+            remove_nones(self.character.inventory[self.item_type])
+            self.list_items()
 
     def right_equip(self, item):
         if self.character.equipped[self.item_type] == item.text:  # Unequipping
@@ -1163,6 +1164,7 @@ class Lock_Pick(pg.sprite.Sprite):
             self.mother.keyway.turn = True
         else:
             self.hp -= 1
+            self.mother.keyway.rot += self.toggle
             choice(self.game.lock_picking_sounds).play()
             if self.hp < 0:
                 self.game.player.inventory['items'].remove('lock pick')

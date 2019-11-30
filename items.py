@@ -19,7 +19,7 @@ ITEMS['potion of major magica'] = {'alchemy': True, 'magica': 75, 'image': 2, 'w
 ITEMS['potion of minor stamina'] = {'alchemy': True, 'stamina': 20, 'image': 5, 'weight': 0.5, 'materials': {'rosemary':1, 'empty bottle':1}, 'value': 30}
 ITEMS['potion of moderate stamina'] = {'alchemy': True, 'stamina': 40, 'image': 6, 'weight': 0.7, 'materials': {'dead green moth':1, 'oregano':1, 'empty bottle':1}, 'value': 60}
 ITEMS['potion of major stamina'] = {'alchemy': True, 'stamina': 75, 'image': 7, 'weight': 1, 'materials': {'dead snake':1, 'dead butterfly ideopsis':1, 'empty bottle':1}, 'value': 120}
-ITEMS['potion of zombie cure'] = {'alchemy': True, 'change race': 'human', 'image': 9, 'weight': 0.5, 'materials': {'zombie extract':1, 'sage':1, 'sulfur':1, 'empty bottle':1}, 'value': 1000}
+ITEMS['humanize potion'] = {'alchemy': True, 'change race': 'human', 'image': 9, 'weight': 0.5, 'materials': {'zombie extract':1, 'sage':1, 'sulfur':1, 'empty bottle':1}, 'value': 1000}
 ITEMS['potion of feminization'] = {'alchemy': True, 'change sex': 'female', 'image': 8, 'weight': 0.5, 'materials': {'dead pink moth':1, 'giant ant eggs':1, 'rosemary':1, 'empty bottle':1}, 'value': 5000}
 ITEMS['potion of masculinization'] = {'alchemy': True, 'change sex': 'male', 'image': 7, 'weight': 0.5, 'materials': {'dead bluefish':1, 'sulphur':1, 'dead snake':1, 'empty bottle':1}, 'value': 5000}
 

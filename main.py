@@ -961,19 +961,26 @@ class Game:
 
     def garbage_collect(self): # This block of code removes everything in memory from previous maps
         for sprite in self.all_sprites:
-            if sprite in self.companions:
-                pass
-            elif sprite in self.companion_bodies:
-                pass
-            else:
+            if self.player.possessing:
+                if sprite in [self.player.possessing, self.player.possessing.body]:
+                    continue
+            if self.player.in_vehicle:
                 try:
-                    if sprite not in [self.player, self.player.body, self.player.vehicle, self.player.vehicle.turret, self.player.possessing]:
-                        sprite.kill()
-                        del sprite
+                    if sprite in [self.player.vehicle, self.player.vehicle.turret]:
+                        continue
                 except:
-                    if sprite not in [self.player, self.player.body, self.player.vehicle, self.player.possessing]:
-                        sprite.kill()
-                        del sprite
+                    if sprite in [self.player.vehicle]:
+                        continue
+            if sprite in self.companions:
+                continue
+            elif sprite in self.companion_bodies:
+                continue
+            elif sprite in [self.player, self.player.human_body, self.player.dragon_body, self.player.body]:
+                continue
+            else:
+                sprite.kill()
+                del sprite
+
         for sprite in self.all_static_sprites:
             sprite.kill()
             del sprite
