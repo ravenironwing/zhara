@@ -82,7 +82,7 @@ class Menu():  # used as the parent class for other menus.
         self.printable_stat_list = []
         # These items are changed for inherrited menus.
         self.exit_keys = [pg.K_e]  # The keys used to enter/exit the menu.
-        self.action_keys = [pg.K_b, pg.K_x]
+        self.action_keys = [pg.K_b, pg.K_x, pg.K_y]
         self.spacing = 20  # Spacing between headings
         self.heading_list = ['Heading1', 'Heading2']  # This is the list of headings
 
@@ -118,6 +118,10 @@ class Menu():  # used as the parent class for other menus.
                 if event.key == self.action_keys[1]:  # drop/sell item
                     if self.selected_item != None:
                         self.drop_item()
+                        self.clear_item_info()
+                if event.key == self.action_keys[2]:  # place item
+                    if self.selected_item != None:
+                        self.place_item()
                         self.clear_item_info()
             if event.type == pg.MOUSEBUTTONDOWN:  # Clears off pictures and stats from previously clicked item when new item is clicked.
                 self.mouse_click = pg.mouse.get_pressed()
@@ -219,6 +223,9 @@ class Menu():  # used as the parent class for other menus.
         pass
 
     def drop_item(self):
+        pass
+
+    def place_item(self):
         pass
 
     def right_equip(self, item):
@@ -608,7 +615,28 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
             # Removes dropped item from inventory
             for i, item in enumerate(self.character.inventory[self.item_type]):
                 if item == self.selected_item.text:
-                    dropped_item = Dropped_Item(self.game, self.character.pos + vec(randrange(-50, 50), randrange(-100, 100)), self.item_type, item, self.game.previous_map)
+                    dropped_item = Dropped_Item(self.game, self.character.pos + vec(randrange(-50, 50), randrange(-100, 100)), self.item_type, item)
+                    self.character.inventory[self.item_type][i] = None
+                    self.selected_item.text = 'None'  # Makes it so it doesn't drop more than one of the same item.
+            remove_nones(self.character.inventory[self.item_type])
+            self.list_items()
+
+    def place_item(self):
+        if self.item_type != 'magic':
+            # Unequips item if you drop one you are equipping and don't have another one.
+            number_of_each = 0
+            for i, item in enumerate(self.character.inventory[self.item_type]):
+                if item == self.selected_item.text:
+                    number_of_each += 1
+            if number_of_each == 1:
+                if self.character.equipped[self.item_type] == self.selected_item.text:
+                    self.character.equipped[self.item_type] = None
+                elif self.character.equipped['weapons2'] == self.selected_item.text: # Unequips dropped secondary weapon.
+                    self.character.equipped['weapons2'] = None
+            # Removes dropped item from inventory
+            for i, item in enumerate(self.character.inventory[self.item_type]):
+                if item == self.selected_item.text:
+                    dropped_item = Dropped_Item(self.game, self.character.pos + vec(50, 0).rotate(-self.character.rot), self.item_type, item, self.character.rot - 90)
                     self.character.inventory[self.item_type][i] = None
                     self.selected_item.text = 'None'  # Makes it so it doesn't drop more than one of the same item.
             remove_nones(self.character.inventory[self.item_type])
@@ -804,7 +832,7 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         self.draw_text(str(self.character.inventory['gold']) + " gold in inventory.", default_font, 25, WHITE, 20, self.game.screen_height - 120, "topleft")
         if self.character == self.game.player:
             self.draw_text("Armor Rating: " + str(self.character.stats['armor']) + "   Carry Weight: " + str(self.character.stats['weight']) + "  Max Carry Weight: " + str(self.character.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
-        self.draw_text("Right Click: Equip/Unequip   Left Click: Equip second weapon/View Item    B: use Items    X: drop selected item    E: Exit Menu   ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Right Click: Equip/Unequip   Left Click: Equip second weapon/View Item   B: use Items   X: drop selected item  Y: place item  E: Exit Menu   ESC: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 
 

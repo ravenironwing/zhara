@@ -385,6 +385,8 @@ ZOMBIELAND_ANIMALS = ['brown bird', 'immortui', 'immortui', 'immortui', 'rabbit'
 TOWN_ANIMALS = ['brown bird', 'rabbit', 'pink moth', 'green moth', 'butterfly ideopsis', 'garden lizard']
 TUNDRA_ANIMALS = ['rabbit', 'ice golem']
 DESERT_ANIMALS = ['red wyvern', 'demon', 'giant ant', 'snake', 'garden lizard', 'spider', 'hawk']
+ANT_TUNNEL_ANIMALS = ['giant ant', 'rabbit']
+CAVE_ANIMALS = ['giant ant', 'rabbit', 'snake', 'spider', 'skeleton', 'immortui']
 
 # Created using the NPC designer
 PEOPLE['sandy'] = {'name': 'Sandy', 'dead': False, 'protected': True, 'health': 150, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (280, 320), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'male', 'race': 'shaktele', 'dialogue': 'random VILLAGER_DLG', 'store': None, 'inventory': {'weapons': ['steel dagger'], 'weapons2': [None], 'tops': ['pink dress top'], 'bottoms': ['chainmail leggings F'], 'hats': ['grey baseball hat'], 'hair': ['dreadlocks'], 'shoes': ['black combat'], 'gloves': [None], 'items': ['brick'], 'magic': ['fireball'], 'gold': 10}, 'animations': {None}, 'guarded': False}

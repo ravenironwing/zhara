@@ -189,21 +189,38 @@ class Game:
         item_list = []
         vehicle_list = []
         breakable_list = []
-        for npc in self.npcs:
-            npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
-            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs = npc_list
-        for animal in self.animals:
-            animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
-            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals = animal_list
-        for item in self.dropped_items:
-            item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
-            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].items = item_list
-        for vehicle in self.vehicles:
-            vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
-            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles = vehicle_list
-        for breakable in self.breakable:
-            breakable_list.append({'name': breakable.name, 'location': breakable.center, 'w': breakable.w, 'h': breakable.h,  'rotation': breakable.rot})
-            self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].breakable = breakable_list
+        if not self.underworld:
+            for npc in self.npcs:
+                npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
+                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs = npc_list
+            for animal in self.animals:
+                animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
+                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals = animal_list
+            for item in self.dropped_items:
+                item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
+                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].items = item_list
+            for vehicle in self.vehicles:
+                vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
+                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles = vehicle_list
+            for breakable in self.breakable:
+                breakable_list.append({'name': breakable.name, 'location': breakable.center, 'w': breakable.w, 'h': breakable.h,  'rotation': breakable.rot})
+                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].breakable = breakable_list
+        else:
+            for npc in self.npcs:
+                npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
+                self.underworld_sprite_data_dict[self.previous_map].npcs = npc_list
+            for animal in self.animals:
+                animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
+                self.underworld_sprite_data_dict[self.previous_map].animals = animal_list
+            for item in self.dropped_items:
+                item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
+                self.underworld_sprite_data_dict[self.previous_map].items = item_list
+            for vehicle in self.vehicles:
+                vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
+                self.underworld_sprite_data_dict[self.previous_map].vehicles = vehicle_list
+            for breakable in self.breakable:
+                breakable_list.append({'name': breakable.name, 'location': breakable.center, 'w': breakable.w, 'h': breakable.h,  'rotation': breakable.rot})
+                self.underworld_sprite_data_dict[self.previous_map].breakable = breakable_list
 
     def save(self):
         self.save_sprite_locs()
@@ -231,7 +248,7 @@ class Game:
             companion_list.append(companion.species)
 
         updated_equipment = [UPGRADED_WEAPONS, UPGRADED_HATS, UPGRADED_TOPS, UPGRADED_GLOVES, UPGRADED_BOTTOMS, UPGRADED_SHOES]
-        save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list, self.map_sprite_data_list]
+        save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict]
         with open(path.join(saves_folder, self.player.race + "_" + self.format_date() + ".sav"), "wb", -1) as FILE:
             pickle.dump(save_list, FILE)
         if possessing != None:
@@ -249,6 +266,7 @@ class Game:
         self.chests = load_file[6] # Updates chests from dave
         self.saved_companions = load_file[13]
         self.map_sprite_data_list = load_file[14]
+        self.underworld_sprite_data_dict = load_file[15]
         updated_equipment = load_file[8]
         UPGRADED_WEAPONS = updated_equipment[0]
         UPGRADED_HATS = updated_equipment[1]
@@ -659,6 +677,7 @@ class Game:
         self.vehicle_data = VEHICLES
         self.saved_vehicle = []
         self.saved_companions = []
+        self.underworld = False
         self.quests = QUESTS
         self.chests = CHESTS
         self.bg_music = BG_MUSIC
@@ -742,6 +761,7 @@ class Game:
         self.respawn = False
         self.previous_map = "1.tmx"
         self.world_location = vec(1, 1)
+        self.underworld_sprite_data_dict = {}
         self.player = Player(self) # Creates initial player object
         if self.new_game:  # Why do I have to variables: new_game and conitnued_game
             self.in_character_menu = True
@@ -858,25 +878,26 @@ class Game:
         return [True, 0, 0]
 
     # Used for switching to the next map after you go north, south, east or west at the end of the current map.
-    def change_map(self, cardinal = None, coordinate = None, location = None):
+    def change_map(self, cardinal = None, coordinate = None, location = None, undermap = None):
         self.save_sprite_locs()
         # This for loop moves npcs and animals to other maps when they go off the screen.
-        for npc in self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs:
-            temp_loc = self.on_map(npc)
-            if not temp_loc[0]:
-                if self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].visited:
-                    self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].npcs.append(npc)
-                else:
-                    self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].moved_npcs.append(npc)
-                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs.remove(npc)
-        for animal in self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals:
-            temp_loc = self.on_map(animal)
-            if not temp_loc[0]:
-                if self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].visited:
-                    self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].animals.append(animal)
-                else:
-                    self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].moved_animals.append(animal)
-                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals.remove(animal)
+        if not self.underworld:
+            for npc in self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs:
+                temp_loc = self.on_map(npc)
+                if not temp_loc[0]:
+                    if self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].visited:
+                        self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].npcs.append(npc)
+                    else:
+                        self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].moved_npcs.append(npc)
+                    self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs.remove(npc)
+            for animal in self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals:
+                temp_loc = self.on_map(animal)
+                if not temp_loc[0]:
+                    if self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].visited:
+                        self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].animals.append(animal)
+                    else:
+                        self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].moved_animals.append(animal)
+                    self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals.remove(animal)
 
         self.guard_alerted = False # Makes it so guards stop attacking you after you change maps
         self.player.vel = vec(0, 0)
@@ -917,7 +938,10 @@ class Game:
             loc = vec(location)
             self.player.rect.center = (int(loc.x * 128), int(loc.y * 128))
             self.player.pos = vec(self.player.rect.center)
-        map = str(self.map_data_list[int(self.world_location.y)][int(self.world_location.x)]) + '.tmx'
+        if undermap == None:
+            map = str(self.map_data_list[int(self.world_location.y)][int(self.world_location.x)]) + '.tmx'
+        else:
+            map = undermap
 
         # This block of code sets the positions of the player's followers so they are randomly arranged in a circular orientation around the player.
         for companion in self.companions:
@@ -991,7 +1015,20 @@ class Game:
         self.sprite_data = self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)]
         self.compass_rot = -math.atan2(49 - self.world_location.y, 89 - self.world_location.x)
         self.compass_rot = math.degrees(self.compass_rot)
+
+        # Checks to see if the map is bellow the main world level
         map = temp_map
+        self.underworld = False
+        for kind in UNDERWORLD:
+            if kind in map:
+                self.underworld = True
+        if self.underworld:
+            if map in self.underworld_sprite_data_dict: # Checks to see if the map has bee visited and added to the data dictionary
+                self.sprite_data = self.underworld_sprite_data_dict[map]
+            else:
+                self.sprite_data = MapData(int(self.world_location.x), int(self.world_location.y)) # Adds the map if it's never been visited as a MapData object to store sprite info in.
+                self.underworld_sprite_data_dict[map] = self.sprite_data
+
         self.map_type = None
         self.screen.fill(BLACK)
         loading_screen = pg.transform.scale(choice(self.loading_screen_images), (self.screen_width, self.screen_height)) # Scales loading screen to resolution
@@ -1007,16 +1044,11 @@ class Game:
         for i in range(0, 10): # Creates random targets for Npcs
             Random_Target(self)
 
-        # Loads vehicles based off of their recorded locations in vehicles.py or the saved vehicle dictionary
-        for vehicle in self.vehicle_data:
-            if self.world_location == (self.vehicle_data[vehicle]['location'][0], self.vehicle_data[vehicle]['location'][1]):
-                ship = Vehicle(self, (self.vehicle_data[vehicle]['location'][2] * self.map.tile_size, self.vehicle_data[vehicle]['location'][3] * self.map.tile_size), vehicle, map)
-
-        # This section creates walls based off of which tile is used in the map rather than having to create wall objects
-        if 'ant_tunnel' in self.map.filename:
-            wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 2) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
-            for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
-                Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
+        if not self.underworld:
+            # Loads vehicles based off of their recorded locations in vehicles.py or the saved vehicle dictionary.... This while part should probably be taken out since the vehicle data should be stored in the MapData object
+            for vehicle in self.vehicle_data:
+                if self.world_location == (self.vehicle_data[vehicle]['location'][0], self.vehicle_data[vehicle]['location'][1]):
+                    ship = Vehicle(self, (self.vehicle_data[vehicle]['location'][2] * self.map.tile_size, self.vehicle_data[vehicle]['location'][3] * self.map.tile_size), vehicle, map)
 
         if self.sprite_data.visited: # Loads stored map data for sprites if you have visited before.
             companion_names = []
@@ -1034,7 +1066,7 @@ class Game:
             for item in self.sprite_data.items:
                 for item_type in ITEM_TYPE_LIST:
                     if item['name'] in eval(item_type.upper()):
-                        Dropped_Item(self, item['location'], item_type, item['name'], map, item['rotation'])
+                        Dropped_Item(self, item['location'], item_type, item['name'], item['rotation'])
         else: # Loads animals and NPCs that have moved onto unvisited maps.
             companion_names = []
             for companion in self.companions:
@@ -1067,14 +1099,14 @@ class Game:
                     # Loads items, weapons, and armor placed on the map
                     for item_type in ITEM_TYPE_LIST:
                         if tile_object.name in eval(item_type.upper()):
-                            Dropped_Item(self, obj_center, item_type, tile_object.name, map)
+                            Dropped_Item(self, obj_center, item_type, tile_object.name)
                     # Loads fixed roated items:
                     if '@' in tile_object.name:
                         item, rot = tile_object.name.split('@')
                         rot = int(rot)
                         for item_type in ITEM_TYPE_LIST:
                             if item in eval(item_type.upper()):
-                                Dropped_Item(self, obj_center, item_type, item, map, rot)
+                                Dropped_Item(self, obj_center, item_type, item, rot)
                     # Used for destructable plants, rocks, ore veins, walls, etc
                     for item in BREAKABLES:
                         if item in tile_object.name:
@@ -1101,7 +1133,7 @@ class Game:
                                 Npc(self, obj_center.x, obj_center.y, map, quest_item)
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
-                                Dropped_Item(self, obj_center, item_type, quest_item, map)
+                                Dropped_Item(self, obj_center, item_type, quest_item)
                 # Loads items/npcs that should only be there if a quest hasn't been completed
                 if 'QU' in tile_object.name:
                     _, quest, quest_item = tile_object.name.split('_')
@@ -1115,7 +1147,7 @@ class Game:
                                 Npc(self, obj_center.x, obj_center.y, map, quest_item)
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
-                                Dropped_Item(self, obj_center, item_type, quest_item, map)
+                                Dropped_Item(self, obj_center, item_type, quest_item)
                 # Loads items/npcs that only appear after a quest has been accepted.
                 if 'QA' in tile_object.name:
                     _, quest, quest_item = tile_object.name.split('_')
@@ -1129,7 +1161,7 @@ class Game:
                                 Npc(self, obj_center.x, obj_center.y, map, quest_item)
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
-                                Dropped_Item(self, obj_center, item_type, quest_item, map)
+                                Dropped_Item(self, obj_center, item_type, quest_item)
                 # Loads items/npcs that should only be there if a quest hasn't been accepted
                 if 'QN' in tile_object.name:
                     _, quest, quest_item = tile_object.name.split('_')
@@ -1143,7 +1175,7 @@ class Game:
                                 Npc(self, obj_center.x, obj_center.y, map, quest_item)
                         for item_type in ITEM_TYPE_LIST:
                             if quest_item in eval(item_type.upper()):
-                                Dropped_Item(self, obj_center, item_type, quest_item, map)
+                                Dropped_Item(self, obj_center, item_type, quest_item)
                 if 'COMMAND' in tile_object.name: # I used this block of code for killing Alex's body: the character that the black wraith comes out of in the beginning.
                     _, command, npc = tile_object.name.split('_')
                     if npc != 'None':
@@ -1222,9 +1254,14 @@ class Game:
                 except:
                     pass
 
+        # This section creates walls based off of which tile is used in the map rather than having to create wall objects
+        if self.map_type in ['ant_tunnel', 'cave']:
+            wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 0) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
+            for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
+                Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
 
         # Generates random drop items
-        if self.map_type in ['mountain', 'forest', 'grassland', 'desert', 'beachw']:
+        if self.map_type in ['mountain', 'forest', 'grassland', 'desert', 'beach']:
             for i in range(0, randrange(1, 15)):
                 for item in ITEMS:
                     if 'random drop' in ITEMS[item].keys():
@@ -1232,7 +1269,7 @@ class Game:
                             centerx = randrange(200, self.map.width - 200)
                             centery = randrange(200, self.map.height - 200)
                             center = vec(centerx, centery)
-                            Dropped_Item(self, center, 'items', item, map)
+                            Dropped_Item(self, center, 'items', item)
 
         # Generates random animals/Npcs on maps that don't have existing animals on them. The type of animal depends on the maptype object in the tmx file.
         if (len(self.mobs) - len(self.companions)) < 4:
@@ -1322,6 +1359,12 @@ class Game:
                 if animal not in hits:
                     animal.death(True)
 
+        # check for animals that spawn in walls and kills them
+        hits = pg.sprite.groupcollide(self.animals, self.walls, True, False)
+        #for animal in self.animals:
+        #    if animal in hits:
+        #        animal.death(True)
+
         # Adds all players and companions
         #self.group.add(self.player.body)
         #for sprite in self.companions:
@@ -1334,7 +1377,7 @@ class Game:
         #    self.group.add(self.player.vehicle)
         #    if self.player.vehicle.cat == 'tank':
         #        self.group.add(self.player.vehicle.turret)
-        self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].visited = True
+        self.sprite_data.visited = True
         self.previous_map = map
         self.respawn = False
         if self.new_game:
@@ -1401,7 +1444,7 @@ class Game:
                 loc = hits[0].loc
                 self.player.rect.center = (int(loc.x * 128), int(loc.y * 128))
                 self.player.pos = vec(self.player.rect.center)
-                self.load_map(hits[0].map)
+                self.change_map(None, None, None, hits[0].map)
 
             # player hits charger
             hits = pg.sprite.spritecollide(self.player, self.chargers, False)
@@ -2149,6 +2192,8 @@ class Game:
                 if event.key == pg.K_b:
                     if not self.store_menu:
                         self.player.use_item()
+                if event.key == pg.K_y:
+                    self.player.place_item()
                 if event.key == pg.K_g:
                     self.player.throw_grenade()
                 if event.key == pg.K_t:

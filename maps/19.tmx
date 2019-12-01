@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="204">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="204">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -444,7 +444,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1610613378,657,657,3758097026,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1610613378,657,657,3758097026,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1610613378,657,657,536871540,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1610613378,2147484305,657,657,3221226098,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,536871555,2147484305,657,657,3221226098,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,626,657,657,657,3221226098,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,626,657,657,657,3221226098,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,626,657,657,657,3221226098,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1220,13 +1220,13 @@
   <object id="168" name="jumpable" x="3098.48" y="2212.12" width="75.7576" height="78.7879"/>
   <object id="169" name="jumpable" x="4001.52" y="1696.97" width="75.7576" height="78.7879"/>
   <object id="170" name="jumpable" x="3992.42" y="1312.12" width="75.7576" height="78.7879"/>
-  <object id="171" name="doorant_tunnel1_4514" x="5676" y="1840" width="42" height="38"/>
-  <object id="174" name="doorant_tunnel1_4818" x="6061" y="2225" width="42" height="38"/>
+  <object id="171" name="doorant_tunnel1_4515" x="5676" y="1840" width="42" height="38"/>
+  <object id="174" name="doorant_tunnel1_4819" x="6061" y="2225" width="42" height="38"/>
   <object id="175" name="doorant_tunnel1_4529" x="5731.1" y="3758.16" width="52" height="46"/>
-  <object id="176" name="doorant_tunnel1_3529" x="4451.57" y="3756.22" width="52" height="46"/>
-  <object id="177" name="doorant_tunnel1_4538" x="5735.39" y="4900.7" width="52" height="46"/>
+  <object id="176" name="doorant_tunnel1_3430" x="4451.57" y="3756.22" width="52" height="46"/>
+  <object id="177" name="doorant_tunnel1_4439" x="5735.39" y="4900.7" width="52" height="46"/>
   <object id="178" name="doorant_tunnel1_3738" x="4706.12" y="4903.73" width="52" height="46"/>
-  <object id="179" name="doorant_tunnel1_3942" x="4962.66" y="5413.85" width="52" height="46"/>
+  <object id="179" name="doorant_tunnel1_3843" x="4962.66" y="5413.85" width="52" height="46"/>
   <object id="180" name="portal" x="733.333" y="4194.67" width="65.3333" height="62.6667"/>
   <object id="181" name="firepot1" x="553.333" y="4005.33" width="46.6667" height="46.6667"/>
   <object id="182" name="firepot2" x="940.667" y="4008.67" width="46.6667" height="46.6667"/>

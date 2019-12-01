@@ -10,6 +10,7 @@ from chests import *
 from race_info import *
 
 vec = pg.math.Vector2
+vec3 = pg.math.Vector3
 
 # define game folders
 game_folder = path.dirname(__file__)
@@ -114,6 +115,7 @@ BROWN = (106, 55, 5)
 CYAN = (0, 255, 255)
 TRANSPARENT = (255, 0, 255)
 SHADOW = (0, 0, 0, 150)
+UNDERWORLD = ['cave', 'tunnel', 'hole', 'tower'] # Used for map naming conventions that are under or over the overworld maps.
 
 # game settings
 pg.mixer.pre_init(44100, -16, 4, 2048)
@@ -365,6 +367,7 @@ BG_MUSIC = 'Cloudforest_Awakening.ogg'
 OCEAN_MUSIC = 'Eternal Renewal.ogg'
 BEACH_MUSIC = 'Emerald Paradise.ogg'
 ANT_TUNNEL_MUSIC = 'The Road Ahead.ogg'
+CAVE_MUSIC = 'The Road Ahead.ogg'
 FOREST_MUSIC = 'Light from the Shadows.ogg'
 GRASSLAND_MUSIC = 'The Forgotten Age.ogg'
 TOWN_MUSIC = 'Last Haven.ogg'

@@ -189,7 +189,7 @@ def drop_all_items(sprite, delete_items = False):
             if not delete_items:
                 for item in sprite.inventory[item_type]:
                     if item != None:
-                        Dropped_Item(sprite.game, sprite.pos + vec(randrange(-50, 50), randrange(-100, 100)), item_type, item, sprite.game.previous_map)
+                        Dropped_Item(sprite.game, sprite.pos + vec(randrange(-50, 50), randrange(-100, 100)), item_type, item)
             sprite.inventory[item_type] = [None]
             sprite.equipped[item_type] = None
 
@@ -1997,6 +1997,12 @@ class Player(pg.sprite.Sprite):
                 self.equipped['items'] = None
             self.game.player.calculate_weight()
 
+    def place_item(self):
+        if self.equipped['items'] != None:
+            dropped_item = Dropped_Item(self.game, self.pos + vec(50, 0).rotate(-self.rot), 'items', self.equipped['items'], self.rot - 90)
+            self.inventory['items'].remove(self.equipped['items'])
+            self.equipped['items'] = None
+
     def is_moving(self):
         keys = pg.key.get_pressed()
         return (keys[pg.K_w] or pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0) or keys[pg.K_RIGHT] or keys[pg.K_LEFT] or keys[pg.K_UP] or keys[pg.K_DOWN])
@@ -3534,7 +3540,7 @@ class Animal(pg.sprite.Sprite):
                 if i != None:
                     for item_type in ITEM_TYPE_LIST:
                         if i in eval(item_type.upper()).keys():
-                            Dropped_Item(self.game, self.pos, item_type, i, self.map, self.rot)
+                            Dropped_Item(self.game, self.pos, item_type, i, self.rot)
             if self.kind['name'] == 'sea turtle':
                 Breakable(self.game, self.pos, self.pos.x - 60, self.pos.y - 60, 120, 120, BREAKABLES['empty turtle shell'], 'empty turtle shell', self.map)
             self.kill()
@@ -3694,7 +3700,7 @@ class MuzzleFlash(pg.sprite.Sprite):
             self.kill()
 
 class Dropped_Item(pg.sprite.Sprite):
-    def __init__(self, game, pos, type, item, map, rot = None, random_spread = False):
+    def __init__(self, game, pos, type, item, rot = None, random_spread = False):
         if 'plate' in item:
             self._layer = WALL_LAYER
         else:
@@ -3703,7 +3709,6 @@ class Dropped_Item(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.game.group.add(self)
-        self.map = map
         self.item_type = type
         self.item = self.name = item
         self.rot = rot
@@ -3740,7 +3745,7 @@ class Dropped_Item(pg.sprite.Sprite):
                 temp_item = temp_item.replace('fire spark enchanted ', '')
                 temp_item = temp_item.replace('electric spark enchanted ', '')
             if 'fish' in temp_item:
-                fish = Dropped_Item(self.game, self.pos, 'items', 'dead ' + temp_item, self.map)
+                fish = Dropped_Item(self.game, self.pos, 'items', 'dead ' + temp_item)
                 fish.dropped_fish = True
             else:
                 Animal(self.game, self.pos.x, self.pos.y, self.map, temp_item)
@@ -4225,7 +4230,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                     for kind in ITEM_TYPE_LIST:
                         if thing in eval(kind.upper()):
                             rand_rot = randrange(0, 360)
-                            Dropped_Item(self.game, self.center, kind, thing, self.map, rand_rot, True)
+                            Dropped_Item(self.game, self.center, kind, thing, rand_rot, True)
 
         if None not in self.rare_items:
             if random_value < 5: # Chance of getting a rare item
@@ -4233,7 +4238,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                 if random_item in ANIMALS:
                     Animal(self.game, self.center.x, self.center.y, self.map, random_item)
                 else:
-                    Dropped_Item(self.game, self.center, 'items', random_item, self.map)
+                    Dropped_Item(self.game, self.center, 'items', random_item)
         self.trunk.kill()
         self.kill()
 
