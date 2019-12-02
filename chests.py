@@ -43,3 +43,5 @@ CHESTS['whitewraith temple'] = {'locked': False, 'combo': None, 'difficulty': 0,
                   'items': ['white crystal', 'white crystal', 'white crystal', 'white crystal', 'ectoplasm', 'ectoplasm', 'ectoplasm', 'demon dust', 'demon dust', 'sage', 'blue crystal', 'blue crystal', 'ectoplasm', 'ectoplasm', 'ectoplasm', 'demon dust', 'demon dust', 'sage', 'blue crystal', 'blue crystal'], 'magic': [None], 'gold': 0}
 CHESTS['grave1'] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': ['potion of major healing'], 'magic': [None], 'gold': 130}
+CHESTS['ant tunnel2 gold'] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
+                  'items': ['potion of moderate healing'], 'magic': [None], 'gold': 220}

@@ -192,11 +192,14 @@ class Game:
         breakable_list = []
         if not self.underworld:
             for npc in self.npcs:
-                npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
-                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs = npc_list
+                if npc not in self.companions:
+                    npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
+                    self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs = npc_list
             for animal in self.animals:
-                animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
-                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals = animal_list
+                if animal not in self.companions:
+                    if animal != self.player.vehicle:
+                        animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
+                        self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals = animal_list
             for item in self.dropped_items:
                 item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
                 self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].items = item_list
@@ -208,11 +211,14 @@ class Game:
                 self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].breakable = breakable_list
         else:
             for npc in self.npcs:
-                npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
-                self.underworld_sprite_data_dict[self.previous_map].npcs = npc_list
+                if npc not in self.companions:
+                    npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
+                    self.underworld_sprite_data_dict[self.previous_map].npcs = npc_list
             for animal in self.animals:
-                animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
-                self.underworld_sprite_data_dict[self.previous_map].animals = animal_list
+                if animal not in self.companions:
+                    if animal != self.player.vehicle:
+                        animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
+                        self.underworld_sprite_data_dict[self.previous_map].animals = animal_list
             for item in self.dropped_items:
                 item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
                 self.underworld_sprite_data_dict[self.previous_map].items = item_list
@@ -1283,15 +1289,15 @@ class Game:
                     if animal in self.people:
                         npc = Npc(self, centerx, centery, map, animal)
                         # check for NPCs that spawn in walls and kills them
-                        hits = pg.sprite.spritcollide(npc, self.walls, False)
+                        hits = pg.sprite.spritecollide(npc, self.walls, False)
                         if hits:
                             npc.kill()
                     else:
                         anim = Animal(self, centerx, centery, map, animal)
                         # checks for animals that spawn in walls and kills them.
-                        hits = pg.sprite.spritcollide(anim, self.walls, False)
+                        hits = pg.sprite.spritecollide(anim, self.walls, False)
                         if hits:
-                            npc.kill()
+                            anim.kill()
 
         # Generates random ores, trees and plants
         if len(self.breakable) < 1:
