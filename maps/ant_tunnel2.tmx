@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="13" nextobjectid="353">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="13" nextobjectid="354">
  <tileset firstgid="1" name="pavement" tilewidth="128" tileheight="128" tilecount="225" columns="15">
   <image source="../img/map_textures/pavement.png" width="1920" height="1920"/>
  </tileset>
@@ -404,5 +404,6 @@
   <object id="348" name="giant ant" x="1917.15" y="5787.64" width="69.697" height="72.7273"/>
   <object id="349" name="giant ant" x="1277.15" y="5019.64" width="69.697" height="72.7273"/>
   <object id="350" name="giant ant" x="4461.15" y="5131.64" width="69.697" height="72.7273"/>
+  <object id="353" name="stoneblock" x="2634.67" y="7425.33" width="128" height="128"/>
  </objectgroup>
 </map>

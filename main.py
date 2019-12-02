@@ -160,6 +160,7 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
+        self.channel4 = pg.mixer.Channel(3)
 
     def on_screen(self, sprite):
         rect = self.camera.apply(sprite)
@@ -738,6 +739,7 @@ class Game:
         self.explosions = pg.sprite.Group()
         self.shocks = pg.sprite.Group()
         self.fireballs = pg.sprite.Group()
+        self.firepits = pg.sprite.Group()
         self.containers = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
         self.enemy_bullets = pg.sprite.Group()
@@ -1279,9 +1281,17 @@ class Game:
                     centerx = randrange(200, self.map.width - 200)
                     centery = randrange(200, self.map.height - 200)
                     if animal in self.people:
-                        Npc(self, centerx, centery, map, animal)
+                        npc = Npc(self, centerx, centery, map, animal)
+                        # check for NPCs that spawn in walls and kills them
+                        hits = pg.sprite.spritcollide(npc, self.walls, False)
+                        if hits:
+                            npc.kill()
                     else:
-                        Animal(self, centerx, centery, map, animal)
+                        anim = Animal(self, centerx, centery, map, animal)
+                        # checks for animals that spawn in walls and kills them.
+                        hits = pg.sprite.spritcollide(anim, self.walls, False)
+                        if hits:
+                            npc.kill()
 
         # Generates random ores, trees and plants
         if len(self.breakable) < 1:
@@ -1359,11 +1369,6 @@ class Game:
                 if animal not in hits:
                     animal.death(True)
 
-        # check for animals that spawn in walls and kills them
-        hits = pg.sprite.groupcollide(self.animals, self.walls, True, False)
-        #for animal in self.animals:
-        #    if animal in hits:
-        #        animal.death(True)
 
         # Adds all players and companions
         #self.group.add(self.player.body)
@@ -1414,9 +1419,12 @@ class Game:
     def update(self):
         # update portion of the game loop
         # updates all sprites that are on screen
+        fires_on_screen = []
         for sprite in self.all_sprites:
             if self.on_screen(sprite):
                 sprite.update()
+                if sprite in self.fires:
+                    fires_on_screen.append(sprite) # Creates a list of all fires on screen so I can calculate their distance and play fire sounds at correct volumes.
             elif sprite == self.player.vehicle:
                 sprite.update()
             elif sprite in self.companions:
@@ -1425,6 +1433,28 @@ class Game:
                 sprite.update()
         self.camera.update(self.player)
         self.group.center(self.player.rect.center)
+
+        # Used for playing fire sounds at set distances:
+        closest_fire = None
+        previous_distance = 30000
+        for sprite in fires_on_screen:    # Finds the closest fire and ignores the others.
+            player_dist = self.player.pos - sprite.pos
+            player_dist = player_dist.length()
+            if previous_distance > player_dist:
+                closest_fire = sprite
+                previous_distance = player_dist
+
+        if closest_fire != None:
+            if previous_distance < 400:  # This part makes it so the fire volume decreases as you walk away from it.
+                volume = 150 / (previous_distance * 2)
+                self.channel4.set_volume(volume)
+                if not self.channel4.get_busy():
+                    self.channel4.play(self.effects_sounds['fire crackle'], loops=-1)
+            else:
+                self.channel4.stop()
+        else:
+            self.channel4.stop()
+
         #self.map.update()
         #self.camera.update(self.map)
 
@@ -1767,6 +1797,20 @@ class Game:
                         for fire in hits[mob]:
                             mob.gets_hit(fire.damage, 0, mob.rot - 180)
 
+        # explosion hit moving target
+        hits = pg.sprite.groupcollide(self.moving_targets, self.explosions, False, False, pg.sprite.collide_circle_ratio(0.5))
+        for mob in hits:
+            if mob in self.occupied_vehicles:
+                pass
+            elif mob.in_vehicle:
+                pass
+            elif mob.in_player_vehicle:
+                pass
+            else:
+                for fire in hits[mob]:
+                    mob.gets_hit(fire.damage, 0, mob.rot - 180)
+
+
         # fireball hit moving target
         hits = pg.sprite.groupcollide(self.moving_targets, self.fireballs, False, False, fire_collide)
         for mob in hits:
@@ -1795,16 +1839,23 @@ class Game:
                             self.player.stats['marksmanship hits'] += 1
 
         # fireball hits firepit
-        hits = pg.sprite.groupcollide(self.dropped_items, self.fireballs, False, False, fire_collide)
+        hits = pg.sprite.groupcollide(self.firepits, self.fireballs, False, False, fire_collide)
         for item in hits:
             for bullet in hits[item]:
-                if item.name == 'fire pit':
-                    if not item.lit:
-                        bullet.explode(item)
-                        item.lit = True
-                        center = vec(item.rect.center)
-                        Stationary_Animated(self, center, 'fire')
-                        Work_Station(self, center.x - 64, center.y - 64, 128, 128, 'cooking fire')
+                if not item.lit:
+                    bullet.explode(item)
+                    item.lit = True
+                    center = vec(item.rect.center)
+                    Stationary_Animated(self, center, 'fire')
+                    Work_Station(self, center.x - 64, center.y - 64, 128, 128, 'cooking fire')
+        # fire hits firepit
+        hits = pg.sprite.groupcollide(self.firepits, self.fires, False, False, pg.sprite.collide_circle_ratio(0.5))
+        for item in hits:
+            if not item.lit:
+                item.lit = True
+                center = vec(item.rect.center)
+                Stationary_Animated(self, center, 'fire')
+                Work_Station(self, center.x - 64, center.y - 64, 128, 128, 'cooking fire')
 
 
         # bullets hit moving_target
@@ -2190,7 +2241,7 @@ class Game:
                 if event.key == pg.K_o: # Toggles overworld map
                     self.hud_overmap = not self.hud_overmap
                 if event.key == pg.K_b:
-                    if not self.store_menu:
+                    if not self.in_store_menu:
                         self.player.use_item()
                 if event.key == pg.K_y:
                     self.player.place_item()

@@ -29,9 +29,13 @@ ITEMS['ale of the gods'] = {'alchemy': True, 'stamina': 40, 'health': 15, 'image
 # Tools
 ITEMS['lock pick'] = {'image': 11, 'weight': 0.2, 'value': 120}
 
+# Forgeable
+ITEMS['flint and steel'] = {'image': 150, 'hp': 20, 'weight': 1, 'materials': {'steel ingot': 1, 'flint stone':1}, 'forgeable': True, 'value': 75}
+
 # Craftable
 ITEMS['fire pit'] = {'craftable': True, 'image': 135, 'weight': 23, 'materials': {'cut dry wood':4, 'ordinary rock':10}, 'random drop': 100}
-
+ITEMS['wood block'] = {'craftable': True, 'material': 'wood', 'image': 27, 'weight': 2.1, 'value': 10, 'materials': {'cut green wood':2}}
+ITEMS['flint block'] = {'craftable': True, 'material': 'stone', 'image': 29, 'weight': 3.5, 'value': 5, 'materials': {'flint stone':2}}
 
 # Containers/bowls
 ITEMS['large plate'] = {'image': 34, 'weight': 0.5, 'value': 2}
@@ -172,8 +176,6 @@ ITEMS['ebony block'] = {'material': 'wood', 'image': 25, 'weight': 2, 'value': 6
 ITEMS['ironwood block'] = {'material': 'wood', 'image': 25, 'weight': 2.5, 'value': 100}
 ITEMS['olive wood block'] = {'material': 'wood', 'image': 27, 'weight': 2.1, 'value': 70}
 ITEMS['rosewood block'] = {'material': 'wood', 'image': 28, 'weight': 1.8, 'value': 80}
-ITEMS['wood block'] = {'material': 'wood', 'image': 27, 'weight': 2.1, 'value': 10}
-ITEMS['flint block'] = {'material': 'stone', 'image': 29, 'weight': 3.5, 'value': 5}
 ITEMS['flint stone'] = {'material': 'stone', 'image': 30, 'weight': 1, 'value': 2, 'random drop': 14}
 ITEMS['leather'] = {'material': 'fabric', 'image': 43, 'weight': 0.7, 'value': 20}
 ITEMS['leather strips'] = {'material': 'fabric', 'image': 51, 'weight': 0.4, 'value': 20}

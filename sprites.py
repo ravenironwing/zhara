@@ -1987,6 +1987,15 @@ class Player(pg.sprite.Sprite):
                 self.human_body.update_animations()
                 self.dragon_body.update_animations()
                 remove = True
+            if 'flint and steel' in self.equipped['items']:
+                ITEMS[self.equipped['items']]['hp'] -= 1
+                if ITEMS[self.equipped['items']]['hp'] < 0:
+                    remove = True
+                    self.game.effects_sounds['metal hit'].play()
+                else:
+                    self.game.effects_sounds['fire blast'].play()
+                    Stationary_Animated(self.game, self.pos + vec(64, 0).rotate(-self.rot), 'fire', 500)
+
             if 'potion' in self.equipped['items']:
                 self.inventory['items'].append('empty bottle') # lets you keep the bottle to use for creating new potions.
             if 'fuel' in self.equipped['items']:
@@ -2352,6 +2361,7 @@ class Npc(pg.sprite.Sprite):
         self.last_weapon2 = None
         self.current_weapon = None
         self.current_weapon2 = None
+        self.last_pos = self.rect.center # Used for tracking whether or not the NPC is moving towards its target.
         #NPC specific data:
         self.species = kind
         try:  # This makes it so you can load a saved game even if there were new NPCs added.
@@ -2557,6 +2567,16 @@ class Npc(pg.sprite.Sprite):
                                         self.offensive = True
                                         last_dist = dist
 
+    def check_moving(self):
+        # This checks to see if the NPC has moved since the last check.
+        dist = self.pos - self.last_pos
+        if dist.length() < 10:
+            self.last_pos = self.rect.center
+            return False
+        else:
+            self.last_pos = self.rect.center
+            return True
+
     def accelerate(self):
         if self.in_player_vehicle:
             pass
@@ -2656,7 +2676,7 @@ class Npc(pg.sprite.Sprite):
                         # This part makes the NPC avoid walls
                         now = pg.time.get_ticks()
                         if not self.immaterial:
-                            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+                            hits = pg.sprite.spritecollide(self, self.game.walls, False) + pg.sprite.spritecollide(self, self.game.climbables, False) + pg.sprite.spritecollide(self, self.game.jumpables, False)
                             if hits:
                                 self.hit_wall = True
                                 if now - self.last_wall_hit > 1000:
@@ -2730,7 +2750,6 @@ class Npc(pg.sprite.Sprite):
                                         if now - self.last_melee > 3000:
                                             self.last_melee = now
                                             self.pre_melee()
-
                 if self.health <= 0:
                     self.death()
 
@@ -3396,7 +3415,7 @@ class Animal(pg.sprite.Sprite):
         if self.living:
             if not self.occupied:
                 target_dist = self.target.pos - self.pos
-                hits = pg.sprite.spritecollide(self, self.game.walls, False) + pg.sprite.spritecollide(self, self.game.shallows, False)  # This part makes the animal avoid walls
+                hits = pg.sprite.spritecollide(self, self.game.walls, False) + pg.sprite.spritecollide(self, self.game.shallows, False) + pg.sprite.spritecollide(self, self.game.climbables, False)  # This part makes the animal avoid walls
                 if hits:
                     self.hit_wall = True
                     now = pg.time.get_ticks()
@@ -3417,7 +3436,7 @@ class Animal(pg.sprite.Sprite):
                         difx = abs(self.target.pos.x - direction_vec.x)
                         dify = abs(self.target.pos.y - direction_vec.y)
                         if difx < 300:
-                            if  dify < 300:
+                            if dify < 300:
                                 magic_chance = randrange(0, 10)
                                 if magic_chance == 1:
                                     self.cast_spell()
@@ -3705,7 +3724,10 @@ class Dropped_Item(pg.sprite.Sprite):
             self._layer = WALL_LAYER
         else:
             self._layer = ITEMS_LAYER
-        self.groups = game.all_sprites, game.dropped_items, game.detectables
+        if 'fire pit' in item:
+            self.groups = game.all_sprites, game.dropped_items, game.detectables, game.firepits
+        else:
+            self.groups = game.all_sprites, game.dropped_items, game.detectables
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.game.group.add(self)
@@ -3793,6 +3815,8 @@ class Stationary_Animated(pg.sprite.Sprite): # Used for fires and other stationa
         self.knockback = 0
         self.spawn_time = pg.time.get_ticks()
         self.lifetime = lifetime
+        self.last_sound = 0
+        self.pos = vec(self.center.x, self.center.y)
 
     def update(self):
         now = pg.time.get_ticks()
@@ -3823,7 +3847,7 @@ class Explosion(pg.sprite.Sprite):
         else:
             self._layer = BULLET_LAYER
         self.game = game
-        self.groups = game.all_sprites, game.explosions, game.fires
+        self.groups = game.all_sprites, game.explosions
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game.group.add(self)
         self.target = target
@@ -4117,7 +4141,9 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game.group.add(self)
         # Image vars
-        if fixed_rot == None:
+        if 'block' in self.name:
+            self.rot = 0
+        elif fixed_rot == None:
             self.rot = randrange(0, 360)
         else:
             self.rot = fixed_rot
@@ -4135,6 +4161,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.dead = False
         self.hit = False
         self.hits = 0
+        self.right_hits = 0
         self.hit_weapon = None
 
         self.hit_sound = self.game.effects_sounds[self.kind['hit sound']]
@@ -4167,7 +4194,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                     self.rect.center = old_center
             if self.break_type == 'gradual':
                 if self.hit_weapon == self.weapon_required:
-                    self.frame = self.hits
+                    self.frame = self.right_hits
                     if self.frame > len(self.image_list) - 2:
                         self.frame = 0
                     self.last_move = now
@@ -4209,10 +4236,11 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                         self.break_sound.play()
                 self.hit = True
                 self.hit_weapon = weapon_type
-                self.hits += 1
                 self.last_hit = now
+                self.hits += 1
                 if weapon_type == self.weapon_required:
                     self.hp -= 1
+                    self.right_hits += 1
                 if self.hp < 1:
                     self.dead = True
 
