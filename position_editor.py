@@ -12,7 +12,7 @@ HEIGHT = 600
 FPS = 60
 
 default = CP_BOWWALK0
-animation = SHOTGUN_WALK
+animation = WALK_SWIPE
 
 
 # define some colors (R, G, B)

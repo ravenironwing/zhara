@@ -584,6 +584,8 @@ class Character(pg.sprite.Sprite):
         self.melee2_rect = pg.Rect(0, 0, 2, 2)
         self.weapon2_melee_rect = pg.Rect(0, 0, 2, 2)
         self.mid_weapon2_melee_rect = pg.Rect(0, 0, 2, 2)
+        self.swing_weapon1 = False # Used for timing melee attacks for stinging vs stabbing weapons.
+        self.swing_weapon2 = False  # Used for timing melee attacks for stinging vs stabbing weapons.
         # Default Animation lists
         if self.mother not in self.game.npcs:
             self.climbing_shoot_anim = self.render_animation([CP_CLIMB0])
@@ -816,6 +818,11 @@ class Character(pg.sprite.Sprite):
                     self.shoot_anim = self.render_animation([eval(WEAPONS[self.mother.equipped['weapons']]['grip'])])
                     self.walk_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['walk']))
                     self.melee_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['melee animation']))
+                    if WEAPONS[self.mother.equipped['weapons']]['melee animation'] == 'SWIPE':
+                        self.swing_weapon1 = True
+                        self.walk_melee_anim = self.render_animation(WALK_SWIPE)
+                    else:
+                        self.swing_weapon1 = False
                 # Default animations if left equipped
                 if self.mother.equipped['weapons2'] != None:
                     #self.l_reload_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['reload animation']))
@@ -823,6 +830,11 @@ class Character(pg.sprite.Sprite):
                     self.l_melee_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['melee animation']))
                     self.stand_anim = self.render_animation([eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['grip'])])  # Change after animations are created
                     self.walk_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['walk']))
+                    if WEAPONS[self.mother.equipped['weapons2']]['melee animation'] == 'SWIPE':
+                        self.swing_weapon2 = True
+                        self.walk_l_melee_anim = self.render_animation(L_WALK_SWIPE)
+                    else:
+                        self.swing_weapon2 = False
                 # Default animaitons for duel wielding
                 if self.mother.equipped['weapons'] != None and self.mother.equipped['weapons2'] != None:
                     self.dual_reload_anim = self.render_animation(RELOAD + L_RELOAD)
@@ -1988,14 +2000,11 @@ class Player(pg.sprite.Sprite):
                 self.dragon_body.update_animations()
                 remove = True
             if 'flint and steel' in self.equipped['items']:
-                ITEMS[self.equipped['items']]['hp'] -= 1
-                if ITEMS[self.equipped['items']]['hp'] < 0:
-                    remove = True
-                    self.game.effects_sounds['metal hit'].play()
-                else:
+                if self.change_used_item('items', self.equipped['items']):
                     self.game.effects_sounds['fire blast'].play()
                     Stationary_Animated(self.game, self.pos + vec(64, 0).rotate(-self.rot), 'fire', 500)
-
+                else: # Makes it so it doesn't try to use a None Type in the other if statements.
+                    return
             if 'potion' in self.equipped['items']:
                 self.inventory['items'].append('empty bottle') # lets you keep the bottle to use for creating new potions.
             if 'fuel' in self.equipped['items']:
@@ -2005,6 +2014,45 @@ class Player(pg.sprite.Sprite):
             if self.equipped['items'] not in self.inventory['items']: # This lets you keep equipping items of the same kind. This way you can use multiple heath potions in a row for example.
                 self.equipped['items'] = None
             self.game.player.calculate_weight()
+
+    def change_used_item(self, item_type, item):
+        # Renames used items to add hp to the end of their names.
+        item_dic = eval(item_type.upper())
+        if 'hp' in item_dic[item]:
+            used_item = item_dic[item].copy()
+            used_item['hp'] -= 1
+            if used_item['hp'] <= 0: # Removes broken items from inventory.
+                self.inventory[item_type].remove(item)
+                if item_type == 'weapons':
+                    if self.equipped[self.weapon_hand] == item:
+                        self.equipped[self.weapon_hand] = None
+                elif self.equipped[item_type] == item:
+                    self.equipped[item_type] = None
+                self.game.effects_sounds['metal hit'].play()
+                if item_type == 'weapons':
+                    self.current_weapon = self.equipped['weapons']
+                    self.current_weapon2 = self.equipped['weapons2']
+                    self.human_body.update_animations()  # Updates animations so you don't have broken weapons in your hand.
+                    self.dragon_body.update_animations()
+                return False # Used to tell that the item is broken.
+            if 'HP' in item:
+                temp_name, _ = item.split(' HP')
+                new_item_name = temp_name + ' HP' + str(used_item['hp'])
+            else:
+                new_item_name = item + ' HP' + str(used_item['hp'])
+            upgrade_dic = eval('UPGRADED_' + item_type.upper())
+            upgrade_dic[new_item_name] = used_item
+            item_dic[new_item_name] = used_item
+            self.inventory[item_type].remove(item)  # removes non-used item
+            self.inventory[item_type].append(new_item_name)  # adds used item to inventory
+            # Unequips old item and equips used one if you were equipping it.
+            if item_type == 'weapons':
+                if self.equipped[self.weapon_hand] == item:
+                    self.equipped[self.weapon_hand] = new_item_name
+            else:
+                if self.equipped[item_type] == item:
+                    self.equipped[item_type] = new_item_name
+            return True
 
     def place_item(self):
         if self.equipped['items'] != None:
@@ -3816,7 +3864,11 @@ class Stationary_Animated(pg.sprite.Sprite): # Used for fires and other stationa
         self.spawn_time = pg.time.get_ticks()
         self.lifetime = lifetime
         self.last_sound = 0
-        self.pos = vec(self.center.x, self.center.y)
+        try:
+            self.pos = vec(self.center.x, self.center.y)
+        except:
+            self.pos = vec(0, 0)
+            print('attribute error')
 
     def update(self):
         now = pg.time.get_ticks()

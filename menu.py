@@ -33,6 +33,9 @@ def check_equip(sprite):
     for item_type in ITEM_TYPE_LIST:
         if sprite.equipped[item_type] not in sprite.inventory[item_type]:
             sprite.equipped[item_type] = None
+        if item_type == 'weapons':
+            if sprite.equipped['weapons2'] not in sprite.inventory[item_type]:
+                sprite.equipped['weapons2'] = None
     if sprite.equipped['race'] in NO_CLOTHES_RACES:
         for item_type in ['hair', 'tops', 'bottoms', 'shoes', 'hats', 'gloves']:
             sprite.equipped[item_type] = None

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="906">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="912">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1426,12 +1426,12 @@
   <object id="612" name="wall" x="5828" y="7110" width="104" height="20"/>
   <object id="613" name="wall" x="5824" y="6949" width="119" height="24"/>
   <object id="614" name="fire" x="5865" y="7024" width="29" height="30"/>
-  <object id="616" name="breakable wall@0" x="2690.67" y="4649.34" width="125.333" height="42.6667"/>
-  <object id="617" name="breakable wall@0" x="2820" y="4650.67" width="125.333" height="42.6667"/>
+  <object id="616" name="breakable wall@0" x="2688" y="4608" width="128" height="128"/>
+  <object id="617" name="breakable wall@0" x="2820" y="4608" width="124" height="128"/>
   <object id="618" name="wall" x="2946.67" y="4649.33" width="417.333" height="42.6667"/>
   <object id="620" name="wall" x="3364" y="4648" width="52" height="216"/>
-  <object id="621" name="breakable wall@90" x="3368" y="4865.33" width="48" height="124"/>
-  <object id="622" name="breakable wall@90" x="3366.67" y="4999.33" width="48" height="124"/>
+  <object id="621" name="breakable wall@90" x="3328" y="4864" width="128" height="128"/>
+  <object id="622" name="breakable wall@90" x="3328" y="4992" width="128" height="128"/>
   <object id="662" name="plate" x="5039.67" y="4776.67" width="56" height="46.6667"/>
   <object id="663" name="plate" x="5145.33" y="4784" width="54.6667" height="45.3333"/>
   <object id="664" name="salmon sushi" x="5042.67" y="4788" width="17.3333" height="18.6667"/>

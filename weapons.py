@@ -970,6 +970,7 @@ WEAPONS['oar'] = {'type': 'mace','gun': False,
                       'armor': 0,
                       'weight': 20}
 WEAPONS['pickaxe'] = {'type': 'pickaxe','gun': False, 'value': 75,
+                      'hp': 1000,
                       'bullet_speed': 0,
                       'bullet_lifetime': 0,
                       'magazine size': 0,

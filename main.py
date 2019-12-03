@@ -126,17 +126,50 @@ def mob_hit_rect(one, two):
 # Used to define hits from melee attacks
 def melee_hit_rect(one, two):
     if one.mid_weapon_melee_rect.colliderect(two.hit_rect) or one.weapon_melee_rect.colliderect(two.hit_rect) or one.melee_rect.colliderect(two.hit_rect): #checks for either the fist hitting a mob or the cente or tip of weapon.
-        return True
+        if one.mother.weapon_hand == 'weapons':
+            if one.swing_weapon1: # This differentiates between weapons that are being swung and those that are thrusted.
+                if one.frame > 3:
+                    return True
+            else:
+                if one.frame < 3:
+                    return True
+        else:
+            return False
     elif one.mid_weapon2_melee_rect.colliderect(two.hit_rect) or one.weapon2_melee_rect.colliderect(two.hit_rect) or one.melee2_rect.colliderect(two.hit_rect): #checks for either the fist hitting a mob or the cente or tip of weapon.
-        return True
+        if one.mother.weapon_hand == 'weapons2':
+            if one.swing_weapon2:
+                if one.frame > 3:
+                    return True
+            else:
+                if one.frame < 3:
+                    return True
+        else:
+            return False
     else:
         return False
 
 def breakable_melee_hit_rect(one, two):
     if one.mid_weapon_melee_rect.colliderect(two.trunk.hit_rect) or one.weapon_melee_rect.colliderect(two.trunk.hit_rect):
-        return True
+        if one.mother.weapon_hand == 'weapons':
+            if one.swing_weapon1: # This differentiates between weapons that are being swung and those that are thrusted.
+                if one.frame > 3:
+                    return True
+            else:
+                if one.frame < 3:
+                    return True
+        else:
+            return False
+
     elif one.mid_weapon2_melee_rect.colliderect(two.trunk.hit_rect) or one.weapon2_melee_rect.colliderect(two.trunk.hit_rect):
-        return True
+        if one.mother.weapon_hand == 'weapons2':
+            if one.swing_weapon2:
+                if one.frame > 3:
+                    return True
+            else:
+                if one.frame < 3:
+                    return True
+        else:
+            return False
     else:
         return False
 
@@ -254,7 +287,7 @@ class Game:
         for companion in self.companions:
             companion_list.append(companion.species)
 
-        updated_equipment = [UPGRADED_WEAPONS, UPGRADED_HATS, UPGRADED_TOPS, UPGRADED_GLOVES, UPGRADED_BOTTOMS, UPGRADED_SHOES]
+        updated_equipment = [UPGRADED_WEAPONS, UPGRADED_HATS, UPGRADED_TOPS, UPGRADED_GLOVES, UPGRADED_BOTTOMS, UPGRADED_SHOES, UPGRADED_ITEMS]
         save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict]
         with open(path.join(saves_folder, self.player.race + "_" + self.format_date() + ".sav"), "wb", -1) as FILE:
             pickle.dump(save_list, FILE)
@@ -281,12 +314,14 @@ class Game:
         UPGRADED_GLOVES.update(updated_equipment[3])
         UPGRADED_BOTTOMS.update(updated_equipment[4])
         UPGRADED_SHOES.update(updated_equipment[5])
+        UPGRADED_ITEMS.update(updated_equipment[6])
         WEAPONS.update(UPGRADED_WEAPONS)
         HATS.update(UPGRADED_HATS)
         TOPS.update(UPGRADED_TOPS)
         BOTTOMS.update(UPGRADED_BOTTOMS)
         GLOVES.update(UPGRADED_GLOVES)
         SHOES.update(UPGRADED_SHOES)
+        ITEMS.update(UPGRADED_ITEMS)
         self.player.inventory = load_file[0]
         self.player.equipped = load_file[1]
         self.player.race = self.player.equipped['race']
@@ -342,18 +377,20 @@ class Game:
         self.quests = QUESTS # Updates Quests from save
         self.chests = CHESTS # Updates chests from dave
         updated_equipment = load_file[8]
-        UPGRADED_WEAPONS = updated_equipment[0]
-        UPGRADED_HATS = updated_equipment[1]
-        UPGRADED_TOPS = updated_equipment[2]
-        UPGRADED_GLOVES = updated_equipment[3]
-        UPGRADED_BOTTOMS = updated_equipment[4]
-        UPGRADED_SHOES = updated_equipment[5]
+        UPGRADED_WEAPONS.update(updated_equipment[0])
+        UPGRADED_HATS.update(updated_equipment[1])
+        UPGRADED_TOPS.update(updated_equipment[2])
+        UPGRADED_GLOVES.update(updated_equipment[3])
+        UPGRADED_BOTTOMS.update(updated_equipment[4])
+        UPGRADED_SHOES.update(updated_equipment[5])
+        UPGRADED_ITEMS.update(updated_equipment[6])
         WEAPONS.update(UPGRADED_WEAPONS)
         HATS.update(UPGRADED_HATS)
         TOPS.update(UPGRADED_TOPS)
         BOTTOMS.update(UPGRADED_BOTTOMS)
         GLOVES.update(UPGRADED_GLOVES)
         SHOES.update(UPGRADED_SHOES)
+        ITEMS.update(UPGRADED_ITEMS)
         self.player.inventory = load_file[0]
         self.player.equipped = load_file[1]
         self.player.race = self.player.equipped['race']
@@ -1644,6 +1681,8 @@ class Game:
                         weapon_type = None
                     else:
                         weapon_type = WEAPONS[self.player.equipped[self.player.weapon_hand]]['type']
+                        if not self.player.change_used_item('weapons', self.player.equipped[self.player.weapon_hand]): # Makes it so pickaxes and other items deplete their hp
+                            weapon_type = None
                     bush.gets_hit(weapon_type)
 
             # player hits lava

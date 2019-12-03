@@ -245,3 +245,5 @@ for chest in CHESTS:
 
 FORGEITEMS = ['gold ingot', 'iron ingot', 'silver ingot', 'steel ingot', 'copper ingot', 'bronze ingot', 'brass ingot', 'tin ingot', 'ebony block', 'ironwood block', 'olive wood block', 'rosewood block', 'flint block', 'flint stone', 'leather', 'leather strips']
 FLOAT_LIST = ['fish', 'wood', 'shark', 'butterfly', 'bread', 'moth']
+
+UPGRADED_ITEMS = {}
