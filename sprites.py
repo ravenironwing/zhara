@@ -4118,10 +4118,19 @@ class Portal(pg.sprite.Sprite):
 
 class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
     def __init__(self, game, obj_center, w, h, name, map, fixed_rot = None):
+        under = False
         if 'palm tree' in name:
             self._layer = EFFECTS_LAYER
         elif 'tree' in name:
             self._layer = ROOF_LAYER
+        elif 'block' in name:
+            for i in UNDERWORLD:
+                if i in map:
+                    under = True
+            if under:
+                self._layer = 0
+            else:
+                self._layer = WALL_LAYER
         else:
             self._layer = WALL_LAYER
         self.game = game

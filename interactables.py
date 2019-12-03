@@ -19,9 +19,16 @@ BREAKABLES['palm tree'] = {'break type': 'gradual', 'wobble': False, 'weapon req
 BREAKABLES['green tree'] = {'break type': 'gradual', 'wobble': False, 'weapon required': 'axe', 'animate speed': 70, 'right weapon hit sound': 'rock_hit', 'hit sound': 'rock_hit', 'break sound': 'rocks', 'health': 5, 'damage': 0, 'knockback': 0, 'protected': False, 'random drop number': False, 'items': {'cut green wood':12}, 'rare items': ['dead brown bird']}
 BREAKABLES['pine tree'] = {'break type': 'gradual', 'wobble': False, 'weapon required': 'axe', 'animate speed': 70, 'right weapon hit sound': 'rock_hit', 'hit sound': 'rock_hit', 'break sound': 'rocks', 'health': 5, 'damage': 0, 'knockback': 0, 'protected': False, 'random drop number': False, 'items': {'cut green wood':12, 'pine branch': 10}, 'rare items': ['dead brown bird']}
 BREAKABLES['stoneblock'] = {'break type': 'gradual', 'wobble': False, 'weapon required': 'pickaxe', 'animate speed': 50, 'right weapon hit sound': 'pickaxe', 'hit sound': 'rock_hit', 'break sound': 'rocks', 'health': 5, 'damage': 0, 'knockback': 0, 'protected': False, 'random drop number': False, 'items': {'ordinary rock':10}, 'rare items': ['flint stone']}
-BREAKABLES['goldblock'] = {'break type': 'gradual', 'wobble': False, 'weapon required': 'pickaxe', 'animate speed': 50, 'right weapon hit sound': 'pickaxe', 'hit sound': 'rock_hit', 'break sound': 'rocks', 'health': 5, 'damage': 0, 'knockback': 0, 'protected': False, 'random drop number': False, 'items': {'gold ore':6}, 'rare items': [None]}
+BREAKABLES['coalblock'] = {'break type': 'gradual', 'wobble': False, 'weapon required': 'pickaxe', 'animate speed': 50, 'right weapon hit sound': 'pickaxe', 'hit sound': 'rock_hit', 'break sound': 'rocks', 'health': 5, 'damage': 0, 'knockback': 0, 'protected': False, 'random drop number': False, 'items': {'coal':6}, 'rare items': ['clay']}
 BREAKABLES['ironblock'] = {'break type': 'gradual', 'wobble': False, 'weapon required': 'pickaxe', 'animate speed': 50, 'right weapon hit sound': 'pickaxe', 'hit sound': 'rock_hit', 'break sound': 'rocks', 'health': 5, 'damage': 0, 'knockback': 0, 'protected': False, 'random drop number': False, 'items': {'iron ore':6}, 'rare items': [None]}
+BREAKABLES['goldblock'] = {'break type': 'gradual', 'wobble': False, 'weapon required': 'pickaxe', 'animate speed': 50, 'right weapon hit sound': 'pickaxe', 'hit sound': 'rock_hit', 'break sound': 'rocks', 'health': 5, 'damage': 0, 'knockback': 0, 'protected': False, 'random drop number': False, 'items': {'gold ore':6}, 'rare items': [None]}
 
+BLOCK_LIST = []
+for item in BREAKABLES:
+    if 'block' in item:
+        BLOCK_LIST.append(item)
+
+BLOCK_PROB = [0.5, 0.25, 0.2, 0.05]
 
 VEIN_LIST = []
 for item in BREAKABLES:

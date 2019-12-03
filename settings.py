@@ -115,7 +115,7 @@ BROWN = (106, 55, 5)
 CYAN = (0, 255, 255)
 TRANSPARENT = (255, 0, 255)
 SHADOW = (0, 0, 0, 150)
-UNDERWORLD = ['cave', 'tunnel', 'hole', 'tower'] # Used for map naming conventions that are under or over the overworld maps.
+UNDERWORLD = ['cave', 'tunnel', 'hole', 'mine', 'tower'] # Used for map naming conventions that are under or over the overworld maps.
 
 # game settings
 pg.mixer.pre_init(44100, -16, 4, 2048)

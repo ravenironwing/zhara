@@ -5,7 +5,7 @@ import gc
 import pygame as pg
 import sys
 import pickle
-from random import choice, random
+from random import choice, random, choices
 from os import path
 from settings import *
 from npcs import *
@@ -275,12 +275,12 @@ class Game:
         self.map_sprite_data_list = load_file[14]
         self.underworld_sprite_data_dict = load_file[15]
         updated_equipment = load_file[8]
-        UPGRADED_WEAPONS = updated_equipment[0]
-        UPGRADED_HATS = updated_equipment[1]
-        UPGRADED_TOPS = updated_equipment[2]
-        UPGRADED_GLOVES = updated_equipment[3]
-        UPGRADED_BOTTOMS = updated_equipment[4]
-        UPGRADED_SHOES = updated_equipment[5]
+        UPGRADED_WEAPONS.update(updated_equipment[0])
+        UPGRADED_HATS.update(updated_equipment[1])
+        UPGRADED_TOPS.update(updated_equipment[2])
+        UPGRADED_GLOVES.update(updated_equipment[3])
+        UPGRADED_BOTTOMS.update(updated_equipment[4])
+        UPGRADED_SHOES.update(updated_equipment[5])
         WEAPONS.update(UPGRADED_WEAPONS)
         HATS.update(UPGRADED_HATS)
         TOPS.update(UPGRADED_TOPS)
@@ -308,9 +308,10 @@ class Game:
                     random_vec = vec(170, 0).rotate(-rand_angle)
                     follower_center = vec(self.player.pos + random_vec)
                     if npc_type == 'animals':
-                        follower = Animal(self, follower_center.x, follower_center.y, self.map, companion)
-                        follower.offensive = False
-                        follower.make_companion()
+                        if companion != self.saved_vehicle: #Makes it so it doesn't double load companions you are riding.
+                            follower = Animal(self, follower_center.x, follower_center.y, self.map, companion)
+                            follower.offensive = False
+                            follower.make_companion()
                     else:
                         follower = Npc(self, follower_center.x, follower_center.y, self.map, companion)
                         follower.offensive = False
@@ -1267,6 +1268,14 @@ class Game:
             wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 0) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
             for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
                 Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
+
+            # This section generates ore blocks to time in all the spaces with the tile specified in the position (1, 0).
+            if not self.sprite_data.visited:
+                block_tile = self.map.tmxdata.get_tile_gid(1, 0, 0)
+                for location in self.map.tmxdata.get_tile_locations_by_gid(block_tile):
+                    block_type = choice(choices(BLOCK_LIST, BLOCK_PROB, k = 10))
+                    center = vec(location[0] * self.map.tile_size + self.map.tile_size/2, location[1] * self.map.tile_size + self.map.tile_size/2)
+                    Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
 
         # Generates random drop items
         if self.map_type in ['mountain', 'forest', 'grassland', 'desert', 'beach']:
