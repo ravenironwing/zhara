@@ -142,11 +142,13 @@ class MapOverlay:
 
 class MiniMap:
     def __init__(self, tm):
-        #self.width = tm.width * tm.tilewidth
-        #self.height = tm.height * tm.tileheight
+        self.mapwidth = tm.width * tm.tilewidth
+        self.mapheight = tm.height * tm.tileheight
         self.tmxdata = tm
         self.size = 256
+        self.ratio = self.size / self.mapwidth
         self.tile_size = int(self.size / tm.width)
+        self.height = self.mapheight * self.ratio
         self.image = self.make_map()
         self.rect = self.image.get_rect()
 
@@ -164,7 +166,7 @@ class MiniMap:
         return mini_surface
 
     def make_map(self):
-        temp_surface = pg.Surface((self.size, self.size)).convert()
+        temp_surface = pg.Surface((self.size, self.height)).convert()
         temp_surface = self.render(temp_surface)
         return temp_surface
 
@@ -177,7 +179,8 @@ class MiniMap:
             self.size -= 128
             if self.size < 128:
                 self.size = 128
-
+        self.ratio = self.size / self.mapwidth
+        self.height = self.mapheight * self.ratio
         self.tile_size = int(self.size / 64)
         self.image = self.make_map()
         self.rect = self.image.get_rect()

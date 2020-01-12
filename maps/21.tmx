@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="912">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="940">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1274,7 +1274,6 @@
   <object id="192" name="climbable" x="6136" y="6650" width="916" height="18"/>
   <object id="193" name="climbable" x="7040" y="5756" width="14" height="902"/>
   <object id="197" name="climbable" x="1268" y="4600" width="922" height="14"/>
-  <object id="198" name="climbable" x="1268" y="4618" width="12" height="894"/>
   <object id="199" name="climbable" x="1926.5" y="5440.5" width="14" height="126"/>
   <object id="200" name="climbable" x="2026.5" y="5440.5" width="14" height="128"/>
   <object id="201" name="climbable" x="1264" y="5502" width="676" height="18"/>
@@ -1339,7 +1338,6 @@
   <object id="364" name="large plate" x="5488.67" y="2020.67" width="36" height="36"/>
   <object id="366" name="roasted chicken" x="5500" y="2029.33" width="13.3333" height="13.3333"/>
   <object id="367" name="large plate" x="5412.67" y="2022" width="36" height="36"/>
-  <object id="375" name="pink moth" x="1767.33" y="5160" width="25.3333" height="26.6667"/>
   <object id="376" name="green moth" x="1908.67" y="4869.33" width="24" height="25.3333"/>
   <object id="427" name="wall" x="3995" y="7962" width="74" height="76"/>
   <object id="428" name="wall" x="4379" y="7961" width="74" height="76"/>
@@ -1426,12 +1424,12 @@
   <object id="612" name="wall" x="5828" y="7110" width="104" height="20"/>
   <object id="613" name="wall" x="5824" y="6949" width="119" height="24"/>
   <object id="614" name="fire" x="5865" y="7024" width="29" height="30"/>
-  <object id="616" name="breakable wall@0" x="2688" y="4608" width="128" height="128"/>
-  <object id="617" name="breakable wall@0" x="2820" y="4608" width="124" height="128"/>
+  <object id="616" name="breakable wall@0" x="2688" y="4648" width="128" height="46.6667"/>
+  <object id="617" name="breakable wall@0" x="2820" y="4648" width="124" height="44"/>
   <object id="618" name="wall" x="2946.67" y="4649.33" width="417.333" height="42.6667"/>
   <object id="620" name="wall" x="3364" y="4648" width="52" height="216"/>
-  <object id="621" name="breakable wall@90" x="3328" y="4864" width="128" height="128"/>
-  <object id="622" name="breakable wall@90" x="3328" y="4992" width="128" height="128"/>
+  <object id="621" name="breakable wall@90" x="3369.33" y="4864" width="45.3333" height="128"/>
+  <object id="622" name="breakable wall@90" x="3368" y="4992" width="46.6667" height="128"/>
   <object id="662" name="plate" x="5039.67" y="4776.67" width="56" height="46.6667"/>
   <object id="663" name="plate" x="5145.33" y="4784" width="54.6667" height="45.3333"/>
   <object id="664" name="salmon sushi" x="5042.67" y="4788" width="17.3333" height="18.6667"/>
@@ -1503,23 +1501,8 @@
   <object id="459" name="sheep" x="6833.88" y="6011.06" width="36" height="34"/>
   <object id="462" name="guard" x="6278" y="5824" width="52" height="46"/>
   <object id="560" name="chicken" x="6501" y="5221" width="34" height="37"/>
-  <object id="568" name="potato bush" x="1844" y="4789" width="26" height="23"/>
   <object id="583" name="brown bird" x="4287" y="6654" width="25" height="28"/>
   <object id="585" name="brown bird" x="4712.5" y="6629" width="25" height="28"/>
-  <object id="586" name="potato bush" x="1975" y="4784.5" width="26" height="23"/>
-  <object id="587" name="potato bush" x="2101" y="4792.5" width="26" height="23"/>
-  <object id="588" name="potato bush" x="1842" y="4916.5" width="26" height="23"/>
-  <object id="589" name="potato bush" x="1970" y="4917.5" width="26" height="23"/>
-  <object id="590" name="potato bush" x="2106" y="4915.5" width="26" height="23"/>
-  <object id="591" name="potato bush" x="1838" y="5045.5" width="26" height="23"/>
-  <object id="592" name="potato bush" x="1971" y="5044.5" width="26" height="23"/>
-  <object id="593" name="potato bush" x="2100" y="5043.5" width="26" height="23"/>
-  <object id="594" name="potato bush" x="1845" y="5172.5" width="26" height="23"/>
-  <object id="595" name="potato bush" x="1972" y="5176.5" width="26" height="23"/>
-  <object id="596" name="potato bush" x="2099" y="5174.5" width="26" height="23"/>
-  <object id="597" name="potato bush" x="1843" y="5299.5" width="26" height="23"/>
-  <object id="598" name="potato bush" x="1971" y="5305.5" width="26" height="23"/>
-  <object id="599" name="potato bush" x="2100" y="5304.5" width="26" height="23"/>
   <object id="623" name="carrot plant" x="1373.33" y="5829.33" width="41.3333" height="41.3333"/>
   <object id="624" name="carrot plant" x="1515.33" y="5832.67" width="41.3333" height="41.3333"/>
   <object id="625" name="carrot plant" x="1362" y="5959.33" width="41.3333" height="41.3333"/>
@@ -1574,42 +1557,24 @@
   <object id="798" name="wall" x="2978" y="5933" width="60" height="46"/>
   <object id="799" name="large dead tree@0" x="4205" y="1329.5" width="34" height="33"/>
   <object id="806" name="large dead tree" x="4483" y="1444.5" width="34" height="33"/>
-  <object id="826" name="hedge@0" x="4766.67" y="6045.33" width="56" height="61.3333"/>
-  <object id="827" name="hedge@0" x="4765.33" y="5918.67" width="56" height="61.3333"/>
-  <object id="828" name="hedge@0" x="4769.33" y="4898.67" width="56" height="61.3333"/>
-  <object id="829" name="hedge@0" x="4773.33" y="4772" width="56" height="61.3333"/>
-  <object id="830" name="hedge@0" x="4770.67" y="4258.67" width="56" height="61.3333"/>
-  <object id="831" name="hedge@0" x="4768" y="4128" width="56" height="61.3333"/>
-  <object id="832" name="hedge@0" x="4768" y="4004" width="56" height="61.3333"/>
-  <object id="833" name="hedge@0" x="4768" y="3489.33" width="56" height="61.3333"/>
-  <object id="834" name="rose bush@0" x="2337.33" y="6562.67" width="53.3333" height="57.3333"/>
-  <object id="835" name="rose bush@0" x="2340" y="6059.33" width="53.3333" height="57.3333"/>
-  <object id="836" name="rose bush@0" x="2337.33" y="5160.67" width="53.3333" height="57.3333"/>
-  <object id="837" name="rose bush@0" x="2338.67" y="5280.67" width="53.3333" height="57.3333"/>
+  <object id="826" name="hedge@0" x="4766.67" y="6030.66" width="56" height="96"/>
+  <object id="827" name="hedge@0" x="4765.33" y="5902.67" width="56" height="98.6666"/>
+  <object id="828" name="hedge@0" x="4769.33" y="4888" width="56" height="85.3333"/>
+  <object id="829" name="hedge@0" x="4773.33" y="4760" width="56" height="92"/>
+  <object id="830" name="hedge@0" x="4770.67" y="4249.34" width="56" height="85.3333"/>
+  <object id="831" name="hedge@0" x="4768" y="4122.67" width="56" height="89.3333"/>
+  <object id="832" name="hedge@0" x="4768" y="3993.33" width="56" height="81.3333"/>
+  <object id="833" name="hedge@0" x="4768" y="3470.66" width="56" height="94.6666"/>
+  <object id="834" name="rose bush@0" x="2337.33" y="6548" width="53.3333" height="90.6666"/>
+  <object id="835" name="rose bush@0" x="2340" y="6036.66" width="53.3333" height="92"/>
+  <object id="836" name="rose bush@0" x="2330.66" y="5147.34" width="66.6666" height="92"/>
+  <object id="837" name="rose bush@0" x="2330.67" y="5267.34" width="66.6666" height="93.3333"/>
   <object id="839" name="rose bush@90" x="6685.33" y="3235.33" width="53.3333" height="57.3333"/>
   <object id="840" name="rose bush@90" x="6818.67" y="3235.33" width="53.3333" height="57.3333"/>
   <object id="841" name="rose bush@90" x="6945.33" y="3236.67" width="53.3333" height="57.3333"/>
   <object id="842" name="John's bed" x="2569.33" y="4746.67" width="246.667" height="100"/>
   <object id="843" name="bed" x="2580" y="5264" width="233.333" height="97.3333"/>
-  <object id="844" name="potato bush" x="1699" y="4783.17" width="26" height="23"/>
-  <object id="845" name="potato bush" x="1573.67" y="4784.5" width="26" height="23"/>
-  <object id="846" name="potato bush" x="1464.33" y="4785.83" width="26" height="23"/>
-  <object id="847" name="potato bush" x="1345.67" y="4781.83" width="26" height="23"/>
-  <object id="848" name="potato bush" x="1352.33" y="4900.5" width="26" height="23"/>
-  <object id="849" name="potato bush" x="1481.67" y="4895.17" width="26" height="23"/>
-  <object id="850" name="potato bush" x="1601.67" y="4889.83" width="26" height="23"/>
-  <object id="851" name="potato bush" x="1707" y="4884.5" width="26" height="23"/>
-  <object id="852" name="potato bush" x="1715" y="5028.5" width="26" height="23"/>
-  <object id="853" name="potato bush" x="1599" y="5039.17" width="26" height="23"/>
-  <object id="854" name="potato bush" x="1488.33" y="5037.83" width="26" height="23"/>
-  <object id="855" name="potato bush" x="1351" y="5037.83" width="26" height="23"/>
-  <object id="856" name="potato bush" x="1344.33" y="5159.17" width="26" height="23"/>
-  <object id="857" name="potato bush" x="1496.33" y="5161.83" width="26" height="23"/>
-  <object id="858" name="potato bush" x="1627" y="5160.5" width="26" height="23"/>
-  <object id="859" name="potato bush" x="1639" y="5303.17" width="26" height="23"/>
-  <object id="860" name="potato bush" x="1513.67" y="5315.17" width="26" height="23"/>
-  <object id="861" name="potato bush" x="1353.67" y="5311.17" width="26" height="23"/>
-  <object id="862" name="potato bush" x="1732.33" y="5291.17" width="26" height="23"/>
+  <object id="847" name="potato bush" x="1345.67" y="4781.83" width="59.6633" height="54.17"/>
   <object id="863" name="john" x="2917.33" y="4842.67" width="49.3333" height="49.3333"/>
   <object id="866" name="climbable" x="5518.67" y="3470.67" width="86.6667" height="601.333"/>
   <object id="867" name="climbable" x="5590.67" y="3978.67" width="145.333" height="92"/>
@@ -1641,5 +1606,32 @@
   <object id="897" name="max" x="5634.67" y="3706.67" width="42.6667" height="42.6667"/>
   <object id="898" name="chestdewcastle blacksmith" x="5656" y="6404" width="77.3333" height="114.667"/>
   <object id="905" name="flint stone" x="5892" y="6674" width="28" height="28"/>
+  <object id="912" name="potato bush" x="1471.5" y="4784.91" width="59.6633" height="54.17"/>
+  <object id="913" name="potato bush" x="1612.84" y="4783.58" width="59.6633" height="54.17"/>
+  <object id="914" name="potato bush" x="1746.17" y="4791.58" width="59.6633" height="54.17"/>
+  <object id="915" name="potato bush" x="1888.84" y="4776.91" width="59.6633" height="54.17"/>
+  <object id="916" name="potato bush" x="2028.84" y="4780.91" width="59.6633" height="54.17"/>
+  <object id="917" name="potato bush" x="2027.5" y="4967.58" width="59.6633" height="54.17"/>
+  <object id="918" name="potato bush" x="1888.84" y="4987.58" width="59.6633" height="54.17"/>
+  <object id="919" name="potato bush" x="1742.17" y="4979.58" width="59.6633" height="54.17"/>
+  <object id="920" name="potato bush" x="1600.84" y="4978.25" width="59.6633" height="54.17"/>
+  <object id="921" name="potato bush" x="1488.84" y="4971.58" width="59.6633" height="54.17"/>
+  <object id="922" name="potato bush" x="1334.17" y="4967.58" width="59.6633" height="54.17"/>
+  <object id="923" name="potato bush" x="1342.17" y="5138.25" width="59.6633" height="54.17"/>
+  <object id="924" name="potato bush" x="1492.84" y="5148.91" width="59.6633" height="54.17"/>
+  <object id="925" name="potato bush" x="1636.84" y="5148.91" width="59.6633" height="54.17"/>
+  <object id="926" name="potato bush" x="1784.84" y="5144.91" width="59.6633" height="54.17"/>
+  <object id="927" name="potato bush" x="1943.5" y="5142.25" width="59.6633" height="54.17"/>
+  <object id="928" name="potato bush" x="2068.84" y="5143.58" width="59.6633" height="54.17"/>
+  <object id="929" name="potato bush" x="2039.5" y="5310.25" width="59.6633" height="54.17"/>
+  <object id="930" name="potato bush" x="1867.5" y="5312.91" width="59.6633" height="54.17"/>
+  <object id="931" name="potato bush" x="1658.17" y="5310.25" width="59.6633" height="54.17"/>
+  <object id="932" name="potato bush" x="1496.84" y="5314.25" width="59.6633" height="54.17"/>
+  <object id="933" name="potato bush" x="1347.5" y="5299.58" width="59.6633" height="54.17"/>
+  <object id="935" name="potato bush" x="1359.5" y="4642.25" width="59.6633" height="54.17"/>
+  <object id="936" name="potato bush" x="1524.84" y="4648.91" width="59.6633" height="54.17"/>
+  <object id="937" name="potato bush" x="1686.17" y="4648.91" width="59.6633" height="54.17"/>
+  <object id="938" name="potato bush" x="1823.5" y="4652.91" width="59.6633" height="54.17"/>
+  <object id="939" name="potato bush" x="1970.17" y="4652.91" width="59.6633" height="54.17"/>
  </objectgroup>
 </map>

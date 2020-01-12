@@ -25,18 +25,16 @@ def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
 
 def collide_with_walls(sprite, group, dir):
-    if dir == 'x':
-        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
-        if hits:
+    hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+    if hits:
+        if dir == 'x':
             if hits[0].rect.centerx > sprite.hit_rect.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
             if hits[0].rect.centerx < sprite.hit_rect.centerx:
                 sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
             sprite.vel.x = 0
             sprite.hit_rect.centerx = sprite.pos.x
-    if dir == 'y':
-        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
-        if hits:
+        if dir == 'y':
             if hits[0].rect.centery > sprite.hit_rect.centery:
                 sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
             if hits[0].rect.centery < sprite.hit_rect.centery:
@@ -2052,6 +2050,8 @@ class Player(pg.sprite.Sprite):
             else:
                 if self.equipped[item_type] == item:
                     self.equipped[item_type] = new_item_name
+            return True
+        else:
             return True
 
     def place_item(self):
@@ -4211,9 +4211,9 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.image = pg.transform.rotate(self.image_list[0].copy(), self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.center
-        self.hit_rect = self.rect
-        self.hit_rect.center = self.rect.center
         self.trunk = Obstacle(self.game, x, y, w, h)
+        self.hit_rect = self.trunk.rect
+        self.hit_rect.center = self.trunk.rect.center
         # Animation vars
         self.animate_speed = self.kind['animate speed']
         self.frame = 0
@@ -4252,7 +4252,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                     old_center = self.rect.center
                     self.image = new_image
                     self.rect = self.image.get_rect()
-                    self.rect.center = old_center
+                    self.rect.center = self.trunk.rect.center = self.hit_rect.center = old_center
             if self.break_type == 'gradual':
                 if self.hit_weapon == self.weapon_required:
                     self.frame = self.right_hits
@@ -4260,7 +4260,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                         self.frame = 0
                     self.last_move = now
                     self.image = pg.transform.rotate(self.image_list[self.frame], self.rot)
-                    self.rect.center = self.center
+                    self.rect.center = self.trunk.rect.center = self.hit_rect.center = self.center
 
         elif self.dead:
             now = pg.time.get_ticks()
@@ -4268,7 +4268,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                 self.animate_death(self.image_list)
                 self.last_move = now
                 self.image = pg.transform.rotate(self.image_list[self.frame], self.rot)
-                self.rect.center = self.center
+                self.rect.center = self.trunk.rect.center = self.hit_rect.center = self.center
         else:
             pass
 
@@ -4282,28 +4282,28 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         if self.frame > 1:
             self.frame = 0
             self.image = pg.transform.rotate(self.image_list[0], self.rot)
-            self.rect.center = self.center
+            self.rect.center = self.trunk.rect.center = self.hit_rect.center = self.center
 
     def gets_hit(self, weapon_type):
         now = pg.time.get_ticks()
         if now - self.last_hit > DAMAGE_RATE * 10:
-                if not self.hit:
-                    if self.hp > 0:
-                        if weapon_type == self.weapon_required:
-                            self.right_hit_sound.play()
-                        else:
-                            self.hit_sound.play()
+            if not self.hit:
+                if self.hp > 0:
+                    if weapon_type == self.weapon_required:
+                        self.right_hit_sound.play()
                     else:
-                        self.break_sound.play()
-                self.hit = True
-                self.hit_weapon = weapon_type
-                self.last_hit = now
-                self.hits += 1
-                if weapon_type == self.weapon_required:
-                    self.hp -= 1
-                    self.right_hits += 1
-                if self.hp < 1:
-                    self.dead = True
+                        self.hit_sound.play()
+                else:
+                    self.break_sound.play()
+            self.hit = True
+            self.hit_weapon = weapon_type
+            self.last_hit = now
+            self.hits += 1
+            if weapon_type == self.weapon_required:
+                self.hp -= 1
+                self.right_hits += 1
+            if self.hp < 1:
+                self.dead = True
 
     def remove_bush(self):
         random_value = randrange(0, 100)  # random number in range [0.0,1.0)

@@ -149,7 +149,7 @@ def melee_hit_rect(one, two):
         return False
 
 def breakable_melee_hit_rect(one, two):
-    if one.mid_weapon_melee_rect.colliderect(two.trunk.hit_rect) or one.weapon_melee_rect.colliderect(two.trunk.hit_rect):
+    if one.mid_weapon_melee_rect.colliderect(two.trunk.hit_rect) or one.weapon_melee_rect.colliderect(two.trunk.hit_rect) or one.melee_rect.colliderect(two.trunk.hit_rect):
         if one.mother.weapon_hand == 'weapons':
             if one.swing_weapon1: # This differentiates between weapons that are being swung and those that are thrusted.
                 if one.frame > 3:
@@ -160,7 +160,7 @@ def breakable_melee_hit_rect(one, two):
         else:
             return False
 
-    elif one.mid_weapon2_melee_rect.colliderect(two.trunk.hit_rect) or one.weapon2_melee_rect.colliderect(two.trunk.hit_rect):
+    elif one.mid_weapon2_melee_rect.colliderect(two.trunk.hit_rect) or one.weapon2_melee_rect.colliderect(two.trunk.hit_rect) or one.melee2_rect.colliderect(two.trunk.hit_rect):
         if one.mother.weapon_hand == 'weapons2':
             if one.swing_weapon2:
                 if one.frame > 3:
