@@ -12,6 +12,13 @@ from vehicles import *
 
 vec = pg.math.Vector2
 
+def color_image(image, color):
+    temp_image = image.copy()
+    color_image = pg.Surface(temp_image.get_size()).convert_alpha()
+    color_image.fill(color)
+    temp_image.blit(color_image, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+    return temp_image
+
 def collide(sprite):
     sprite.hit_rect.centerx = sprite.pos.x
     for item in sprite.collide_list:
@@ -660,7 +667,9 @@ class Character(pg.sprite.Sprite):
             i = 0
             for part in part_placement:
                 if i in range(0, 9):
-                    image = pg.transform.rotate(self.game.humanoid_images[body_part_images_list][i], part[2])
+                    temp_img = self.game.humanoid_images[body_part_images_list][i]
+                    colored_img = color_image(temp_img, self.mother.colors['skin'])
+                    image = pg.transform.rotate(colored_img, part[2])
                     temp_rect = image.get_rect()
                     body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
 
@@ -712,7 +721,9 @@ class Character(pg.sprite.Sprite):
                         body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
                     if 'dragon' not in self.race:
                         if self.mother.equipped['hair'] != None:
-                            image = pg.transform.rotate(self.game.hair_images[HAIR[self.mother.equipped['hair']]['image']], part_placement[8][2])
+                            temp_img = self.game.hair_images[HAIR[self.mother.equipped['hair']]['image']]
+                            colored_img = color_image(temp_img, self.mother.colors['hair'])
+                            image = pg.transform.rotate(colored_img, part_placement[8][2])
                             temp_rect = image.get_rect()
                             body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part_placement[8][0]), rect.centery - (temp_rect.centery - part_placement[8][1])))
                         if self.mother.equipped['hats'] != None:
@@ -968,9 +979,10 @@ class Player(pg.sprite.Sprite):
         self.last_magica_regen = 0
         self.last_cast = 0
         # Player Body Customizations/Equipped
-        self.inventory = {'gender': list(GENDER.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'hair': list(HAIR.keys()), 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 0, 'items': [None], 'magic': [None]}
+        self.inventory = {'gender': list(GENDER.keys()), 'hair': list(HAIR.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 0, 'items': [None], 'magic': [None]}
         self.equipped = {'gender': 'female', 'race': 'osidine', 'weapons': None, 'weapons2': None, 'hair': None, 'hats': None, 'tops': None, 'bottoms': None, 'shoes': None, 'gloves': None, 'items': None, 'magic': None}
         self.race = self.equipped['race']
+        self.colors = {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}
         self.ammo = {'pistol': 100, 'submachine gun': 100, 'shotgun': 100, 'rifle': 100, 'sniper rifle': 100, 'rocket launcher': 100, 'grenades': 100, 'turret': 1000, 'laser': 100, 'crystals': 100, 'bow': 100}
         self.mag1 = 0
         self.mag2 = 0
@@ -2418,6 +2430,13 @@ class Npc(pg.sprite.Sprite):
             self.kind = PEOPLE[kind]
             self.game.people[kind] = self.kind
         self.race = self.kind['race']
+        self.colors = self.kind['colors']
+        if 'random' in self.colors['skin']:
+            skin_list = eval(self.colors['skin'].replace('random', ''))
+            self.colors['skin'] = choice(skin_list)
+        if 'random' in self.colors['hair']:
+            hair_list = eval(self.colors['hair'].replace('random', ''))
+            self.colors['hair'] = choice(hair_list)
         self.name = self.kind['name']
         self.protected = self.kind['protected']
         if 'Guard' in self.kind['name']:

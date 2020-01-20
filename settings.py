@@ -8,6 +8,7 @@ from interactables import *
 from items import *
 from chests import *
 from race_info import *
+from color_palettes import *
 
 vec = pg.math.Vector2
 vec3 = pg.math.Vector3
@@ -89,6 +90,7 @@ enchantments_folder = path.join(img_folder, 'enchantments')
 corpse_folder = path.join(img_folder, 'corpses')
 loading_screen_folder = path.join(img_folder, 'loading_screens')
 vehicles_folder = path.join(img_folder, 'vehicles')
+color_swatches_folder = path.join(img_folder, 'color_swatches')
 
 # Font settings:
 HEADING_FONT = path.join(fonts_folder, 'UncialAntiqua-Regular.ttf')
@@ -115,6 +117,8 @@ BROWN = (106, 55, 5)
 CYAN = (0, 255, 255)
 TRANSPARENT = (255, 0, 255)
 SHADOW = (0, 0, 0, 150)
+DEFAULT_HAIR_COLOR = (138,54,15)
+DEFAULT_SKIN_COLOR = (255,255,255)
 UNDERWORLD = ['cave', 'tunnel', 'hole', 'mine', 'tower'] # Used for map naming conventions that are under or over the overworld maps.
 
 # game settings
@@ -317,6 +321,12 @@ number_of_files = len([name for name in os.listdir(vehicles_folder) if os.path.i
 for i in range(0, number_of_files):
     filename = 'vehicle{}.png'.format(i)
     VEHICLES_IMAGES.append(filename)
+
+COLOR_SWATCH_IMAGES = []
+number_of_files = len([name for name in os.listdir(color_swatches_folder) if os.path.isfile(os.path.join(color_swatches_folder, name))])
+for i in range(0, number_of_files):
+    filename = 'swatch{}.png'.format(i)
+    COLOR_SWATCH_IMAGES.append(filename)
 
 # Bullet Images
 BULLET_IMG = path.join(img_folder, 'bullet.png')

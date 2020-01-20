@@ -26,25 +26,25 @@ PEOPLE = {}
 PEOPLE['generic'] = {'name': 'generic', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'male', 'race': 'osidine',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': list(WEAPONS.keys()), 'hats': list(HATS.keys()), 'hair': list(HAIR.keys()), 'tops': list(TOPS.keys()), 'bottoms': list(BOTTOMS.keys()), 'shoes': list(SHOES.keys()), 'gloves': list(GLOVES.keys()), 'gold': 100, 'items': list(ITEMS.keys()), 'magic': list(MAGIC.keys())},
     'animations': {None}}
 PEOPLE['melerous'] = {'name': 'Melerous', 'dead': False, 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 0, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 500, 'avoid radius': 10, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': [],
     'gender': 'male', 'race': 'blackwraith',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['karang'], 'hats': ['dark wizard hood'], 'hair': [None], 'tops': ['melerous armor'], 'bottoms': ['chainmail leggings M'], 'shoes': ['demon boots'], 'gloves': ['demon gauntlets'], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': ['fireball']},
     'animations': {None}}
 PEOPLE['vadashay'] = {'name': 'Vadashay', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 600, 'avoid radius': 100, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'vadashay',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['dead bluefish'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['demon'] = {'name': 'demon', 'protected': False, 'health': 666, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (100, 150), 'run speed': 260, 'detect radius': 650, 'avoid radius': 100, 'aggression': 'awd', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'demon',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random DEMON_'], 'hats': ['random DEMON_'], 'hair': ['random DEMON_'], 'tops': ['random DEMON_'], 'bottoms': ['random DEMON_'], 'shoes': [None], 'gloves': ['random DEMON_'], 'gold': 666, 'items': ['random DEMON_'], 'magic': [None]},
     'animations': {None}}
 
@@ -58,44 +58,44 @@ DEMON_ITEMS = [None, 'charcoal', 'charcoal', 'sulphur', 'sulphur', 'sulphur', 's
 PEOPLE['clay golem guard'] = {'name': 'clay golem Guard', 'protected': False, 'health': 400, 'touch damage': False, 'damage': 50, 'knockback': 50, 'walk speed': (70, 100), 'run speed': 200, 'detect radius': 700, 'avoid radius': 100, 'aggression': 'awp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'golem',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 300, 'items': ['clay', 'clay', 'clay', 'clay'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['ice golem'] = {'name': 'ice golem', 'protected': False, 'health': 400, 'touch damage': False, 'damage': 50, 'knockback': 50, 'walk speed': (70, 100), 'run speed': 200, 'detect radius': 700, 'avoid radius': 100, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'icegolem',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 300, 'items': ['living water', 'living water', 'living water', 'living water'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['goblin'] = {'name': 'goblin', 'protected': False, 'health': 200, 'touch damage': False, 'damage': 10, 'knockback': 5, 'walk speed': (100, 200), 'run speed': 300, 'detect radius': 700, 'avoid radius': 100, 'aggression': 'awd', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'goblin',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random SKELETON_'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['random SKELETON_'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['goblin king'] = {'name': 'Tronold Grump', 'dead': False, 'protected': False, 'health': 10000, 'touch damage': False, 'damage': 100, 'knockback': 20, 'walk speed': (50, 75), 'run speed': 90, 'detect radius': 400, 'avoid radius': 80, 'aggression': 'sap', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'male', 'race': 'goblin',
-    'dialogue': 'GOBLIN_KING_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['live goldfish'], 'hats': ['golden crown'], 'hair': ['The Golden Toupee'], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 1000000000, 'items': [None], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'GOBLIN_KING_DLG', 'store': None,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['live goldfish'], 'hats': ['The Golden Toupee'], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 1000000000, 'items': [None], 'magic': [None]},
     'animations': {None}}
 PEOPLE['goblin guard'] = {'name': 'Goblin Guard', 'protected': True, 'health': 350, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'goblin',
-    'dialogue': 'random GUARD_DLG', 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'random GUARD_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['bone club'], 'hats': ['skull helmet'], 'hair': [None], 'tops': ['iron plate armor'], 'bottoms': ['leather leggings M'], 'shoes': [None], 'gloves': [None], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['goblin slave'] = {'name': 'slave', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'random HUMAN_RACES',
-    'dialogue': 'random GOBLIN_SLAVE_DLG', 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'random GOBLIN_SLAVE_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 HUMAN_RACES = ['shaktele', 'osidine']
 PEOPLE['immortui'] = {'name': 'Immortui', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 600, 'avoid radius': 50, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'random', 'race': 'immortui',
-    'dialogue': 'random IMMORTUI_DLG', 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'random IMMORTUI_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random IMMORTUI_'], 'bottoms': ['random IMMORTUI_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random IMMORTUI_'], 'magic': [None]},
     'animations': {'walk': ZOMBIE_WALK}}
 IMMORTUI_TOPS = ['decayed shirt F', 'decayed shirt M', 'tshirt M', 'tshirt F', 'dark tshirt M', 'dark tshirt F']
@@ -104,20 +104,20 @@ IMMORTUI_ITEMS = ['zombie extract', 'zombie extract', 'zombie extract', 'zombie 
 PEOPLE['blackwraith'] = {'name': 'black wraith', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 0, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 500, 'avoid radius': 10, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': [],
     'gender': 'random', 'race': 'blackwraith',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': ['fireball']},
     'animations': {'walk': ZOMBIE_WALK}}
 BLACKWRAITH_ITEMS = ['demon dust', 'ectoplasm']
 PEOPLE['whitewraith'] = {'name': 'white wraith', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 0, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 500, 'avoid radius': 300, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': [],
     'gender': 'random', 'race': 'whitewraith',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['random BLACKWRAITH_'], 'magic': [None]},
     'animations': {'walk': ZOMBIE_WALK}}
 PEOPLE['skeleton'] = {'name': 'skeleton', 'protected': False, 'health': 300, 'touch damage': False, 'damage': 10, 'knockback': 5, 'walk speed': (100, 200), 'run speed': 300, 'detect radius': 700, 'avoid radius': 150, 'aggression': 'awd', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'skeleton',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random SKELETON_'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 100, 'items': ['random SKELETON_'], 'magic': [None]},
     'animations': {None}}
 SKELETON_WEAPONS = ['ancient viking sword', 'bone club']
@@ -126,43 +126,43 @@ SKELETON_ITEMS = ['charcoal', 'charcoal', 'sulphur', 'sulphur', 'sulphur', 'sulp
 PEOPLE['lafonda'] = {'name': 'Lafonda the Blacksmith', 'dead': False, 'protected': True, 'health': 500, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'osidine',
-    'dialogue': 'BLACKSMITH_DLG', 'store': BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': [None], 'hair': ['long black pony'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['dewcastle blacksmith chest key'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'BLACKSMITH_DLG', 'store': BLACKSMITH_STORE,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': [None], 'hair': ['long pony'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['dewcastle blacksmith chest key'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['tamolin'] = {'name': 'Tamolin the Mage', 'dead': False, 'quest': 'Ant eggs for Tamolin', 'protected': True, 'health': 550, 'touch damage': False, 'damage': 25, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'shaktele',
-    'dialogue': 'TAMOLIN_DLG', 'store': TAMOLIN_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['bronze mace'], 'hats': ['red cloak'], 'hair': ['short brown'], 'tops': ['blue mage robe top M'], 'bottoms': ['blue mage robe bottom'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'TAMOLIN_DLG', 'store': TAMOLIN_STORE,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['bronze mace'], 'hats': ['red cloak'], 'hair': ['short'], 'tops': ['blue mage robe top M'], 'bottoms': ['blue mage robe bottom'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['kimmy'] = {'name': 'Kimmy', 'dead': False, 'protected': True,'health': 1000, 'touch damage': False, 'damage': 15, 'knockback': 1, 'walk speed': (300, 400), 'run speed': 400, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables'],
     'gender': 'female', 'race': 'elf',
-    'dialogue': 'KIMMY_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['long blond'], 'tops': ['tshirt F'], 'bottoms': ['red mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'KIMMY_DLG', 'store': None,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['long straight'], 'tops': ['tshirt F'], 'bottoms': ['red mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
     'animations': {'walk': RUNNING}}
 PEOPLE['loella'] = {'name': 'Loella', 'dead': False, 'quest': 'A fish for Loella', 'protected': True,'health': 1000, 'touch damage': False, 'damage': 0, 'knockback': 1, 'walk speed': (200, 300), 'run speed': 400, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'water'],
     'gender': 'female', 'race': 'elf',
-    'dialogue': 'LOELLA_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['long straight brown'], 'tops': ['dark tshirt F'], 'bottoms': ['green mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'LOELLA_DLG', 'store': None,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['long straight'], 'tops': ['dark tshirt F'], 'bottoms': ['green mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['steve'] = {'name': 'Steve the Guard', 'dead': False, 'quest': 'A mace for Steve', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'male', 'race': 'osidine',
-    'dialogue': 'STEVE_DLG', 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'STEVE_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['short messy'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'gold': 12, 'items': ['baked potato', 'cheese wedge'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['anna'] = {'name': 'Anna the Stable Guard', 'dead': False, 'quest': None, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'female', 'race': 'osidine',
-    'dialogue': 'ANNA_DLG', 'store': ANNA_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': [None], 'hair': ['long blond pony'], 'tops': ['leather armor F'], 'bottoms': ['leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['leather gauntlets'], 'gold': 12, 'items': ['cheese wedge', 'carrot'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'ANNA_DLG', 'store': ANNA_STORE,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': [None], 'hair': ['long pony'], 'tops': ['leather armor F'], 'bottoms': ['leather leggings F'], 'shoes': ['steel boots'], 'gloves': ['leather gauntlets'], 'gold': 12, 'items': ['cheese wedge', 'carrot'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['guard'] = {'name': 'Guard', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'osidine',
-    'dialogue': 'random GUARD_DLG', 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'random GUARD_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random GUARD_'], 'hats': ['random GUARD_'], 'hair': ['random'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['random GUARD_'], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 GUARD_WEAPONS = ['steel sword', 'steel mace']
@@ -172,7 +172,7 @@ GUARD_BOTTOMS = ['chainmail leggings F', 'leather leggings F', 'chainmail leggin
 PEOPLE['villager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 5, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'osidine',
-    'dialogue': 'random VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 VILLAGER_TOPS = CASUAL_TOPS_LIST
@@ -181,35 +181,35 @@ VILLAGER_BOTTOMS = CASUAL_BOTTOMS_LIST
 PEOPLE['shaktelevillager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'shaktele',
-    'dialogue': 'random VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random SHAKTELEVILLAGER_'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 SHAKTELEVILLAGER_HAIR = RACE_HAIR['shaktele']
 PEOPLE['shaktele blacksmith'] = {'name': 'Hank the Blacksmith', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'shaktele',
-    'dialogue': 'BLACKSMITH_DLG', 'store': SHAKTELE_BLACKSMITH_STORE,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'BLACKSMITH_DLG', 'store': SHAKTELE_BLACKSMITH_STORE,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': [None], 'hair': ['dreadlocks'], 'tops': ['tshirt M'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['shakteleguard'] = {'name': 'Guard', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (190, 200), 'run speed': 260, 'detect radius': 450, 'avoid radius': 130, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'shaktele',
-    'dialogue': 'random GUARD_DLG', 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'random GUARD_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['assault rifle'], 'hats': ['tactical helmet'], 'hair': ['random'], 'tops': ['shaktele guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['black combat'], 'gloves': ['leather gauntlets'], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['kevin'] = {'name': 'Kevin', 'dead': False, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (190, 200), 'run speed': 260, 'detect radius': 450, 'avoid radius': 130, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'male', 'race': 'shaktele',
-    'dialogue': 'KEVIN_DLG', 'store': KEVIN_STORE,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'KEVIN_DLG', 'store': KEVIN_STORE,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': [None], 'hair': ['dreadlocks'], 'tops': ['shaktele guard armor'], 'bottoms': ['leather leggings M'], 'shoes': ['black combat'], 'gloves': [None], 'gold': 200, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['miewdravillager'] = {'name': 'Miewdra Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'miewdra',
-    'dialogue': 'random MIEWDRA_VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random COLOR_PALLETTE'}, 'dialogue': 'random MIEWDRA_VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random MIEWDRAVILLAGER_'], 'tops': ['random MIEWDRAVILLAGER_'], 'bottoms': ['random MIEWDRAVILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 MIEWDRAVILLAGER_TOPS = CASUAL_TOPS_LIST
@@ -218,26 +218,26 @@ MIEWDRAVILLAGER_HAIR = RACE_HAIR['miewdra']
 PEOPLE['miewdra blacksmith'] = {'name': 'Purrcy the Blacksmith', 'dead': False, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'miewdra',
-    'dialogue': 'BLACKSMITH_DLG', 'store': MIEWDRA_BLACKSMITH_STORE,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'BLACKSMITH_DLG', 'store': MIEWDRA_BLACKSMITH_STORE,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': ['elf hat'], 'hair': ['cat tufts'], 'tops': ['leather armor M'], 'bottoms': ['leather leggings M'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['felius'] = {'name': 'Felius', 'dead': False, 'quest': 'Fuel for Felius', 'protected': True, 'health': 1000, 'touch damage': False, 'damage': 50, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'miewdra',
-    'dialogue': 'FELIUS_DLG', 'store': FELIUS_STORE,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'FELIUS_DLG', 'store': FELIUS_STORE,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['miewdra blade'], 'hats': [None], 'hair': ['cat tufts'], 'tops': ['demon armor M'], 'bottoms': ['chainmail leggings M'], 'shoes': ['demon boots'], 'gloves': ['demon gauntlets'], 'gold': randrange(100, 1000), 'items': ['fireball tome'], 'magic': ['fireball']},
     'animations': {None}}
 PEOPLE['catrina'] = {'name': 'Catrina', 'dead': False, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'female', 'race': 'miewdra',
-    'dialogue': 'CATRINA_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['white cat'], 'tops': ['red dress top'], 'bottoms': ['blue dress skirt'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'CATRINA_DLG', 'store': None,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['long straight cat'], 'tops': ['red dress top'], 'bottoms': ['blue dress skirt'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['elfvillager'] = {'name': 'Elf Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'elf',
-    'dialogue': 'random ELF_VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random ELF_VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random ELFVILLAGER_'], 'tops': ['random ELFVILLAGER_'], 'bottoms': ['random ELFVILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 ELFVILLAGER_HAIR = ['brown elf braids', 'blond elf braids', 'white elf braids', 'short brown', 'short blond', 'long black pony', 'long brown side pony', 'long blond side pony']
@@ -246,37 +246,37 @@ ELFVILLAGER_BOTTOMS = CASUAL_BOTTOMS_LIST
 PEOPLE['elf blacksmith'] = {'name': 'Nelf the Blacksmith', 'dead': False, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'elf',
-    'dialogue': 'BLACKSMITH_DLG', 'store': ELF_BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': ['elf hat'], 'hair': ['white elf braids'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'BLACKSMITH_DLG', 'store': ELF_BLACKSMITH_STORE,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': ['elf hat'], 'hair': ['elf braids'], 'tops': ['black racerback tank top'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['elfqueen'] = {'name': 'Queen Zeladria', 'dead': False, 'protected': True, 'health': 200, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (100, 110), 'run speed': 200, 'detect radius': 500, 'avoid radius': 10, 'aggression': 'sap', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'elf',
-    'dialogue': 'ELF_QUEEN_DLG', 'store': None,
-    'osidine': {'dialogue': 'ELF_QUEEN_OSIDINE_DLG', 'quest': "Give letter to Zeladria", 'active': True},
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': ['paladin crown'], 'hair': ['white elf braids'], 'tops': ['wedding dress top'], 'bottoms': ['red mini dress skirt'], 'shoes': ['brown boots'], 'gloves': ['dress gloves'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'ELF_QUEEN_DLG', 'store': None,
+    'osidine': {'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'ELF_QUEEN_OSIDINE_DLG', 'quest': "Give letter to Zeladria", 'active': True},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['steel dagger'], 'hats': ['paladin crown'], 'hair': ['elf braids'], 'tops': ['wedding dress top'], 'bottoms': ['red mini dress skirt'], 'shoes': ['brown boots'], 'gloves': ['dress gloves'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['elfguard'] = {'name': 'Elf Guard', 'protected': True, 'health': 400, 'touch damage': False, 'damage': 25, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water', 'jumpables', 'climbables'],
     'gender': 'random', 'race': 'elf',
-    'dialogue': 'random ELF_GUARD_DLG', 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'random ELF_GUARD_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['random GUARD_'], 'hats': [None], 'hair': ['random ELFVILLAGER_'], 'tops': ['guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['steel boots'], 'gloves': ['random GUARD_'], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['dangerman'] = {'name': 'Elron Dangerman', 'dead': False, 'protected': True, 'health': 800, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (20, 25), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'sap', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'elf',
-    'dialogue': 'DANGERMAN_DLG', 'store': DANGERMAN_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': ['red cloak'], 'hair': ['white beard'], 'tops': ['red mage robe top M'], 'bottoms': ['red mage robe bottom'], 'shoes': ['bronze boots'], 'gloves': [None], 'gold': randrange(1, 10), 'items': ['potato', 'lock pick'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'DANGERMAN_DLG', 'store': DANGERMAN_STORE,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': ['red cloak'], 'hair': ['beard'], 'tops': ['red mage robe top M'], 'bottoms': ['red mage robe bottom'], 'shoes': ['bronze boots'], 'gloves': [None], 'gold': randrange(1, 10), 'items': ['potato', 'lock pick'], 'magic': [None]},
     'animations': {None}}
 
 
 PEOPLE['lacertolianvillager'] = {'name': 'Lacertolian Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'lacertolian',
-    'dialogue': 'random LACERTOLIAN_VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random COLOR_PALLETTE'}, 'dialogue': 'random LACERTOLIAN_VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 LACERTOLIANVILLAGER_TOPS = CASUAL_TOPS_LIST
@@ -284,34 +284,34 @@ LACERTOLIANVILLAGER_BOTTOMS = CASUAL_BOTTOMS_LIST
 PEOPLE['lacertolian blacksmith'] = {'name': 'Wendell the Blacksmith', 'dead': False, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'lacertolian',
-    'dialogue': 'BLACKSMITH_DLG', 'store': LACERTOLIAN_BLACKSMITH_STORE,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'BLACKSMITH_DLG', 'store': LACERTOLIAN_BLACKSMITH_STORE,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': [None], 'hair': ['lizard spikes'], 'tops': ['leather armor M'], 'bottoms': ['leather leggings M'], 'shoes': [None], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 PEOPLE['liz'] = {'name': 'Liz', 'protected': True, 'dead': False, 'health': 100, 'touch damage': False, 'damage': 20, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'female', 'race': 'lacertolian',
-    'dialogue': 'LIZ_DLG', 'store': LIZ_STORE,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'LIZ_DLG', 'store': LIZ_STORE,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['iron dagger'], 'hats': [None], 'hair': [None], 'tops': ['pink dress top'], 'bottoms': ['leather leggings F'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': ['fireball']},
     'animations': {None}}
 
 PEOPLE['mechanima blacksmith'] = {'name': 'Minimus Prime the Blacksmith', 'dead': False, 'protected': True, 'health': 600, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (90, 100), 'run speed': 160, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['obstacles', 'vehicles'],
     'gender': 'male', 'race': 'mechanima',
-    'dialogue': 'BLACKSMITH_DLG', 'store': MECHANIMA_BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': [None], 'hair': ['LED skin'], 'tops': ['guard armor'], 'bottoms': ['chainmail leggings M'], 'shoes': ['black combat'], 'gloves': ['steel gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'BLACKSMITH_DLG', 'store': MECHANIMA_BLACKSMITH_STORE,
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': [None], 'hair': ['full LED skin'], 'tops': ['guard armor'], 'bottoms': ['chainmail leggings M'], 'shoes': ['black combat'], 'gloves': ['steel gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['mech suit'] = {'name': 'Mech Suit', 'protected': False, 'health': 600, 'touch damage': False, 'damage': 60, 'knockback': 20, 'walk speed': (100, 110), 'run speed': 480, 'detect radius': 50, 'avoid radius': 10, 'aggression': 'sap', 'armed': True, 'dual wield': False,
     'collide': ['walls', 'water'],
     'gender': 'male', 'race': 'mech_suit',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['machine screws', 'machine screws', 'steel pipe', 'aluminum rod', 'steel wire', 'steel ingot', 'steel ingot'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['occupied mech suit'] = {'name': 'Mech Guard', 'protected': True, 'health': 600, 'touch damage': False, 'damage': 60, 'knockback': 20, 'walk speed': (300, 310), 'run speed': 480, 'detect radius': 600, 'avoid radius': 30, 'aggression': 'sap', 'armed': True, 'dual wield': False,
     'collide': ['walls', 'water'],
     'gender': 'male', 'race': 'mech_suit',
-    'dialogue': None, 'store': None,
+    'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['mech peacekeeper'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['machine screws', 'machine screws', 'steel pipe', 'aluminum rod', 'steel wire', 'steel ingot', 'steel ingot'], 'magic': [None]},
     'animations': {None}}
 
@@ -389,15 +389,15 @@ ANT_TUNNEL_ANIMALS = ['giant ant', 'rabbit']
 CAVE_ANIMALS = ['giant ant', 'rabbit', 'snake', 'spider', 'skeleton', 'immortui']
 
 # Created using the NPC designer
-PEOPLE['sandy'] = {'name': 'Sandy', 'dead': False, 'protected': True, 'health': 150, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (280, 320), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'male', 'race': 'shaktele', 'dialogue': 'random VILLAGER_DLG', 'store': None, 'inventory': {'weapons': ['steel dagger'], 'weapons2': [None], 'tops': ['pink dress top'], 'bottoms': ['chainmail leggings F'], 'hats': ['grey baseball hat'], 'hair': ['dreadlocks'], 'shoes': ['black combat'], 'gloves': [None], 'items': ['brick'], 'magic': ['fireball'], 'gold': 10}, 'animations': {None}, 'guarded': False}
-PEOPLE['demon priest'] = {'name': 'Demon Priest', 'dead': False, 'protected': False, 'health': 250, 'touch damage': True, 'damage': 30, 'knockback': 15, 'walk speed': (130, 170), 'run speed': (180, 220), 'detect radius': 500, 'avoid radius': 80, 'aggression': 'awd', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles'], 'gender': 'male', 'race': 'demon', 'dialogue': None, 'store': None, 'inventory': {'weapons': ['ancient viking sword'], 'weapons2': [None], 'tops': ['black mage robe top M'], 'bottoms': ['black mage robe bottom'], 'hats': [None], 'hair': ['demon horns'], 'shoes': ['demon boots'], 'gloves': ['demon gauntlets'], 'items': ['potion of major healing', 'Zhara Talisman'], 'magic': ['fireball'], 'gold': 345}, 'animations': {None}, 'guarded': False}
-PEOPLE['zhaway'] = {'name': 'Zhaway', 'dead': False, 'protected': True, 'health': 1000, 'touch damage': False, 'damage': 100, 'knockback': 25, 'walk speed': (100, 140), 'run speed': (180, 220), 'detect radius': 600, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['lava'], 'gender': 'male', 'race': 'whitewraith', 'dialogue': 'ZHAWAY_DLG', 'store': None, 'inventory': {'weapons': ['bone club'], 'weapons2': [None], 'tops': ['blue mage robe top M'], 'bottoms': ['blue mage robe bottom'], 'hats': ['white wizard cloak'], 'hair': [None], 'shoes': [None], 'gloves': [None], 'items': ['potion of feminization'], 'magic': ['healing', 'fireball'], 'gold': 0}, 'animations': {None}, 'guarded': True, 'quest': 'Cleanse the Temple of Zhara'}
-PEOPLE['king spirit guard'] = {'name': 'King Spirit Guard', 'protected': True, 'health': 500, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['lava'], 'gender': 'female', 'race': 'whitewraith', 'dialogue': None, 'store': None, 'inventory': {'weapons': ['iron battle axe'], 'weapons2': [None], 'tops': ['iron plate armor'], 'bottoms': [None], 'hats': ['steel crown'], 'hair': ['long white wraith'], 'shoes': ['steel boots'], 'gloves': ['iron gauntlets'], 'items': ['potion of major healing'], 'magic': ['healing', 'fireball'], 'gold': 0}, 'animations': {None}, 'guarded': True}
-PEOPLE['little red riding kitting'] = {'name': 'Little Red Riding Kitty', 'dead': False, 'protected': True, 'health': 125, 'touch damage': False, 'damage': 28, 'knockback': 15, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava', 'water'], 'gender': 'female', 'race': 'miewdra', 'dialogue': None, 'store': None, 'inventory': {'weapons': ['wood cutting axe'], 'weapons2': [None], 'tops': ['red dress top'], 'bottoms': ['red mini dress skirt'], 'hats': ['red cloak'], 'hair': ['brown cat'], 'shoes': ['brown boots'], 'gloves': [None], 'items': ['french bread'], 'magic': ['healing'], 'gold': 32}, 'animations': {None}, 'guarded': False}
-PEOPLE['jaz'] = {'name': 'Jaz', 'dead': False, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'female', 'race': 'lacertolian', 'dialogue': 'JAZ_DLG', 'store': None, 'inventory': {'weapons': ['iron dagger'], 'weapons2': [None], 'tops': ['leather armor F'], 'bottoms': ['leather leggings F'], 'hats': [None], 'hair': ['lizard spikes'], 'shoes': [None], 'gloves': [None], 'items': ['potion of minor healing'], 'magic': [None], 'gold': 123}, 'animations': {None}, 'guarded': False, 'quest': 'Turtle Armor for Jaz'}
-PEOPLE['jamal'] = {'name': 'Jamal', 'dead': False, 'protected': True, 'health': 223, 'touch damage': False, 'damage': 15, 'knockback': 15, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'male', 'race': 'shaktele', 'dialogue': 'JAMAL_DLG', 'store': None, 'inventory': {'weapons': ['shotgun'], 'weapons2': [None], 'tops': ['shaktele guard armor'], 'bottoms': ['jeans M'], 'hats': [None], 'hair': ['brown beard'], 'shoes': ['green combat'], 'gloves': [None], 'items': ['potion of major healing'], 'magic': ['healing'], 'gold': 23}, 'animations': {None}, 'guarded': False, 'quest': 'Jamal the body guard'}
-PEOPLE['hagitha'] = {'name': 'Hagitha', 'dead': False, 'protected': False, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 20, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'lava'], 'gender': 'female', 'race': 'goblin', 'dialogue': 'HAGITHA_DLG', 'store': None, 'inventory': {'weapons': ['pickaxe'], 'weapons2': [None], 'tops': ['decayed shirt F'], 'bottoms': ['leather leggings F'], 'hats': [None], 'hair': ['brown elf braids'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'items': ['candle'], 'magic': ['healing'], 'gold': 13}, 'animations': {None}, 'guarded': False, 'quest': 'Find gold ore for Hagitha'}
-PEOPLE['john'] = {'name': 'John', 'protected': True, 'dead': False, 'health': 250, 'touch damage': False, 'damage': 23, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (280, 320), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'male', 'race': 'osidine', 'dialogue': 'JOHN_DLG', 'store': None, 'inventory': {'weapons': [None], 'weapons2': [None], 'tops': ['decayed shirt M'], 'bottoms': ['jeans M'], 'hats': [None], 'hair': ['brown beard'], 'shoes': ['brown boots'], 'gloves': [None], 'items': ['potion of major healing'], 'magic': ['fireball'], 'gold': 100}, 'animations': {None}, 'guarded': False, 'quest': 'Harvest the potatoes'}
-PEOPLE['king draconius'] = {'name': 'King Draconius', 'dead': False, 'protected': True, 'health': 645, 'touch damage': False, 'damage': 56, 'knockback': 10, 'walk speed': (130, 170), 'run speed': (230, 270), 'detect radius': 300, 'avoid radius': 100, 'aggression': 'sap', 'armed': True, 'dual wield': False, 'collide': ['obstacles'], 'gender': 'male', 'race': 'osidine', 'dialogue': 'KING_DRACONIUS_DLG', 'store': None, 'inventory': {'weapons': ['steel sword'], 'weapons2': [None], 'tops': ['gold plated royal armor'], 'bottoms': ['bronze chainmail leggings M'], 'hats': ['golden crown'], 'hair': ['brown beard'], 'shoes': ['bronze boots'], 'gloves': ['bronze gauntlets'], 'items': ['Angel Talisman'], 'magic': ['healing'], 'gold': 324}, 'animations': {None}, 'guarded': True, 'quest': 'Deliver a letter to the Elf Queen'}
-PEOPLE['alex'] = {'name': 'Alex', 'protected': True, 'dead': False, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'sap', 'armed': False, 'dual wield': False, 'collide': ['obstacles'], 'gender': 'other', 'race': 'osidine', 'dialogue': None, 'store': None, 'inventory': {'weapons': ['steel mace'], 'weapons2': ['steel shield'], 'tops': ['guard armor'], 'bottoms': ['chainmail leggings M'], 'hats': ['steel helmet'], 'hair': ['short blond'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'items': ['empty bottle', 'book of demon secrets', 'garlic', 'Guide book to Arroshay', 'letter from Alex', 'letter from Loella'], 'magic': [None], 'gold': 13}, 'animations': {None}, 'guarded': False}
-PEOPLE['max'] = {'name': 'Max', 'protected': True, 'health': 200, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (180, 220), 'run speed': (330, 370), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'sap', 'armed': False, 'dual wield': False, 'collide': ['obstacles'], 'gender': 'male', 'race': 'elf', 'dialogue': 'MAX_DLG', 'store': MAX_STORE, 'inventory': {'weapons': [None], 'weapons2': [None], 'tops': ['leather armor M'], 'bottoms': ['chainmail leggings M'], 'hats': [None], 'hair': ['brown beard'], 'shoes': ['brown boots'], 'gloves': [None], 'items': ['empty bottle'], 'magic': [None], 'gold': 10}, 'animations': {None}, 'guarded': True}
+PEOPLE['sandy'] = {'name': 'Sandy', 'dead': False, 'protected': True, 'health': 150, 'touch damage': False, 'damage': 30, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (280, 320), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'male', 'race': 'shaktele', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'random VILLAGER_DLG', 'store': None, 'inventory': {'weapons': ['steel dagger'], 'weapons2': [None], 'tops': ['pink dress top'], 'bottoms': ['chainmail leggings F'], 'hats': ['grey baseball hat'], 'hair': ['dreadlocks'], 'shoes': ['black combat'], 'gloves': [None], 'items': ['brick'], 'magic': ['fireball'], 'gold': 10}, 'animations': {None}, 'guarded': False}
+PEOPLE['demon priest'] = {'name': 'Demon Priest', 'dead': False, 'protected': False, 'health': 250, 'touch damage': True, 'damage': 30, 'knockback': 15, 'walk speed': (130, 170), 'run speed': (180, 220), 'detect radius': 500, 'avoid radius': 80, 'aggression': 'awd', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles'], 'gender': 'male', 'race': 'demon', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None, 'inventory': {'weapons': ['ancient viking sword'], 'weapons2': [None], 'tops': ['black mage robe top M'], 'bottoms': ['black mage robe bottom'], 'hats': [None], 'hair': ['demon horns'], 'shoes': ['demon boots'], 'gloves': ['demon gauntlets'], 'items': ['potion of major healing', 'Zhara Talisman'], 'magic': ['fireball'], 'gold': 345}, 'animations': {None}, 'guarded': False}
+PEOPLE['zhaway'] = {'name': 'Zhaway', 'dead': False, 'protected': True, 'health': 1000, 'touch damage': False, 'damage': 100, 'knockback': 25, 'walk speed': (100, 140), 'run speed': (180, 220), 'detect radius': 600, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['lava'], 'gender': 'male', 'race': 'whitewraith', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'ZHAWAY_DLG', 'store': None, 'inventory': {'weapons': ['bone club'], 'weapons2': [None], 'tops': ['blue mage robe top M'], 'bottoms': ['blue mage robe bottom'], 'hats': ['white wizard cloak'], 'hair': [None], 'shoes': [None], 'gloves': [None], 'items': ['potion of feminization'], 'magic': ['healing', 'fireball'], 'gold': 0}, 'animations': {None}, 'guarded': True, 'quest': 'Cleanse the Temple of Zhara'}
+PEOPLE['king spirit guard'] = {'name': 'King Spirit Guard', 'protected': True, 'health': 500, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['lava'], 'gender': 'female', 'race': 'whitewraith', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None, 'inventory': {'weapons': ['iron battle axe'], 'weapons2': [None], 'tops': ['iron plate armor'], 'bottoms': [None], 'hats': ['steel crown'], 'hair': ['long wraith'], 'shoes': ['steel boots'], 'gloves': ['iron gauntlets'], 'items': ['potion of major healing'], 'magic': ['healing', 'fireball'], 'gold': 0}, 'animations': {None}, 'guarded': True}
+PEOPLE['little red riding kitting'] = {'name': 'Little Red Riding Kitty', 'dead': False, 'protected': True, 'health': 125, 'touch damage': False, 'damage': 28, 'knockback': 15, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava', 'water'], 'gender': 'female', 'race': 'miewdra', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None, 'inventory': {'weapons': ['wood cutting axe'], 'weapons2': [None], 'tops': ['red dress top'], 'bottoms': ['red mini dress skirt'], 'hats': ['red cloak'], 'hair': ['long straight cat'], 'shoes': ['brown boots'], 'gloves': [None], 'items': ['french bread'], 'magic': ['healing'], 'gold': 32}, 'animations': {None}, 'guarded': False}
+PEOPLE['jaz'] = {'name': 'Jaz', 'dead': False, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'female', 'race': 'lacertolian', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'JAZ_DLG', 'store': None, 'inventory': {'weapons': ['iron dagger'], 'weapons2': [None], 'tops': ['leather armor F'], 'bottoms': ['leather leggings F'], 'hats': [None], 'hair': ['lizard spikes'], 'shoes': [None], 'gloves': [None], 'items': ['potion of minor healing'], 'magic': [None], 'gold': 123}, 'animations': {None}, 'guarded': False, 'quest': 'Turtle Armor for Jaz'}
+PEOPLE['jamal'] = {'name': 'Jamal', 'dead': False, 'protected': True, 'health': 223, 'touch damage': False, 'damage': 15, 'knockback': 15, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'male', 'race': 'shaktele', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'JAMAL_DLG', 'store': None, 'inventory': {'weapons': ['shotgun'], 'weapons2': [None], 'tops': ['shaktele guard armor'], 'bottoms': ['jeans M'], 'hats': [None], 'hair': ['beard'], 'shoes': ['green combat'], 'gloves': [None], 'items': ['potion of major healing'], 'magic': ['healing'], 'gold': 23}, 'animations': {None}, 'guarded': False, 'quest': 'Jamal the body guard'}
+PEOPLE['hagitha'] = {'name': 'Hagitha', 'dead': False, 'protected': False, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 20, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': True, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'lava'], 'gender': 'female', 'race': 'goblin', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'HAGITHA_DLG', 'store': None, 'inventory': {'weapons': ['pickaxe'], 'weapons2': [None], 'tops': ['decayed shirt F'], 'bottoms': ['leather leggings F'], 'hats': [None], 'hair': ['elf braids'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'items': ['candle'], 'magic': ['healing'], 'gold': 13}, 'animations': {None}, 'guarded': False, 'quest': 'Find gold ore for Hagitha'}
+PEOPLE['john'] = {'name': 'John', 'protected': True, 'dead': False, 'health': 250, 'touch damage': False, 'damage': 23, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (280, 320), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'awp', 'armed': False, 'dual wield': False, 'collide': ['walls', 'jumpables', 'climbables', 'vehicles', 'lava'], 'gender': 'male', 'race': 'osidine', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'JOHN_DLG', 'store': None, 'inventory': {'weapons': [None], 'weapons2': [None], 'tops': ['decayed shirt M'], 'bottoms': ['jeans M'], 'hats': [None], 'hair': ['beard'], 'shoes': ['brown boots'], 'gloves': [None], 'items': ['potion of major healing'], 'magic': ['fireball'], 'gold': 100}, 'animations': {None}, 'guarded': False, 'quest': 'Harvest the potatoes'}
+PEOPLE['king draconius'] = {'name': 'King Draconius', 'dead': False, 'protected': True, 'health': 645, 'touch damage': False, 'damage': 56, 'knockback': 10, 'walk speed': (130, 170), 'run speed': (230, 270), 'detect radius': 300, 'avoid radius': 100, 'aggression': 'sap', 'armed': True, 'dual wield': False, 'collide': ['obstacles'], 'gender': 'male', 'race': 'osidine', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'KING_DRACONIUS_DLG', 'store': None, 'inventory': {'weapons': ['steel sword'], 'weapons2': [None], 'tops': ['gold plated royal armor'], 'bottoms': ['bronze chainmail leggings M'], 'hats': ['golden crown'], 'hair': ['beard'], 'shoes': ['bronze boots'], 'gloves': ['bronze gauntlets'], 'items': ['Angel Talisman'], 'magic': ['healing'], 'gold': 324}, 'animations': {None}, 'guarded': True, 'quest': 'Deliver a letter to the Elf Queen'}
+PEOPLE['alex'] = {'name': 'Alex', 'protected': True, 'dead': False, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (80, 120), 'run speed': (180, 220), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'sap', 'armed': False, 'dual wield': False, 'collide': ['obstacles'], 'gender': 'other', 'race': 'osidine', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': None, 'store': None, 'inventory': {'weapons': ['steel mace'], 'weapons2': ['steel shield'], 'tops': ['guard armor'], 'bottoms': ['chainmail leggings M'], 'hats': ['steel helmet'], 'hair': ['short combed'], 'shoes': ['steel boots'], 'gloves': ['steel gauntlets'], 'items': ['empty bottle', 'book of demon secrets', 'garlic', 'Guide book to Arroshay', 'letter from Alex', 'letter from Loella'], 'magic': [None], 'gold': 13}, 'animations': {None}, 'guarded': False}
+PEOPLE['max'] = {'name': 'Max', 'protected': True, 'health': 200, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (180, 220), 'run speed': (330, 370), 'detect radius': 400, 'avoid radius': 100, 'aggression': 'sap', 'armed': False, 'dual wield': False, 'collide': ['obstacles'], 'gender': 'male', 'race': 'elf', 'colors':  {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}, 'dialogue': 'MAX_DLG', 'store': MAX_STORE, 'inventory': {'weapons': [None], 'weapons2': [None], 'tops': ['leather armor M'], 'bottoms': ['chainmail leggings M'], 'hats': [None], 'hair': ['beard'], 'shoes': ['brown boots'], 'gloves': [None], 'items': ['empty bottle'], 'magic': [None], 'gold': 10}, 'animations': {None}, 'guarded': True}

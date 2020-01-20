@@ -253,6 +253,7 @@ class Character_Design_Menu(Menu):
             self.character = character
         self.exit_keys = [pg.K_e]  # The keys used to enter/exit the menu.
         self.heading_list = ['Gender', 'Race', 'Hair']  # This is the list of headings
+        self.palette = None
 
     def events(self):
         # catch all events here
@@ -277,11 +278,18 @@ class Character_Design_Menu(Menu):
                 pos = pg.mouse.get_pos()
                 # get a list of all sprites that are under the mouse cursor
                 self.clicked_sprites = [s for s in self.menu_sprites if s.rect.collidepoint(pos)]
+                if self.palette in self.clicked_sprites:
+                    if self.item_type == 'hair':
+                        self.character.colors['hair'] = self.game.screen.get_at((pos[0], pos[1]))
+                        #print(self.game.screen.get_at((pos[0], pos[1])))
+                    if self.item_type == 'race':
+                        self.character.colors['skin'] = self.game.screen.get_at((pos[0], pos[1]))
                 for heading in self.menu_heading_sprites:
                     if heading in self.clicked_sprites:
                         self.item_type = heading.text.lower()
                         self.list_items()
                         self.selected_heading = heading
+                        self.clear_pictures()
                 for item in self.clicked_sprites:
                     if item in self.item_sprites:
                         self.selected_item = item
@@ -334,9 +342,10 @@ class Character_Design_Menu(Menu):
                 pass
 
     def display_item_info(self, item):
-        image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
-        item_image = eval(image_path)
-        picture = Picture(self.game, self, item_image, int(self.game.screen_width * (3/4)), 150)
+        if self.item_type != 'hair':
+            image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
+            item_image = eval(image_path)
+            picture = Picture(self.game, self, item_image, int(self.game.screen_width * (3/4)), 150)
         if self.item_type == 'race':
             # This part wraps the descriptions of the character races. So they are displayed in paragraph form.
             description = wrap(RACE[item.text]['description'], 80)
@@ -365,6 +374,12 @@ class Character_Design_Menu(Menu):
         pg.draw.rect(self.game.screen, WHITE, description_rect, 2)
         pg.draw.rect(self.game.screen, BLACK, list_rect_fill)
         pg.draw.rect(self.game.screen, BLACK, description_rect_fill)
+        if self.item_type == 'hair':
+            self.draw_text("Pick Your Hair Color:", default_font, 24, WHITE, int(self.game.screen_width * (3 / 4)) - 70, 90, "topleft")
+            self.palette = Picture(self.game, self, self.game.color_swatch_images[0], int(self.game.screen_width * (3 / 4)), 300)
+        elif self.item_type == 'race':
+            self.draw_text("Pick Your Skin Tone:", default_font, 24, WHITE, int(self.game.screen_width * (1 / 4) + 30), 90, "topleft")
+            self.palette = Picture(self.game, self, self.game.color_swatch_images[0], int(self.game.screen_width * (1 / 4) + 100), 300)
         if not self.selected_item == None:
             if self.item_selected:
                 selected_rect = pg.Rect(self.selected_item.rect.x - 4, self.selected_item.rect.y, self.selected_item.rect.width + 8, self.selected_item.size + 2)

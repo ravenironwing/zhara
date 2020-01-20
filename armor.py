@@ -1,6 +1,7 @@
 from race_info import *
 
 HATS = {}
+HATS['The Golden Toupee'] = {'armor': 35, 'image': 25, 'weight': 3, 'value': 1200}
 HATS['steel crown'] = {'armor': 10, 'image': 0, 'weight': 0.3, 'materials': {'steel ingot': 2}, 'upgrade': {'steel ingot': 1, 'green crystal': 1}, 'value': 100}
 HATS['grey baseball hat'] = {'armor': 1, 'image': 1, 'weight': 0.1, 'upgrade': {'leather': 1}, 'value': 10}
 HATS['tactical helmet'] = {'armor': 20, 'image': 2, 'weight': 1.5, 'upgrade': {'steel ingot': 1}, 'value': 100}
@@ -28,90 +29,35 @@ HATS['dark wizard hood'] = {'armor': 3, 'image': 23, 'weight': 0.7, 'reinforce m
 HATS['aetherial helmet'] = {'armor': 25, 'reinforce magica': 25, 'reinforce stamina': 25, 'image': 24, 'gender': 'other', 'weight': 0, 'value': 1100, 'materials': {'demon dust': 2, 'ectoplasm': 2, 'sage': 1, 'blue crystal': 1}, 'upgrade': {'demon dust': 1, 'ectoplasm': 1}}
 
 HAIR = {}
-HAIR['long blond pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'weight': 0.4,
-                                'image': 0}
-HAIR['long straight brown'] = {'races': ['osidine', 'shaktele', 'immortui'], 'weight': 0.3,
-                                'image': 1}
-HAIR['long curly brown'] = {'races': ['osidine', 'shaktele'], 'weight': 0.3,
-                                'image': 2}
-HAIR['long black pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'weight': 0.4,
-                                'image': 3}
-HAIR['medium messy brown'] = {'races': ['osidine', 'shaktele', 'immortui'], 'weight': 0.2,
-                                'image': 4}
-HAIR['long brown side pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'weight': 0.4,
-                                'image': 5}
-HAIR['short messy'] = {'races': ['osidine', 'shaktele', 'immortui'], 'weight': 0.1,
-                                'image': 6}
-HAIR['short brown'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'weight': 0.1,
-                                'image': 7}
-HAIR['long blond side pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'weight': 0.4,
-                                'image': 8}
-HAIR['short blond'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'weight': 0.1,
-                                'image': 9}
-HAIR['dreadlocks'] = {'races': ['osidine', 'shaktele', 'immortui'], 'weight': 0.5,
-                                'image': 16}
-HAIR['long blond'] = {'races': ['osidine', 'shaktele', 'immortui'], 'weight': 0.3,
-                                'image': 10}
-HAIR['brown elf braids'] = {'races': ['elf'], 'weight': 0.3,
-                                'image': 11}
-HAIR['white elf braids'] = {'races': ['elf', 'demon'], 'weight': 0.3,
-                                'image': 14}
-HAIR['blond elf braids'] = {'races': ['elf'], 'weight': 0.3,
-                                'image': 15}
-HAIR['lizard hornes'] = {'races': ['lacertolian'], 'weight': 0.2,
-                                'image': 12}
-HAIR['lizard spikes'] = {'races': ['lacertolian', 'demon'], 'weight': 0.1,
-                                'image': 13}
-HAIR['cat tufts'] = {'races': ['miewdra'], 'weight': 0.1,
-                                'image': 17}
-HAIR['frizzy cat'] = {'races': ['miewdra'], 'weight': 0.2,
-                                'image': 18}
-HAIR['fluffy cat'] = {'races': ['miewdra'], 'weight': 0.2,
-                                'image': 19}
-HAIR['blond cat'] = {'races': ['miewdra'], 'weight': 0.3,
-                                'image': 20}
-HAIR['brown cat'] = {'races': ['miewdra'], 'weight': 0.3,
-                                'image': 21}
-HAIR['blue cat'] = {'races': ['miewdra'], 'weight': 0.3,
-                                'image': 22}
-HAIR['white cat'] = {'races': ['miewdra'], 'weight': 0.3,
-                                'image': 23}
-HAIR['bald'] = {'races': ['osidine', 'shaktele', 'elf', 'lacertolian', 'miewdra', 'immortui', 'mechanima', 'blackwraith', 'whitewraith', 'skeleton', 'demon', 'vadashay'], 'weight': 0,
-                                'image': 24}
-HAIR['ram horns'] = {'races': ['skeleton', 'demon'], 'weight': 0.5,
-                                'image': 25}
-HAIR['demon horns'] = {'races': ['skeleton', 'demon'], 'weight': 0.4, 'value': 666,
-                                'image': 26}
-HAIR['short horns'] = {'races': ['skeleton', 'demon'], 'weight': 0.2,
-                                'image': 27}
-HAIR['long black wraith'] = {'races': ['blackwraith'], 'weight': 0,
-                                'image': 28}
-HAIR['long white wraith'] = {'races': ['whitewraith'], 'weight': 0,
-                                'image': 29}
-HAIR['medium white droid'] = {'races': ['mechanima'], 'weight': 0.1,
-                                'image': 30}
-HAIR['medium black droid'] = {'races': ['mechanima'], 'weight': 0.1,
-                                'image': 31}
-HAIR['medium blue droid'] = {'races': ['mechanima'], 'weight': 0.1,
-                                'image': 32}
-HAIR['cable mohawk'] = {'races': ['mechanima'], 'weight': 0.1,
-                                'image': 33}
-HAIR['medium cable dreads'] = {'races': ['mechanima'], 'weight': 0.1,
-                                'image': 34}
-HAIR['long cable dreads'] = {'races': ['mechanima'], 'weight': 0.1,
-                                'image': 35}
-HAIR['LED skin'] = {'races': ['mechanima'], 'weight': 0,
-                                'image': 36}
-HAIR['light strips'] = {'races': ['mechanima'], 'weight': 0,
-                                'image': 37}
-HAIR['LED stripes'] = {'races': ['mechanima'], 'weight': 0,
-                                'image': 38}
-HAIR['The Golden Toupee'] = {'races': ['goblin'], 'weight': 3,
-                                'image': 39, 'value': 1000}
-HAIR['brown beard'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'weight': 0.2,
-                                'image': 40}
-HAIR['white beard'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'weight': 0.2,
-                                'image': 41}
+HAIR['long pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'image': 1}
+HAIR['long straight'] = {'races': ['osidine', 'shaktele', 'immortui'],'image': 29}
+HAIR['long curly'] = {'races': ['osidine', 'shaktele'], 'image': 2}
+HAIR['medium messy'] = {'races': ['osidine', 'shaktele', 'immortui'], 'image': 3}
+HAIR['long side pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'image': 6}
+HAIR['short messy'] = {'races': ['osidine', 'shaktele', 'immortui'], 'image': 4}
+HAIR['short'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'image': 5}
+HAIR['short combed'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'image': 30}
+HAIR['dreadlocks'] = {'races': ['osidine', 'shaktele', 'immortui'], 'image': 12}
+HAIR['elf braids'] = {'races': ['elf'], 'image': 9}
+HAIR['lizard horns'] = {'races': ['lacertolian'], 'image': 10}
+HAIR['lizard spikes'] = {'races': ['lacertolian', 'demon'], 'image': 11}
+HAIR['cat tufts'] = {'races': ['miewdra'], 'image': 13}
+HAIR['frizzy cat'] = {'races': ['miewdra'], 'image': 14}
+HAIR['fluffy cat'] = {'races': ['miewdra'], 'image': 15}
+HAIR['long straight cat'] = {'races': ['miewdra'], 'image': 16}
+HAIR['bald'] = {'races': ['osidine', 'shaktele', 'elf', 'lacertolian', 'miewdra', 'immortui', 'mechanima', 'blackwraith', 'whitewraith', 'skeleton', 'demon', 'vadashay'], 'image': 0}
+HAIR['ram horns'] = {'races': ['skeleton', 'demon'], 'image': 18}
+HAIR['demon horns'] = {'races': ['skeleton', 'demon'], 'image': 19}
+HAIR['short horns'] = {'races': ['skeleton', 'demon'], 'image': 20}
+HAIR['long wraith'] = {'races': ['blackwraith', 'whitewraith'], 'image': 21}
+HAIR['long straight droid'] = {'races': ['mechanima'], 'image': 22}
+HAIR['cable mohawk'] = {'races': ['mechanima'], 'image': 23}
+HAIR['medium cable dreads'] = {'races': ['mechanima'], 'image': 24}
+HAIR['long cable dreads'] = {'races': ['mechanima'], 'image': 25}
+HAIR['full LED skin'] = {'races': ['mechanima'], 'image': 26}
+HAIR['light strips'] = {'races': ['mechanima'], 'image': 27}
+HAIR['LED stripes'] = {'races': ['mechanima'], 'image': 28}
+HAIR['beard'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'image': 17}
 
 # Makes a dictionary containing the hairstyles appropriate for each race.
 #temp_race_list = ['demon', 'osidine', 'shaktele', 'elf', 'lacertolian', 'miewdra', 'immortui', 'mechanima', 'blackwraith', 'whitewraith', 'skeleton']

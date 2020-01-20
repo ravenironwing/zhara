@@ -288,7 +288,7 @@ class Game:
             companion_list.append(companion.species)
 
         updated_equipment = [UPGRADED_WEAPONS, UPGRADED_HATS, UPGRADED_TOPS, UPGRADED_GLOVES, UPGRADED_BOTTOMS, UPGRADED_SHOES, UPGRADED_ITEMS]
-        save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict]
+        save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict, self.player.colors]
         with open(path.join(saves_folder, self.player.race + "_" + self.format_date() + ".sav"), "wb", -1) as FILE:
             pickle.dump(save_list, FILE)
         if possessing != None:
@@ -326,6 +326,7 @@ class Game:
         self.player.equipped = load_file[1]
         self.player.race = self.player.equipped['race']
         self.player.stats = load_file[2]
+        self.player.colors = load_file[16]
         self.previous_map = load_file[4]
         self.world_location = vec(load_file[5])
         self.load_map(self.previous_map)
@@ -558,6 +559,10 @@ class Game:
         for i, x in enumerate(VEHICLES_IMAGES):
             img = pg.image.load(path.join(vehicles_folder, VEHICLES_IMAGES[i])).convert_alpha()
             self.vehicle_images.append(img)
+        self.color_swatch_images = []
+        for i, x in enumerate(COLOR_SWATCH_IMAGES):
+            img = pg.image.load(path.join(color_swatches_folder, COLOR_SWATCH_IMAGES[i])).convert()
+            self.color_swatch_images.append(img)
         self.race_images = []
         for i, race in enumerate(RACE_IMAGES):
             img = pg.image.load(path.join(race_folder, RACE_IMAGES[i])).convert_alpha()
