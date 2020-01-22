@@ -281,9 +281,9 @@ class Character_Design_Menu(Menu):
                 if self.palette in self.clicked_sprites:
                     if self.item_type == 'hair':
                         self.character.colors['hair'] = self.game.screen.get_at((pos[0], pos[1]))
-                        #print(self.game.screen.get_at((pos[0], pos[1])))
                     if self.item_type == 'race':
                         self.character.colors['skin'] = self.game.screen.get_at((pos[0], pos[1]))
+                        print(self.game.screen.get_at((pos[0], pos[1])))
                 for heading in self.menu_heading_sprites:
                     if heading in self.clicked_sprites:
                         self.item_type = heading.text.lower()
@@ -376,10 +376,14 @@ class Character_Design_Menu(Menu):
         pg.draw.rect(self.game.screen, BLACK, description_rect_fill)
         if self.item_type == 'hair':
             self.draw_text("Pick Your Hair Color:", default_font, 24, WHITE, int(self.game.screen_width * (3 / 4)) - 70, 90, "topleft")
-            self.palette = Picture(self.game, self, self.game.color_swatch_images[0], int(self.game.screen_width * (3 / 4)), 300)
+            if self.palette != None:
+                self.palette.kill()
+            self.palette = Picture(self.game, self, self.game.color_swatch_images[HAIR_PALETE_IMAGES[self.character.equipped['race']]], int(self.game.screen_width * (3/ 4)), 300)
         elif self.item_type == 'race':
             self.draw_text("Pick Your Skin Tone:", default_font, 24, WHITE, int(self.game.screen_width * (1 / 4) + 30), 90, "topleft")
-            self.palette = Picture(self.game, self, self.game.color_swatch_images[0], int(self.game.screen_width * (1 / 4) + 100), 300)
+            if self.palette != None:
+                self.palette.kill()
+            self.palette = Picture(self.game, self, self.game.color_swatch_images[PALETE_IMAGES[self.character.equipped['race']]], int(self.game.screen_width * (1 / 4) + 100), 300)
         if not self.selected_item == None:
             if self.item_selected:
                 selected_rect = pg.Rect(self.selected_item.rect.x - 4, self.selected_item.rect.y, self.selected_item.rect.width + 8, self.selected_item.size + 2)

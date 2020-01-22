@@ -1,4 +1,7 @@
-COLOR_PALLETTE = [
+PALETE_IMAGES = {'osidine': 1, 'shaktele': 1, 'elf': 1, 'immortui': 3, 'miewdra': 0, 'skeleton': 1, 'mechanima': 2, 'lacertolian': 2, 'blackwraith': 4, 'whitewraith': 4}
+HAIR_PALETE_IMAGES = {'osidine': 0, 'shaktele': 0, 'elf': 0, 'immortui': 0, 'miewdra': 0, 'skeleton': 0, 'mechanima': 2, 'lacertolian': 0, 'blackwraith': 0, 'whitewraith': 0}
+
+COLOR_PALETTE = [
 (249, 255, 241),
 (251, 250, 220),
 (251, 252, 195),

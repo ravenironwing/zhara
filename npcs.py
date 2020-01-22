@@ -172,7 +172,7 @@ GUARD_BOTTOMS = ['chainmail leggings F', 'leather leggings F', 'chainmail leggin
 PEOPLE['villager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 5, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'osidine',
-    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 VILLAGER_TOPS = CASUAL_TOPS_LIST
@@ -181,7 +181,7 @@ VILLAGER_BOTTOMS = CASUAL_BOTTOMS_LIST
 PEOPLE['shaktelevillager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'shaktele',
-    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random SHAKTELEVILLAGER_'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 SHAKTELEVILLAGER_HAIR = RACE_HAIR['shaktele']
@@ -209,7 +209,7 @@ PEOPLE['kevin'] = {'name': 'Kevin', 'dead': False, 'protected': True, 'health': 
 PEOPLE['miewdravillager'] = {'name': 'Miewdra Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'miewdra',
-    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random COLOR_PALLETTE'}, 'dialogue': 'random MIEWDRA_VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random COLOR_PALETTE'}, 'dialogue': 'random MIEWDRA_VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random MIEWDRAVILLAGER_'], 'tops': ['random MIEWDRAVILLAGER_'], 'bottoms': ['random MIEWDRAVILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 MIEWDRAVILLAGER_TOPS = CASUAL_TOPS_LIST
@@ -237,7 +237,7 @@ PEOPLE['catrina'] = {'name': 'Catrina', 'dead': False, 'protected': True, 'healt
 PEOPLE['elfvillager'] = {'name': 'Elf Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'elf',
-    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random ELF_VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random HUMAN_SKIN_TONES'}, 'dialogue': 'random ELF_VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random ELFVILLAGER_'], 'tops': ['random ELFVILLAGER_'], 'bottoms': ['random ELFVILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 ELFVILLAGER_HAIR = ['brown elf braids', 'blond elf braids', 'white elf braids', 'short brown', 'short blond', 'long black pony', 'long brown side pony', 'long blond side pony']
@@ -276,7 +276,7 @@ PEOPLE['dangerman'] = {'name': 'Elron Dangerman', 'dead': False, 'protected': Tr
 PEOPLE['lacertolianvillager'] = {'name': 'Lacertolian Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'jumpables', 'climbables', 'lava'],
     'gender': 'random', 'race': 'lacertolian',
-    'colors':  {'hair': 'random COLOR_PALLETTE', 'skin': 'random COLOR_PALLETTE'}, 'dialogue': 'random LACERTOLIAN_VILLAGER_DLG', 'store': None,
+    'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random COLOR_PALETTE'}, 'dialogue': 'random LACERTOLIAN_VILLAGER_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 LACERTOLIANVILLAGER_TOPS = CASUAL_TOPS_LIST

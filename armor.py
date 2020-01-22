@@ -30,13 +30,13 @@ HATS['aetherial helmet'] = {'armor': 25, 'reinforce magica': 25, 'reinforce stam
 
 HAIR = {}
 HAIR['long pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'image': 1}
-HAIR['long straight'] = {'races': ['osidine', 'shaktele', 'immortui'],'image': 29}
+HAIR['long straight'] = {'races': ['osidine', 'shaktele', 'immortui'],'image': 8}
 HAIR['long curly'] = {'races': ['osidine', 'shaktele'], 'image': 2}
 HAIR['medium messy'] = {'races': ['osidine', 'shaktele', 'immortui'], 'image': 3}
 HAIR['long side pony'] = {'races': ['osidine', 'shaktele', 'elf'], 'image': 6}
 HAIR['short messy'] = {'races': ['osidine', 'shaktele', 'immortui'], 'image': 4}
 HAIR['short'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'image': 5}
-HAIR['short combed'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'image': 30}
+HAIR['short combed'] = {'races': ['osidine', 'shaktele', 'elf', 'immortui'], 'image': 29}
 HAIR['dreadlocks'] = {'races': ['osidine', 'shaktele', 'immortui'], 'image': 12}
 HAIR['elf braids'] = {'races': ['elf'], 'image': 9}
 HAIR['lizard horns'] = {'races': ['lacertolian'], 'image': 10}
