@@ -114,7 +114,7 @@ CYAN = (0, 255, 255)
 TRANSPARENT = (255, 0, 255)
 SHADOW = (0, 0, 0, 150)
 DEFAULT_HAIR_COLOR = (138,54,15)
-DEFAULT_SKIN_COLOR = (215, 164, 119)
+DEFAULT_SKIN_COLOR = (255, 255, 255)
 UNDERWORLD = ['cave', 'tunnel', 'hole', 'mine', 'tower'] # Used for map naming conventions that are under or over the overworld maps.
 
 # game settings
@@ -169,6 +169,10 @@ PLAYER_IMG = 'player1.png'
 PLAYER_HIT_RECT = pg.Rect(0, 0, 45, 45)
 WING1_OFFSET = (-15, 21)
 WING2_OFFSET = (-15, -21)
+
+#Misc Sprite Settings
+MAX_TREE_SIZE = 700
+MIN_TREE_SIZE = 300
 
 # Used for mapping portal firepot combos with map locations
 # 1234-Goblin Island, 4132: Demon's Lair, 3421-Dewcastle Graveyard, 2143-Norwald the Miewdra Village, 1342-Mechanima Village, 1243-Lacertolia, 2413-Zombieland, 4321-Elf Town, 3124-South Pole

@@ -33,6 +33,8 @@ CHESTS['morton apartments1 right drawers'] = {'locked': False, 'combo': None, 'd
                   'items': [None], 'magic': [None], 'gold': 0}
 CHESTS['dangerman cave'] = {'locked': True, 'combo': 25, 'difficulty': 5,'weapons': ['enchanted elven dagger'], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': [None], 'magic': [None], 'gold': 0}
+CHESTS['dangerman cave2'] = {'locked': True, 'combo': 92, 'difficulty': 4,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
+                  'items': ['Zhara Talisman'], 'magic': [None], 'gold': 0}
 CHESTS['anttunnel1coffin'] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': ['grey baseball hat'], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': [None], 'magic': [None], 'gold': 60}
 CHESTS['empty '] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],

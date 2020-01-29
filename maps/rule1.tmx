@@ -3,8 +3,8 @@
  <editorsettings>
   <export target="rule2.tmx" format="tmx"/>
  </editorsettings>
- <tileset firstgid="1" name="tunnels" tilewidth="128" tileheight="128" tilecount="20" columns="4">
-  <image source="../img/map_textures/tunnels.png" width="512" height="640"/>
+ <tileset firstgid="1" name="tunnels" tilewidth="128" tileheight="128" tilecount="24" columns="4">
+  <image source="../img/map_textures/tunnels.png" width="512" height="768"/>
  </tileset>
  <layer id="3" name="regions" width="100" height="100">
   <data encoding="csv">
@@ -214,7 +214,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="1" name="output_walls" width="100" height="100">
+ <layer id="1" name="output_walls" width="100" height="100" locked="1">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,17,1,0,1,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

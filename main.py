@@ -767,6 +767,7 @@ class Game:
         self.obstacles = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.inside = pg.sprite.Group()
+        self.nospawn = pg.sprite.Group()
         self.jumpables = pg.sprite.Group()
         self.climbables = pg.sprite.Group()
         self.climbables_and_jumpables = pg.sprite.Group()
@@ -1163,12 +1164,16 @@ class Game:
                     # Used for destructable plants, rocks, ore veins, walls, etc
                     for item in BREAKABLES:
                         if item in tile_object.name:
+                            size = 0
                             if '@' in tile_object.name:
                                 temp_item, rot = tile_object.name.split('@')
                                 rot = int(rot)
                             else:
                                 rot = None
-                            Breakable(self, obj_center, tile_object.width, tile_object.height, item, map, rot)
+                            if 'SZ' in tile_object.name:
+                                size, temp_item = tile_object.name.split('SZ')
+                                size = int(size)
+                            Breakable(self, obj_center, tile_object.width, tile_object.height, item, map, rot, size)
 
                 # Loads detectors used to detect whether quest items have be delivered to the correct locations.
                 if 'detector' in tile_object.name:  # These are invisible objects used to detect other objects touching them.
@@ -1253,6 +1258,9 @@ class Game:
                 if tile_object.name == 'inside':
                     Inside(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
+                if tile_object.name == 'nospawn':
+                    NoSpawn(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height)
                 if tile_object.name == 'jumpable':
                     Jumpable(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
@@ -1308,7 +1316,7 @@ class Game:
                     pass
 
         # This section creates walls based off of which tile is used in the map rather than having to create wall objects
-        if self.map_type in ['ant_tunnel', 'cave']:
+        if self.map_type in ['ant_tunnel', 'cave', 'mine']:
             wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 0) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
             for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
                 Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
@@ -1361,7 +1369,7 @@ class Game:
                         rand_trees = randrange(8, 12)
                     if self.map_type == 'forest':
                         rand_range = randrange(1, 3)
-                        rand_trees = randrange(30, 60)
+                        rand_trees = randrange(80, 160)
                     for i in range(0, rand_range):
                         vein = choice(VEIN_LIST)
                         centerx = randrange(200, self.map.width - 200)
@@ -1381,7 +1389,10 @@ class Game:
                         center = vec(centerx, centery)
                         Breakable(self, center, object_width, object_height, tree, map)
                 if self.map_type in ['mountain', 'forest', 'grassland']:
-                    rand_plants = randrange(15, 35)
+                    if self.map_type == 'forest':
+                        rand_plants = randrange(50, 200)
+                    else:
+                        rand_plants = randrange(15, 35)
                     for i in range(0, rand_plants):
                         plant = choice(PLANT_LIST)
                         centerx = randrange(200, self.map.width - 200)
@@ -1413,9 +1424,10 @@ class Game:
                         objecty = int(centery - object_height / 2)
                         center = vec(centerx, centery)
                         Breakable(self, center, object_width, object_height, tree, map)
-        # Kills breakables that spawn in water
+        # Kills breakables that spawn in water or no spawn areas.
         hits = pg.sprite.groupcollide(self.breakable, self.water, True, False)
         hits = pg.sprite.groupcollide(self.breakable, self.shallows, True, False)
+        hits = pg.sprite.groupcollide(self.breakable, self.nospawn, True, False)
 
 
         # check for fish out of water and kills them

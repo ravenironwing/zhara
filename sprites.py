@@ -9,6 +9,7 @@ from interactables import *
 from collections import Counter
 from menu import *
 from vehicles import *
+from math import ceil
 
 vec = pg.math.Vector2
 
@@ -664,10 +665,14 @@ class Character(pg.sprite.Sprite):
                 body_part_images_list = 'male' + '_' + self.race + '_' + 'images'  # Used male images by default for 'other'
             else:
                 body_part_images_list = self.mother.equipped['gender'] + '_' + self.race + '_' + 'images'
+            part_image_dict = {0: 0, 1: 0, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 5, 9: 6, 10: 6}
+            reverse_list = [1, 4, 6, 10]
             i = 0
             for part in part_placement:
                 if i in range(0, 9):
-                    temp_img = self.game.humanoid_images[body_part_images_list][i]
+                    temp_img = self.game.humanoid_images[body_part_images_list][part_image_dict[i]]
+                    if i in reverse_list:
+                        temp_img = pg.transform.flip(temp_img, False, True)
                     colored_img = color_image(temp_img, self.mother.colors['skin'])
                     image = pg.transform.rotate(colored_img, part[2])
                     temp_rect = image.get_rect()
@@ -734,10 +739,15 @@ class Character(pg.sprite.Sprite):
                 if 'dragon' in self.race and i == 11:
                     wing1_pos = vec(WING1_OFFSET).rotate(-torso_pos[2])
                     wing2_pos = vec(WING2_OFFSET).rotate(-torso_pos[2])
-                    image = pg.transform.rotate(self.game.humanoid_images[body_part_images_list][9], part[0] + torso_pos[2])
+                    temp_img = self.game.humanoid_images[body_part_images_list][6]
+                    colored_img = color_image(temp_img, self.mother.colors['skin'])
+                    image = pg.transform.rotate(colored_img, part[0] + torso_pos[2])
                     temp_rect = image.get_rect()
                     body_surface.blit(image, (rect.centerx - (temp_rect.centerx - (torso_pos[0] + wing1_pos.x)), rect.centery - (temp_rect.centery - (torso_pos[1] + wing1_pos.y))))
-                    image = pg.transform.rotate(self.game.humanoid_images[body_part_images_list][10], part[1] + torso_pos[2])
+                    temp_img = self.game.humanoid_images[body_part_images_list][6]
+                    colored_img = color_image(temp_img, self.mother.colors['skin'])
+                    temp_img = pg.transform.flip(colored_img, False, True)
+                    image = pg.transform.rotate(temp_img, part[1] + torso_pos[2])
                     temp_rect = image.get_rect()
                     body_surface.blit(image, (rect.centerx - (temp_rect.centerx - (torso_pos[0] + wing2_pos.x)), rect.centery - (temp_rect.centery - (torso_pos[1] + wing2_pos.y))))
                     if not self.mother.equipped['hats'] == None:  # This makes it so horns on helmets are drawn over wings, not under them.
@@ -4188,7 +4198,7 @@ class Portal(pg.sprite.Sprite):
             self.frame = 0
 
 class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
-    def __init__(self, game, obj_center, w, h, name, map, fixed_rot = None):
+    def __init__(self, game, obj_center, w, h, name, map, fixed_rot = None, size = 0):
         under = False
         if 'palm tree' in name:
             self._layer = EFFECTS_LAYER
@@ -4211,10 +4221,20 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.center = obj_center
         x = int(self.center.x - (w/2))
         y = int(self.center.y - (h/2))
+        self.size = size
         self.name = name
         self.kind =  BREAKABLES[self.name]
         #if 'large ' in self.name
-        self.image_list = self.game.breakable_images[self.name]
+        if 'tree' in self.name:
+            if self.size == 0:
+                self.size = randrange(MIN_TREE_SIZE, MAX_TREE_SIZE)
+            temp_image_list = self.game.breakable_images[self.name]
+            self.image_list = []
+            for image in temp_image_list:
+                scaled_image = pg.transform.scale(image, (self.size, self.size))
+                self.image_list.append(scaled_image)
+        else:
+            self.image_list = self.game.breakable_images[self.name]
         self.scale_factor = 1
 
         self.groups = game.all_sprites, game.breakable
@@ -4326,19 +4346,31 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
 
     def remove_bush(self):
         random_value = randrange(0, 100)  # random number in range [0.0,1.0)
-        for thing in self.items:
-            if self.random_drop_number:
-                drop_number = randrange(0, self.items[thing])
-            else:
-                drop_number = self.items[thing]
-            for i in range(0, drop_number):
-                if thing in ANIMALS:
-                    Animal(self.game, self.center.x, self.center.y, self.map, thing)
+        if 'tree' not in self.name:
+            for thing in self.items:
+                if self.random_drop_number:
+                    drop_number = randrange(0, self.items[thing])
                 else:
-                    for kind in ITEM_TYPE_LIST:
-                        if thing in eval(kind.upper()):
-                            rand_rot = randrange(0, 360)
-                            Dropped_Item(self.game, self.center, kind, thing, rand_rot, True)
+                    drop_number = self.items[thing]
+                for i in range(0, drop_number):
+                    if thing in ANIMALS:
+                        Animal(self.game, self.center.x, self.center.y, self.map, thing)
+                    else:
+                        for kind in ITEM_TYPE_LIST:
+                            if thing in eval(kind.upper()):
+                                rand_rot = randrange(0, 360)
+                                Dropped_Item(self.game, self.center, kind, thing, rand_rot, True)
+        else: # Wood drops for trees are based on size.
+            for thing in self.items:
+                drop_number = ceil(self.items[thing] * self.size/MAX_TREE_SIZE)
+                for i in range(0, drop_number):
+                    if thing in ANIMALS:
+                        Animal(self.game, self.center.x, self.center.y, self.map, thing)
+                    else:
+                        for kind in ITEM_TYPE_LIST:
+                            if thing in eval(kind.upper()):
+                                rand_rot = randrange(0, 360)
+                                Dropped_Item(self.game, self.center, kind, thing, rand_rot, True)
 
         if None not in self.rare_items:
             if random_value < 5: # Chance of getting a rare item
@@ -4406,6 +4438,18 @@ class Charger(pg.sprite.Sprite):
 class Inside(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
         self.groups = game.inside, game.all_static_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.hit_rect = self.rect
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+
+class NoSpawn(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h):
+        self.groups = game.nospawn, game.all_static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)

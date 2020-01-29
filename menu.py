@@ -283,7 +283,6 @@ class Character_Design_Menu(Menu):
                         self.character.colors['hair'] = self.game.screen.get_at((pos[0], pos[1]))
                     if self.item_type == 'race':
                         self.character.colors['skin'] = self.game.screen.get_at((pos[0], pos[1]))
-                        print(self.game.screen.get_at((pos[0], pos[1])))
                 for heading in self.menu_heading_sprites:
                     if heading in self.clicked_sprites:
                         self.item_type = heading.text.lower()

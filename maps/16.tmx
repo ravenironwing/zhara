@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.4" orientation="orthogonal" renderorder="right-down" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="31" nextobjectid="146">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="31" nextobjectid="147">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1234,5 +1234,6 @@
   <object id="110" name="snake" x="4521.21" y="3500" width="78.7879" height="81.8182"/>
   <object id="128" name="dolphin" x="4454" y="6236" width="140" height="104"/>
   <object id="144" name="wood cutting axe" x="1508" y="1836" width="96" height="108"/>
+  <object id="146" name="Zhara Talisman" x="1933.33" y="1457.33" width="29.3333" height="32"/>
  </objectgroup>
 </map>

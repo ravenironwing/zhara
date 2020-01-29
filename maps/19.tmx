@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="204">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="30" nextobjectid="215">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1119,7 +1119,6 @@
 </data>
  </layer>
  <objectgroup id="16" name="Object Layer 1">
-  <object id="34" name="wall" x="3301.52" y="1663.64" width="57.5758" height="48.4849"/>
   <object id="45" name="immortui" x="4206" y="5862" width="82" height="74"/>
   <object id="59" name="rabbit" x="5003.03" y="457.576" width="66.6667" height="63.6364"/>
   <object id="60" name="rabbit" x="4912.12" y="616.667" width="66.6667" height="63.6364"/>
@@ -1233,21 +1232,16 @@
   <object id="183" name="firepot4" x="938" y="4391.33" width="46.6667" height="46.6667"/>
   <object id="184" name="firepot3" x="554" y="4391.33" width="46.6667" height="46.6667"/>
   <object id="185" name="skeleton" x="1496" y="4414" width="54" height="50"/>
-  <object id="186" name="large dead tree" x="3966" y="4068" width="74" height="76"/>
-  <object id="187" name="large dead tree" x="5139" y="4098" width="74" height="76"/>
-  <object id="188" name="large dead tree" x="4195" y="6650" width="74" height="76"/>
-  <object id="189" name="large dead tree" x="5083" y="6578" width="74" height="76"/>
-  <object id="190" name="large dead tree" x="5723" y="6626" width="74" height="76"/>
-  <object id="191" name="large dead tree" x="5811" y="1282" width="74" height="76"/>
-  <object id="192" name="large dead tree" x="6803" y="2338" width="74" height="76"/>
-  <object id="193" name="large dead tree" x="6507" y="1714" width="74" height="76"/>
-  <object id="194" name="large dead tree" x="1875" y="2930" width="74" height="76"/>
-  <object id="195" name="small dead tree" x="5789" y="4050" width="74" height="76"/>
-  <object id="197" name="small dead tree" x="4131" y="2002" width="74" height="76"/>
-  <object id="198" name="small dead tree" x="4571" y="1570" width="74" height="76"/>
-  <object id="199" name="small dead tree" x="7315" y="3050" width="74" height="76"/>
-  <object id="200" name="small dead tree" x="7139" y="2514" width="74" height="76"/>
-  <object id="201" name="small dead tree" x="2163" y="2074" width="74" height="76"/>
-  <object id="203" name="small dead tree" x="267" y="1754" width="74" height="76"/>
+  <object id="204" name="dead tree" x="5834.52" y="4095.62" width="34" height="33"/>
+  <object id="205" name="dead tree" x="5189.06" y="4131.98" width="34" height="33"/>
+  <object id="206" name="dead tree" x="3967.85" y="4095.62" width="34" height="33"/>
+  <object id="207" name="dead tree" x="5128.45" y="6598.65" width="34" height="33"/>
+  <object id="208" name="dead tree" x="5767.85" y="6650.17" width="34" height="33"/>
+  <object id="209" name="dead tree" x="4219.36" y="6686.53" width="34" height="33"/>
+  <object id="210" name="dead tree" x="5555.73" y="1256.23" width="34" height="33"/>
+  <object id="211" name="dead tree" x="6610.27" y="1974.41" width="34" height="33"/>
+  <object id="212" name="dead tree" x="4052.7" y="2113.8" width="34" height="33"/>
+  <object id="213" name="dead tree" x="2925.42" y="1225.92" width="34" height="33"/>
+  <object id="214" name="dead tree" x="1592.09" y="3562.29" width="34" height="33"/>
  </objectgroup>
 </map>

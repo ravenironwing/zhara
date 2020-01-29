@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="940">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="941">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1444,9 +1444,9 @@
   <object id="689" name="climbable" x="5121" y="150" width="129" height="85"/>
   <object id="690" name="climbable" x="5024" y="130" width="66" height="70"/>
   <object id="691" name="toilet" x="5046" y="158" width="20" height="18"/>
-  <object id="698" name="large dead tree" x="6508" y="6967.5" width="34" height="33"/>
-  <object id="699" name="large dead tree" x="6830" y="7095.5" width="34" height="33"/>
-  <object id="700" name="large dead tree" x="6827" y="6832.5" width="34" height="33"/>
+  <object id="698" name="dead tree" x="6508" y="6967.5" width="34" height="33"/>
+  <object id="699" name="dead tree" x="6830" y="7095.5" width="34" height="33"/>
+  <object id="700" name="dead tree" x="6827" y="6832.5" width="34" height="33"/>
   <object id="368" name="french bread" x="5426.67" y="2038.67" width="10.6667" height="10.6667"/>
   <object id="370" name="cheese wedge" x="5568" y="2124" width="13.3333" height="10.6667"/>
   <object id="380" name="villager" x="4247.67" y="6864.67" width="76" height="72"/>
@@ -1555,7 +1555,7 @@
   <object id="778" name="green tree" x="3157.5" y="767" width="45" height="42"/>
   <object id="797" name="cloak of invisibility@270" x="2995" y="5938" width="26" height="32"/>
   <object id="798" name="wall" x="2978" y="5933" width="60" height="46"/>
-  <object id="799" name="large dead tree@0" x="4205" y="1329.5" width="34" height="33"/>
+  <object id="799" name="750SZdead tree@0" x="4205" y="1329.5" width="34" height="33"/>
   <object id="806" name="large dead tree" x="4483" y="1444.5" width="34" height="33"/>
   <object id="826" name="hedge@0" x="4766.67" y="6030.66" width="56" height="96"/>
   <object id="827" name="hedge@0" x="4765.33" y="5902.67" width="56" height="98.6666"/>
