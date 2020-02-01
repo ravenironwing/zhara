@@ -438,6 +438,7 @@ class Game:
         self.lock_keyway_image = pg.image.load(path.join(img_folder, 'lock_keyway.png')).convert_alpha()
         self.keyed_keyway_image = pg.image.load(path.join(img_folder, 'keyed_keyway.png')).convert_alpha()
         self.lock_pick_image = pg.image.load(path.join(img_folder, 'lock_pick.png')).convert_alpha()
+        self.swim_shadow_image = pg.image.load(path.join(img_folder, 'swim_shadow.png')).convert_alpha()
         # creates a dictionary of animal images. This is not in the settings file like the others because of the order it needs to import info.
         ANIMAL_IMAGES = {}
         for animal in ANIMAL_ANIMATIONS:
@@ -579,13 +580,30 @@ class Game:
         for i, screen in enumerate(LOADING_SCREEN_IMAGES):
             img = pg.image.load(path.join(loading_screen_folder, LOADING_SCREEN_IMAGES[i])).convert()
             self.loading_screen_images.append(img)
+        self.tree_images = {}
         self.breakable_images = {}
         for kind in BREAKABLE_IMAGES:
-            temp_list = []
-            for i, picture in enumerate(BREAKABLE_IMAGES[kind]):
-                img = pg.image.load(path.join(breakable_folder, BREAKABLE_IMAGES[kind][i])).convert_alpha()
-                temp_list.append(img)
-            self.breakable_images[kind] = temp_list
+            if 'tree' not in kind:
+                temp_list = []
+                for i, picture in enumerate(BREAKABLE_IMAGES[kind]):
+                    img = pg.image.load(path.join(breakable_folder, BREAKABLE_IMAGES[kind][i])).convert_alpha()
+                    temp_list.append(img)
+                self.breakable_images[kind] = temp_list
+            else:
+                temp_list = []
+                temp_list2 = []
+                temp_list3 = []
+                for i, picture in enumerate(BREAKABLE_IMAGES[kind]):
+                    img = pg.image.load(path.join(breakable_folder, BREAKABLE_IMAGES[kind][i])).convert_alpha()
+                    scaled_image = pg.transform.scale(img, (TREE_SIZES['sm'], TREE_SIZES['sm']))
+                    temp_list.append(scaled_image)
+                    scaled_image = pg.transform.scale(img, (TREE_SIZES['md'], TREE_SIZES['md']))
+                    temp_list2.append(scaled_image)
+                    scaled_image = pg.transform.scale(img, (TREE_SIZES['lg'], TREE_SIZES['lg']))
+                    temp_list3.append(scaled_image)
+                self.tree_images['sm' + kind] = temp_list
+                self.tree_images['md' + kind] = temp_list2
+                self.tree_images['lg' + kind] = temp_list3
 
         self.portal_sheet = pg.image.load(PORTAL_SHEET).convert_alpha()
         self.portal_images = load_spritesheet(self.portal_sheet, 256)
@@ -1164,7 +1182,7 @@ class Game:
                     # Used for destructable plants, rocks, ore veins, walls, etc
                     for item in BREAKABLES:
                         if item in tile_object.name:
-                            size = 0
+                            size = None
                             if '@' in tile_object.name:
                                 temp_item, rot = tile_object.name.split('@')
                                 rot = int(rot)
@@ -1172,7 +1190,6 @@ class Game:
                                 rot = None
                             if 'SZ' in tile_object.name:
                                 size, temp_item = tile_object.name.split('SZ')
-                                size = int(size)
                             Breakable(self, obj_center, tile_object.width, tile_object.height, item, map, rot, size)
 
                 # Loads detectors used to detect whether quest items have be delivered to the correct locations.
@@ -1425,9 +1442,18 @@ class Game:
                         center = vec(centerx, centery)
                         Breakable(self, center, object_width, object_height, tree, map)
         # Kills breakables that spawn in water or no spawn areas.
-        hits = pg.sprite.groupcollide(self.breakable, self.water, True, False)
-        hits = pg.sprite.groupcollide(self.breakable, self.shallows, True, False)
-        hits = pg.sprite.groupcollide(self.breakable, self.nospawn, True, False)
+        hits = pg.sprite.groupcollide(self.breakable, self.water, False, False)
+        for hit in hits:
+            hit.trunk.kill()
+            hit.kill()
+        hits = pg.sprite.groupcollide(self.breakable, self.shallows, False, False)
+        for hit in hits:
+            hit.trunk.kill()
+            hit.kill()
+        hits = pg.sprite.groupcollide(self.breakable, self.nospawn, False, False)
+        for hit in hits:
+            hit.trunk.kill()
+            hit.kill()
 
 
         # check for fish out of water and kills them

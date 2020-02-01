@@ -171,8 +171,8 @@ WING1_OFFSET = (-15, 21)
 WING2_OFFSET = (-15, -21)
 
 #Misc Sprite Settings
-MAX_TREE_SIZE = 700
-MIN_TREE_SIZE = 300
+TREE_SIZES = {'sm': 400, 'md': 580, 'lg': 750}
+
 
 # Used for mapping portal firepot combos with map locations
 # 1234-Goblin Island, 4132: Demon's Lair, 3421-Dewcastle Graveyard, 2143-Norwald the Miewdra Village, 1342-Mechanima Village, 1243-Lacertolia, 2413-Zombieland, 4321-Elf Town, 3124-South Pole

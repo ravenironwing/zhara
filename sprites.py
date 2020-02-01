@@ -130,6 +130,7 @@ def random_inventory_item(container, temp_inventory):
         gender = container.gender
     except:
         gender = None
+
     for item_type in ITEM_TYPE_LIST:
         for i, value in enumerate(temp_inventory[item_type]):
             if value != None:
@@ -628,8 +629,8 @@ class Character(pg.sprite.Sprite):
             self.climbing_melee_anim = self.render_animation(CLIMB_MELEE)
             self.climbing_l_melee_anim = self.render_animation(L_CLIMB_MELEE)
 
-        self.swim_anim = self.render_animation(SWIM)
-        self.swim_melee_anim = self.render_animation(WATER_PUNCH)
+        self.swim_anim = self.render_animation(SWIM, True)
+        self.swim_melee_anim = self.render_animation(WATER_PUNCH, True)
         #self.animations_cache_list = [self.stand_anim, self.shoot_anim, self.climbing_shoot_anim, self.climbing_weapon_anim, self.climbing_weapon_melee_anim, self.climbing_l_weapon_melee_anim, self.run_anim, self.walk_anim, self.melee_anim, self.walk_melee_anim, self.walk_l_melee_anim, self.dual_melee_anim,  self.l_melee_anim,  self.jump_anim, self.shallows_anim, self.reload_anim, self.l_reload_anim, self.dual_reload_anim, self.swim_anim, self.swim_jump_anim, self.swim_melee_anim, self.climb_jump_anim, self.climbing_anim, self.climbing_melee_anim, self.climbing_l_melee_anim]
         toggle_equip(self.mother, False)
         self.frame = 0
@@ -643,7 +644,7 @@ class Character(pg.sprite.Sprite):
         # Must be last line in init.
         self.body_surface = self.stand_anim[0][0]
 
-    def render_animation(self, animation_list):
+    def render_animation(self, animation_list, swimming = False):
         if not self.dragon:
             self.race = self.mother.equipped['race'].replace('dragon', '')
         else:
@@ -670,6 +671,11 @@ class Character(pg.sprite.Sprite):
             i = 0
             for part in part_placement:
                 if i in range(0, 9):
+                    if i == 0 and swimming: # draws swimming shadow (the part of the body that's under water).
+                        temp_img = self.game.swim_shadow_image
+                        colored_img = color_image(temp_img, self.mother.colors['skin'])
+                        temp_rect = colored_img.get_rect()
+                        body_surface.blit(colored_img, (rect.centerx - (temp_rect.centerx + 40), rect.centery - (temp_rect.centery)))
                     temp_img = self.game.humanoid_images[body_part_images_list][part_image_dict[i]]
                     if i in reverse_list:
                         temp_img = pg.transform.flip(temp_img, False, True)
@@ -826,8 +832,8 @@ class Character(pg.sprite.Sprite):
                     self.climbing_melee_anim = self.render_animation(CLIMB_MELEE)
                     self.climbing_l_melee_anim = self.render_animation(L_CLIMB_MELEE)
 
-                self.swim_anim = self.render_animation(SWIM)
-                self.swim_melee_anim = self.render_animation(WATER_PUNCH)
+                self.swim_anim = self.render_animation(SWIM, True)
+                self.swim_melee_anim = self.render_animation(WATER_PUNCH, True)
                 toggle_equip(self.mother, False)
 
                 # Default animations if right equipped
@@ -1220,9 +1226,9 @@ class Player(pg.sprite.Sprite):
                     self.last_move = now
                     self.game.effects_sounds['swim'].play()
                     if not self.in_vehicle:
-                        self.add_stamina(-3)   # This part makes it so you get hurt and drown if you run out of stamina in the water
-                        if self.stats['stamina'] < 10:
-                            self.add_health(-3)
+                        self.add_stamina(-1)   # This part makes it so you get hurt and drown if you run out of stamina in the water
+                        if self.stats['stamina'] < 4:
+                            self.add_health(-1)
             if self.in_shallows:
                 if now - self.last_move > self.game.effects_sounds['shallows'].get_length() * 1000:
                     self.last_move = now
@@ -4198,7 +4204,7 @@ class Portal(pg.sprite.Sprite):
             self.frame = 0
 
 class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
-    def __init__(self, game, obj_center, w, h, name, map, fixed_rot = None, size = 0):
+    def __init__(self, game, obj_center, w, h, name, map, fixed_rot = None, size = None):
         under = False
         if 'palm tree' in name:
             self._layer = EFFECTS_LAYER
@@ -4226,13 +4232,9 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.kind =  BREAKABLES[self.name]
         #if 'large ' in self.name
         if 'tree' in self.name:
-            if self.size == 0:
-                self.size = randrange(MIN_TREE_SIZE, MAX_TREE_SIZE)
-            temp_image_list = self.game.breakable_images[self.name]
-            self.image_list = []
-            for image in temp_image_list:
-                scaled_image = pg.transform.scale(image, (self.size, self.size))
-                self.image_list.append(scaled_image)
+            if self.size == None:
+                self.size = choice(['sm', 'md', 'lg'])
+            self.image_list = self.game.tree_images[self.size + self.name]
         else:
             self.image_list = self.game.breakable_images[self.name]
         self.scale_factor = 1
@@ -4362,7 +4364,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                                 Dropped_Item(self.game, self.center, kind, thing, rand_rot, True)
         else: # Wood drops for trees are based on size.
             for thing in self.items:
-                drop_number = ceil(self.items[thing] * self.size/MAX_TREE_SIZE)
+                drop_number = ceil(self.items[thing] * TREE_SIZES[self.size]/TREE_SIZES['lg'])
                 for i in range(0, drop_number):
                     if thing in ANIMALS:
                         Animal(self.game, self.center.x, self.center.y, self.map, thing)

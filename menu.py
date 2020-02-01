@@ -377,12 +377,20 @@ class Character_Design_Menu(Menu):
             self.draw_text("Pick Your Hair Color:", default_font, 24, WHITE, int(self.game.screen_width * (3 / 4)) - 70, 90, "topleft")
             if self.palette != None:
                 self.palette.kill()
-            self.palette = Picture(self.game, self, self.game.color_swatch_images[HAIR_PALETE_IMAGES[self.character.equipped['race']]], int(self.game.screen_width * (3/ 4)), 300)
+            try:
+                self.palette = Picture(self.game, self, self.game.color_swatch_images[HAIR_PALETE_IMAGES[self.character.equipped['race']]], int(self.game.screen_width * (3/ 4)), 300)
+            except:
+                self.palette = Picture(self.game, self, self.game.color_swatch_images[0], int(self.game.screen_width * (3 / 4)), 300)
+
         elif self.item_type == 'race':
             self.draw_text("Pick Your Skin Tone:", default_font, 24, WHITE, int(self.game.screen_width * (1 / 4) + 30), 90, "topleft")
             if self.palette != None:
                 self.palette.kill()
-            self.palette = Picture(self.game, self, self.game.color_swatch_images[PALETE_IMAGES[self.character.equipped['race']]], int(self.game.screen_width * (1 / 4) + 100), 300)
+            try:
+                self.palette = Picture(self.game, self, self.game.color_swatch_images[PALETE_IMAGES[self.character.equipped['race']]], int(self.game.screen_width * (1 / 4) + 100), 300)
+            except:
+                self.palette = Picture(self.game, self, self.game.color_swatch_images[0], int(self.game.screen_width * (1 / 4) + 100), 300)
+
         if not self.selected_item == None:
             if self.item_selected:
                 selected_rect = pg.Rect(self.selected_item.rect.x - 4, self.selected_item.rect.y, self.selected_item.rect.width + 8, self.selected_item.size + 2)

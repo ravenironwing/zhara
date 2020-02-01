@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="25" height="16" tilewidth="128" tileheight="128" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" name="waves" tilewidth="128" tileheight="128" tilecount="30" columns="30">
+  <image source="../img/map_textures/waves.png" width="3840" height="128"/>
+ </tileset>
+ <tileset firstgid="31" name="animatedwater" tilewidth="128" tileheight="128" tilecount="32" columns="2">
+  <image source="../img/map_textures/animatedwater.png" width="256" height="2048"/>
+ </tileset>
+ <tileset firstgid="63" name="water_and_ice" tilewidth="128" tileheight="128" tilecount="135" columns="15">
+  <image source="../img/map_textures/water_and_ice.png" width="1920" height="1152"/>
+ </tileset>
+ <tileset firstgid="198" name="1" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/1.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="199" name="2" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/2.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="200" name="3" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/3.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="201" name="4" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/4.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="202" name="5" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/5.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="203" name="6" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/6.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="204" name="7" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/7.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="205" name="8" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/8.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="206" name="9" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/9.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="207" name="10" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/10.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="208" name="10" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/10.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="209" name="11" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/11.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="210" name="12" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/12.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="211" name="13" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/13.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="212" name="14" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/14.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="213" name="15" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/15.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="214" name="16" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/16.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="215" name="17" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/17.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="216" name="18" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/18.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="217" name="19" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/19.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="218" name="20" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/20.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="219" name="21" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/WaterAnimations/ocean/21.gif" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="220" name="waterfall" tilewidth="128" tileheight="128" tilecount="16" columns="8">
+  <image source="../img/map_textures/waterfall.png" width="1024" height="256"/>
+ </tileset>
+ <tileset firstgid="236" name="temp_water" tilewidth="128" tileheight="128" tilecount="72" columns="6">
+  <image source="../img/map_textures/temp_water.png" width="768" height="1536"/>
+ </tileset>
+ <tileset firstgid="308" name="waterfall2" tilewidth="128" tileheight="128" tilecount="4" columns="4">
+  <image source="../img/map_textures/waterfall2.png" width="512" height="128"/>
+ </tileset>
+ <tileset firstgid="312" name="water" tilewidth="128" tileheight="128" tilecount="147" columns="7">
+  <image source="../img/map_textures/water.png" width="896" height="2688"/>
+ </tileset>
+ <tileset firstgid="459" name="1" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/waterfall/1.png" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="460" name="2" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/waterfall/2.png" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="461" name="3" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/waterfall/3.png" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="462" name="4" tilewidth="128" tileheight="128" tilecount="1" columns="1">
+  <image source="../../../../Desktop/waterfall/4.png" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="463" name="waterfall2" tilewidth="128" tileheight="128" tilecount="8" columns="1">
+  <image source="../../../../Desktop/waterfall/waterfall2.png" width="128" height="1024"/>
+ </tileset>
+ <tileset firstgid="471" name="waterfall3" tilewidth="128" tileheight="128" tilecount="8" columns="1">
+  <image source="../../../../Desktop/waterfall/waterfall3.png" width="128" height="1024"/>
+ </tileset>
+ <tileset firstgid="479" name="waterfall4" tilewidth="128" tileheight="128" tilecount="8" columns="1">
+  <image source="../../../../Desktop/waterfall/waterfall4.png" width="128" height="1024"/>
+ </tileset>
+ <layer id="1" name="Tile Layer 1" width="25" height="16">
+  <data encoding="csv">
+312,1073742136,2684354872,536871224,1073742242,418,2684354873,536871225,384,1073742208,2684354944,536871296,424,2147484072,2684354984,536871336,2147483963,314,315,2147483998,349,350,323,324,325,
+319,1073742143,2684354879,536871231,1073742235,411,2684354880,536871232,391,1073742215,2684354951,536871303,431,2147484079,2684354991,536871343,536871226,0,2684354874,536871261,0,2684354909,330,331,332,
+326,1073742150,2684354886,536871238,1073742228,404,2684354887,536871239,398,1073742222,2684354958,536871310,438,2147484086,2684354998,536871350,3221225787,1073742138,1073742139,3221225822,1073742173,1073742174,337,338,339,
+333,1073742157,2684354893,536871245,1073742221,397,2684354894,536871246,405,1073742229,2684354965,536871317,445,2147484093,2684355005,536871357,2147483970,321,322,2147484005,356,357,344,345,346,
+340,1073742164,2684354900,536871252,1073742214,390,2684354901,536871253,412,1073742236,2684354972,536871324,452,2147484100,2684355012,536871364,1610613057,0,3758096705,536871268,0,2684354916,351,352,353,
+347,1073742171,2684354907,536871259,1073742207,383,2684354908,536871260,419,1073742243,2684354979,536871331,425,2147484073,2684354985,536871337,3221225794,1073742145,1073742146,3221225829,1073742180,1073742181,358,359,360,
+354,1073742178,2684354914,536871266,1073742200,376,2684354915,536871267,426,1073742250,2684354986,536871338,432,2147484080,2684354992,536871344,2147483977,328,329,2147484012,363,364,365,366,367,
+361,1073742185,2684354921,536871273,1073742193,369,2684354915,536871267,433,1073742257,2684354993,536871345,439,2147484087,2684354999,536871351,1610613064,0,3758096712,536871275,0,2684354923,372,373,374,
+368,1073742192,2684354928,536871280,1073742186,362,2684354929,536871281,385,1073742209,2684354945,536871297,1073742248,3221225896,3758096808,1610613160,3221225801,1073742152,1073742153,3221225836,1073742187,1073742188,379,380,381,
+375,1073742199,2684354935,536871287,1073742179,355,2684354936,536871288,392,1073742216,2684354952,536871304,1073742255,3221225903,3758096815,1610613167,2147483984,335,336,2147484019,370,371,386,387,388,
+382,1073742206,2684354942,536871294,1073742172,348,2684354943,536871295,399,1073742223,2684354959,536871311,1073742262,3221225910,3758096822,1610613174,536871247,0,2684354895,536871282,0,2684354930,393,394,395,
+389,1073742213,2684354949,536871301,1073742165,341,2684354950,536871302,406,1073742230,2684354966,536871318,1073742269,3221225917,3758096829,1610613181,3221225808,1073742159,1073742160,3221225843,1073742194,1073742195,421,422,423,
+396,1073742220,2684354956,536871308,1073742158,334,2684354957,536871309,413,1073742237,2684354973,536871325,1073742276,3221225924,3758096836,1610613188,2147483991,342,343,2147484026,377,378,428,429,430,
+403,1073742227,2684354963,536871315,1073742151,327,2684354964,536871316,420,1073742244,2684354980,536871332,1073742249,3221225897,3758096809,1610613161,536871254,0,2684354902,536871289,0,2684354937,435,436,437,
+410,1073742234,2684354970,536871322,1073742144,320,2684354971,536871323,427,1073742251,2684354987,536871339,1073742256,3221225904,3758096816,1610613168,3221225815,1073742166,1073742167,3221225850,1073742201,1073742202,0,0,0,
+417,1073742241,2684354977,536871329,1073742137,313,2684354978,536871330,434,1073742258,2684354994,536871346,1073742263,3221225911,3758096823,1610613175,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

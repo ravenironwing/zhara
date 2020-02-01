@@ -26,6 +26,14 @@ https://www.wildtextures.com/
 http://www.cadhatch.com/seamless-textures/4588167680
 https://naldzgraphics.net/free-seamless-sand-textures/
 
+animated tiles modified from the following:
+animated water made using this tutorial and custom transparency editiing:
+http://ccorner.duke4.net/tutorials-index/workflowswalkthroughs/water-animation-pt-2-after-effects/
+wave animation:
+https://opengameart.org/content/animated-ocean-tileset
+waterfall modified from:
+https://opengameart.org/content/lpc-animated-water-and-waterfalls
+
 Sprite sheets created using:
 https://www.codeandweb.com/free-sprite-sheet-packer
 
