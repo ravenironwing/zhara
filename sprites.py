@@ -3814,6 +3814,7 @@ class Dropped_Item(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.game.group.add(self)
+        self.map = None
         self.item_type = type
         self.item = self.name = item
         self.rot = rot
