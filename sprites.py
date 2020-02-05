@@ -23,10 +23,15 @@ def color_image(image, color):
 def collide(sprite):
     sprite.hit_rect.centerx = sprite.pos.x
     for item in sprite.collide_list:
-        collide_with_walls(sprite, item, 'x')
+            collide_with_walls(sprite, item, 'x')
+    if not (sprite.immaterial or sprite.flying):
+        collide_with_elevations(sprite, sprite.game.elevations, 'x')
+
     sprite.hit_rect.centery = sprite.pos.y
     for item in sprite.collide_list:
-        collide_with_walls(sprite, item, 'y')
+            collide_with_walls(sprite, item, 'y')
+    if not (sprite.immaterial or sprite.flying):
+        collide_with_elevations(sprite, sprite.game.elevations, 'y')
     sprite.rect.center = sprite.hit_rect.center
 
 def collide_hit_rect(one, two):
@@ -50,47 +55,64 @@ def collide_with_walls(sprite, group, dir):
             sprite.vel.y = 0
             sprite.hit_rect.centery = sprite.pos.y
 
-def collide_with_jumpables(sprite, group, dir):
-    if not (sprite.jumping or sprite.climbing):
+def collide_with_elevations(sprite, group, dir):
+    xwall = False
+    ywall = False
+    hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+    if hits:
+        if len(hits) == 1:
+            hit_level = hits[0]
+        else:
+            hit_level = hits[1]
         if dir == 'x':
-            hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
-            if hits:
-                if hits[0].rect.centerx > sprite.hit_rect.centerx:
-                    sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
-                if hits[0].rect.centerx < sprite.hit_rect.centerx:
-                    sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
+            if hit_level.elevation - sprite.elevation > 3:
+                xwall = True
+                sprite.climbing = False
+            elif hit_level.elevation - sprite.elevation == 3:
+                if not sprite.climbing:
+                    xwall = True
+            elif hit_level.elevation - sprite.elevation == 2:
+                if True not in [sprite.jumping, sprite.climbing]:
+                    xwall = True
+            elif hit_level.elevation - sprite.elevation <= 1:
+                if hit_level.elevation - sprite.elevation < -1:
+                    sprite.falling = True
+                    sprite.pre_jump()
+                sprite.elevation = hit_level.elevation
+            if xwall:
+                if hit_level.rect.centerx > sprite.hit_rect.centerx:
+                    sprite.pos.x = hit_level.rect.left - sprite.hit_rect.width / 2
+                if hit_level.rect.centerx < sprite.hit_rect.centerx:
+                    sprite.pos.x = hit_level.rect.right + sprite.hit_rect.width / 2
                 sprite.vel.x = 0
                 sprite.hit_rect.centerx = sprite.pos.x
         if dir == 'y':
-            hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
-            if hits:
-                if hits[0].rect.centery > sprite.hit_rect.centery:
-                    sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
-                if hits[0].rect.centery < sprite.hit_rect.centery:
-                    sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
+            if hit_level.elevation - sprite.elevation > 3:
+                ywall = True
+                sprite.climbing = False
+            elif hit_level.elevation - sprite.elevation == 3:
+                if not sprite.climbing:
+                    ywall = True
+                else:
+                    sprite.elevation = hit_level.elevation
+            elif hit_level.elevation - sprite.elevation == 2:
+                if True not in [sprite.jumping, sprite.climbing]:
+                    ywall = True
+                else:
+                    sprite.elevation = hit_level.elevation
+            elif hit_level.elevation - sprite.elevation <= 1:
+                if hit_level.elevation - sprite.elevation < -1:
+                    sprite.falling = True
+                    sprite.pre_jump()
+                sprite.elevation = hit_level.elevation
+            if ywall:
+                if hit_level.rect.centery > sprite.hit_rect.centery:
+                    sprite.pos.y = hit_level.rect.top - sprite.hit_rect.height / 2
+                if hit_level.rect.centery < sprite.hit_rect.centery:
+                    sprite.pos.y = hit_level.rect.bottom + sprite.hit_rect.height / 2
                 sprite.vel.y = 0
                 sprite.hit_rect.centery = sprite.pos.y
 
-def collide_with_climbables(sprite, group, dir):
-    if not sprite.climbing:
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
-            if hits:
-                if hits[0].rect.centerx > sprite.hit_rect.centerx:
-                    sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
-                if hits[0].rect.centerx < sprite.hit_rect.centerx:
-                    sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
-                sprite.vel.x = 0
-                sprite.hit_rect.centerx = sprite.pos.x
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
-            if hits:
-                if hits[0].rect.centery > sprite.hit_rect.centery:
-                    sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
-                if hits[0].rect.centery < sprite.hit_rect.centery:
-                    sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
-                sprite.vel.y = 0
-                sprite.hit_rect.centery = sprite.pos.y
 
 # Used for detecting when a fireball hits an obstacle
 def fire_collide(one, two):
@@ -383,13 +405,13 @@ class Vehicle(pg.sprite.Sprite):
         self.turret = None
         if self.cat == 'tank':
             self.turret = Turret(game, self)
-            collide_list = ['walls', 'climbables']
+            collide_list = ['walls']
         elif self.cat == 'boat':
-            collide_list = ['walls', 'jumpables', 'climbables', 'shallows']
+            collide_list = ['walls', 'shallows']
         elif self.cat == 'airship':
             collide_list = []
         else:
-            collide_list = ['walls', 'water', 'jumpables', 'climbables']
+            collide_list = ['walls', 'water']
         self.collide_list = []
         for item in collide_list:
             self.collide_list.append(eval("self.game." + item))
@@ -599,7 +621,6 @@ class Character(pg.sprite.Sprite):
             self.climbing_weapon_anim = self.render_animation(CLIMB)
             self.climbing_weapon_melee_anim = self.render_animation(CLIMB_MELEE)
             self.climbing_l_weapon_melee_anim = self.render_animation(L_CLIMB_MELEE)
-            self.jump_anim = self.render_animation(JUMP)
             self.walk_melee_anim = self.render_animation(WALK_PUNCH)
             self.walk_l_melee_anim = self.render_animation(L_WALK_PUNCH)
             self.dual_melee_anim = self.render_animation(D_PUNCH)
@@ -614,6 +635,7 @@ class Character(pg.sprite.Sprite):
             self.shoot_anim = self.render_animation(SHOOT)
             self.reload_anim = self.render_animation(RELOAD)
 
+        self.jump_anim = self.render_animation(JUMP)
         self.stand_anim = self.render_animation(STAND)
         self.run_anim = self.render_animation(RUNNING)
         self.walk_anim = self.render_animation(WALK)
@@ -625,10 +647,10 @@ class Character(pg.sprite.Sprite):
         if self.mother not in self.game.npcs:
             self.swim_jump_anim = self.render_animation(WATER_JUMP)
             self.climb_jump_anim = self.render_animation(CLIMB_JUMP)
-            self.climbing_anim = self.render_animation(CLIMB)
             self.climbing_melee_anim = self.render_animation(CLIMB_MELEE)
             self.climbing_l_melee_anim = self.render_animation(L_CLIMB_MELEE)
 
+        self.climbing_anim = self.render_animation(CLIMB)
         self.swim_anim = self.render_animation(SWIM, True)
         self.swim_melee_anim = self.render_animation(WATER_PUNCH, True)
         #self.animations_cache_list = [self.stand_anim, self.shoot_anim, self.climbing_shoot_anim, self.climbing_weapon_anim, self.climbing_weapon_melee_anim, self.climbing_l_weapon_melee_anim, self.run_anim, self.walk_anim, self.melee_anim, self.walk_melee_anim, self.walk_l_melee_anim, self.dual_melee_anim,  self.l_melee_anim,  self.jump_anim, self.shallows_anim, self.reload_anim, self.l_reload_anim, self.dual_reload_anim, self.swim_anim, self.swim_jump_anim, self.swim_melee_anim, self.climb_jump_anim, self.climbing_anim, self.climbing_melee_anim, self.climbing_l_melee_anim]
@@ -806,7 +828,6 @@ class Character(pg.sprite.Sprite):
                     self.dual_melee_anim = self.render_animation(D_PUNCH)
                     self.walk_melee_anim = self.render_animation(WALK_PUNCH)
                     self.walk_l_melee_anim = self.render_animation(L_WALK_PUNCH)
-                    self.jump_anim = self.render_animation(JUMP)
 
                 if self.mother.bow:
                     self.reload_anim = self.render_animation(BOW_RELOAD)
@@ -815,6 +836,7 @@ class Character(pg.sprite.Sprite):
                     self.reload_anim = self.render_animation(RELOAD)
                     self.shoot_anim = self.render_animation(SHOOT)
 
+                self.jump_anim = self.render_animation(JUMP)
                 self.run_anim = self.render_animation(RUNNING)
                 self.walk_anim = self.render_animation(WALK)
                 self.melee_anim = self.render_animation(PUNCH)
@@ -828,10 +850,10 @@ class Character(pg.sprite.Sprite):
                 if (self.mother not in self.game.npcs) or (self.mother in self.game.companions):
                     self.swim_jump_anim = self.render_animation(WATER_JUMP)
                     self.climb_jump_anim = self.render_animation(CLIMB_JUMP)
-                    self.climbing_anim = self.render_animation(CLIMB)
                     self.climbing_melee_anim = self.render_animation(CLIMB_MELEE)
                     self.climbing_l_melee_anim = self.render_animation(L_CLIMB_MELEE)
 
+                self.climbing_anim = self.render_animation(CLIMB)
                 self.swim_anim = self.render_animation(SWIM, True)
                 self.swim_melee_anim = self.render_animation(WATER_PUNCH, True)
                 toggle_equip(self.mother, False)
@@ -924,6 +946,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.hit_rect = PLAYER_HIT_RECT
         self.hit_rect.center = self.rect.center
+        self.elevation = 0
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.pos = vec(0, 0)
@@ -954,6 +977,7 @@ class Player(pg.sprite.Sprite):
         self.melee_rate = 0
         self.last_melee_sound = 0
         self.last_throw = 0
+        self.last_climb = 0
         # Player state variables
         self.dragon = False
         self.temp_equipped = None # Used for switching your body to a mech suit or for Wraith possession.
@@ -1041,6 +1065,8 @@ class Player(pg.sprite.Sprite):
         if value!=self._climbing:
             if value == False:
                 self.falling = True
+            else:
+                self.last_climb = pg.time.get_ticks()
             self.pre_jump()
             toggle_equip(self, value)
             self._climbing = value
@@ -2110,6 +2136,11 @@ class Player(pg.sprite.Sprite):
             self.reload()
 
         now = pg.time.get_ticks()
+        # Stops you from climbing after a certain time if you aren't on an object that requires you climb on it.
+        if self.climbing:
+            if now - self.last_climb > CLIMB_TIME:
+                if not pg.sprite.spritecollide(self, self.game.climbs, False):
+                    self.climbing = False
         # drains magica if you are a dragon
         if self.dragon:
             if now - self.last_magica_drain > 2000:
@@ -2164,12 +2195,10 @@ class Player(pg.sprite.Sprite):
             if ('wraith' not in self.race) or self.stats['weight'] !=0:
                 self.hit_rect.centerx = self.pos.x
                 collide_with_walls(self, self.game.walls, 'x')
-                collide_with_climbables(self, self.game.climbables, 'x')
-                collide_with_jumpables(self, self.game.jumpables, 'x')
+                collide_with_elevations(self, self.game.elevations, 'x')
                 self.hit_rect.centery = self.pos.y
                 collide_with_walls(self, self.game.walls, 'y')
-                collide_with_climbables(self, self.game.climbables, 'y')
-                collide_with_jumpables(self, self.game.jumpables, 'y')
+                collide_with_elevations(self, self.game.elevations, 'y')
                 self.rect.center = self.hit_rect.center
         self.check_map_pos()
 
@@ -2388,6 +2417,7 @@ class Npc(pg.sprite.Sprite):
         self.talk_rect = XLARGE_HIT_RECT.copy()
         self.talk_rect.center = self.rect.center
         self.talk_counter = 0 # Used to keep track of how many times you talk to someone. So you can changed the dialogue based on it.
+        self.elevation = 0
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
@@ -2446,7 +2476,7 @@ class Npc(pg.sprite.Sprite):
             self.kind = PEOPLE[kind]
             self.game.people[kind] = self.kind
         self.race = self.kind['race']
-        self.colors = self.kind['colors']
+        self.colors = self.kind['colors'].copy()
         if 'random' in self.colors['skin']:
             skin_list = eval(self.colors['skin'].replace('random', ''))
             self.colors['skin'] = choice(skin_list)
@@ -2759,7 +2789,7 @@ class Npc(pg.sprite.Sprite):
                         # This part makes the NPC avoid walls
                         now = pg.time.get_ticks()
                         if not self.immaterial:
-                            hits = pg.sprite.spritecollide(self, self.game.walls, False) + pg.sprite.spritecollide(self, self.game.climbables, False) + pg.sprite.spritecollide(self, self.game.jumpables, False)
+                            hits = pg.sprite.spritecollide(self, self.game.walls, False)
                             if hits:
                                 self.hit_wall = True
                                 if now - self.last_wall_hit > 1000:
@@ -3264,6 +3294,12 @@ class Npc(pg.sprite.Sprite):
     def draw_health(self):
         pass
 
+    def pre_jump(self):
+        pass
+
+    def jump(self):
+        pass
+
 
 class Animal(pg.sprite.Sprite):
     def __init__(self, game, x, y, map, species, health = None):
@@ -3327,6 +3363,7 @@ class Animal(pg.sprite.Sprite):
         self.rot = randrange(0, 360)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.elevation = 0
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
@@ -3348,6 +3385,7 @@ class Animal(pg.sprite.Sprite):
         self.jumping = False
         self.climbing = False
         self.swimming = False
+        self.falling = False
         self.in_shallows = False
         self.in_player_vehicle = False
         self.in_vehicle = False
@@ -3498,7 +3536,7 @@ class Animal(pg.sprite.Sprite):
         if self.living:
             if not self.occupied:
                 target_dist = self.target.pos - self.pos
-                hits = pg.sprite.spritecollide(self, self.game.walls, False) + pg.sprite.spritecollide(self, self.game.shallows, False) + pg.sprite.spritecollide(self, self.game.climbables, False)  # This part makes the animal avoid walls
+                hits = pg.sprite.spritecollide(self, self.game.walls, False) + pg.sprite.spritecollide(self, self.game.shallows, False) # This part makes the animal avoid walls
                 if hits:
                     self.hit_wall = True
                     now = pg.time.get_ticks()
@@ -3647,7 +3685,10 @@ class Animal(pg.sprite.Sprite):
                 Breakable(self.game, self.pos, self.pos.x - 60, self.pos.y - 60, 120, 120, BREAKABLES['empty turtle shell'], 'empty turtle shell', self.map)
             self.kill()
 
-
+    def pre_jump(self):
+        pass
+    def jump(self):
+        pass
 
     def draw_health(self):
         pass
@@ -3745,9 +3786,6 @@ class Bullet(pg.sprite.Sprite):
         self.rect.center = self.pos
         if pg.sprite.spritecollideany(self, self.game.walls):
             self.death()
-        if not self.game.player.climbing: # Makes it so bullets don't hit climbable object when you are on top of them
-            if pg.sprite.spritecollideany(self, self.game.climbables):
-                self.death()
         # Kills bullets of current and previous weapons
         if pg.time.get_ticks() - self.spawn_time > self.lifetime:
             self.death()
@@ -3825,9 +3863,9 @@ class Dropped_Item(pg.sprite.Sprite):
         self.pos = pos
         # Looks up the item image from the list of dictionaries in the settings based on the item type and item name.
         if self.item_type[-1:] == 's':
-            image_path = "self.game." + self.item_type[:-1] + "_images[" + self.item_type.upper() + "['" + item + "']['image']]"
+            image_path = "self.game." + self.item_type[:-1] + "_images[" + self.item_type.upper() + '["' + item + '"]["image"]]'
         else:
-            image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item + "']['image']]"
+            image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + '["' + item + '"]["image"]]'
         if self.rot == None:
             self.rot = randrange(0, 360)
         self.image = pg.transform.rotate(eval(image_path), self.rot)
@@ -3926,6 +3964,146 @@ class Stationary_Animated(pg.sprite.Sprite): # Used for fires and other stationa
         self.frame += 1
         if self.frame > len(images) - 1:
             self.frame = 0
+
+class Entryway(pg.sprite.Sprite):
+    def __init__(self, game, x, y, orientation = 'L', name = 'generic', locked = False, kind = 'wood'):
+        self._layer = WALL_LAYER
+        self.groups = game.all_sprites, game.entryways
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.game.group.add(self)
+        self.name = name
+        self.kind = kind
+        self.orientation = orientation
+        self.locked = locked
+        self.combo = randrange(10, 350)
+        self.difficulty = randrange(0, 30)
+        self.length = 88
+        self.health = DOOR_STYLES[self.kind]['hp']
+        self.vel = vec(0, 0)
+        self.protected = False
+        temp_img = self.game.door_images[DOOR_STYLES[self.kind]['image']]
+        if self.orientation in 'L':
+            self.image_orig = temp_img
+            self.image = self.image_orig.copy()
+            self.rect = self.image.get_rect()
+            self.rect.x = x - 19
+            self.rect.y = y
+            self.wall = Obstacle(self.game, self.rect.x, self.rect.y, 20, self.length)
+        elif self.orientation == 'R':
+            self.image_orig = pg.transform.rotate(temp_img, 180)
+            self.image = self.image_orig.copy()
+            self.rect = self.image.get_rect()
+            self.rect.x = x - 10
+            self.rect.y = y - self.length
+            self.wall = Obstacle(self.game, self.rect.x, self.rect.y + self.length, 20, self.length)
+        elif self.orientation == 'D':
+            self.image_orig = pg.transform.rotate(temp_img, 90)
+            self.image = self.image_orig.copy()
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y - 10
+            self.wall = Obstacle(self.game, self.rect.x, self.rect.y, self.length, 20)
+        elif self.orientation == 'U':
+            self.image_orig = pg.transform.rotate(temp_img, -90)
+            self.image = self.image_orig.copy()
+            self.rect = self.image.get_rect()
+            self.rect.x = x - self.length
+            self.rect.y = y - 19
+            self.wall = Obstacle(self.game, self.rect.x + self.length, self.rect.y, self.length, 20)
+        self.last_move = 0
+        self.rot = 0
+        self.animate_speed = 30
+        self.rotate_amount = 4
+        self.open = False
+        self.close = False
+        self.opened = False
+        self.hit_rect = self.wall.rect
+        self.hit_rect.center = self.wall.rect.center
+        self.sound_played = False
+        self.inventory = {'locked': self.locked, 'combo': self.combo,'difficulty': self.difficulty}
+        self.last_hit = 0
+        self.living = True
+
+    def update(self):
+        if self.open:
+            now = pg.time.get_ticks()
+            if now - self.last_move > self.animate_speed:
+                self.animate_open()
+                self.rotate_image()
+
+        if self.close:
+            now = pg.time.get_ticks()
+            if now - self.last_move > self.animate_speed:
+                self.animate_close()
+                self.rotate_image()
+
+        if not self.living:
+            now = pg.time.get_ticks()
+            if now - self.last_move > self.animate_speed:
+                self.animate_death()
+
+
+    def rotate_image(self):
+        new_image = pg.transform.rotate(self.image_orig, self.rot)
+        old_center = self.rect.center
+        self.image = new_image
+        self.rect = self.image.get_rect()
+        self.rect.center = old_center
+
+    def animate_open(self):
+        if not self.sound_played:
+            self.game.effects_sounds['door open'].play()
+            self.sound_played = True
+        self.rot += self.rotate_amount
+        if self.rot > 90:
+            self.rot = 90
+            self.open = False
+            self.opened = True
+            self.wall.kill()
+            if self.orientation == 'L':
+                self.wall = Obstacle(self.game, self.rect.x, self.rect.y, self.length, 20)
+            elif self.orientation == 'D':
+                self.wall = Obstacle(self.game, self.rect.x, self.rect.y + self.length, 20, self.length)
+            elif self.orientation == 'R':
+                self.wall = Obstacle(self.game, self.rect.x + self.length, self.rect.y, self.length, 20)
+            elif self.orientation == 'U':
+                self.wall = Obstacle(self.game, self.rect.x, self.rect.y, 20, self.length)
+            self.hit_rect = self.wall.rect
+            self.hit_rect.center = self.wall.rect.center
+            self.sound_played = False
+
+    def animate_close(self):
+        self.rot -= self.rotate_amount
+        if self.rot < 0:
+            self.rot = 0
+            self.close = False
+            self.opened = False
+            self.wall.kill()
+            if self.orientation == 'L':
+                self.wall = Obstacle(self.game, self.rect.x, self.rect.y, 20, self.length)
+            elif self.orientation == 'D':
+                self.wall = Obstacle(self.game, self.rect.x, self.rect.y, self.length, 20)
+            elif self.orientation == 'R':
+                self.wall = Obstacle(self.game, self.rect.x, self.rect.y + self.length, 20, self.length)
+            elif self.orientation == 'U':
+                self.wall = Obstacle(self.game, self.rect.x + self.length, self.rect.y, self.length, 20)
+            self.hit_rect = self.wall.rect
+            self.hit_rect.center = self.wall.rect.center
+            self.game.effects_sounds['door close'].play()
+
+    def animate_death(self):
+        self.game.effects_sounds['rocks'].play()
+        self.wall.kill()
+        self.kill()
+
+    def gets_hit(self, damage, knockback = 0, rot = 0):
+        now = pg.time.get_ticks()
+        if now - self.last_hit > DAMAGE_RATE:
+            self.last_hit = now
+            self.health -= damage
+        if self.health <= 0:
+            self.living = False
 
 class Explosion(pg.sprite.Sprite):
     def __init__(self, game, target = None, knockback = 0, damage = 0, center = None, after_effect = None, sky = False):
@@ -4051,9 +4229,6 @@ class Fireball(pg.sprite.Sprite):
 
         if pg.sprite.spritecollideany(self, self.game.walls, fire_collide):
             self.explode()
-        if not self.game.player.climbing: # Makes it so fireballs don't hit climbable object when you are on top of them
-            if pg.sprite.spritecollideany(self, self.game.climbables, fire_collide):
-                self.explode()
         # Kills bullets of current and previous weapons
         if pg.time.get_ticks() - self.spawn_time > self.lifetime:
             self.explode()
@@ -4067,8 +4242,8 @@ class Fireball(pg.sprite.Sprite):
         self.kill()
 
 class FirePot(pg.sprite.Sprite):
-    def __init__(self, game, center, number):
-        self.groups = game.jumpables, game.obstacles, game.all_sprites, game.firepots
+    def __init__(self, game, center, number, elev = 2):
+        self.groups = game.elevations, game.all_sprites, game.firepots
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.game.group.add(self)
@@ -4082,6 +4257,7 @@ class FirePot(pg.sprite.Sprite):
         self.lit = False
         self.lit_time = 0
         self.life_time = 8000
+        self.elevation = elev
 
     def update(self):
         now = pg.time.get_ticks()
@@ -4146,11 +4322,6 @@ class Spell_Animation(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.hit_rect.center = self.pos
 
-        #if pg.sprite.spritecollideany(self, self.game.walls, fire_collide):
-        #    self.explode()
-        #if not self.game.player.climbing: # Makes it so fireballs don't hit climbable object when you are on top of them
-        #    if pg.sprite.spritecollideany(self, self.game.climbables, fire_collide):
-        #        self.explode()
         # Kills bullets of current and previous weapons
         if pg.time.get_ticks() - self.spawn_time > self.lifetime:
             self.explode()
@@ -4462,9 +4633,12 @@ class NoSpawn(pg.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-class Jumpable(pg.sprite.Sprite):
-    def __init__(self, game, x, y, w, h):
-        self.groups = game.jumpables, game.obstacles, game.all_static_sprites, game.climbables_and_jumpables
+class Elevation(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h, elev, climb = False):
+        if climb:
+            self.groups = game.elevations, game.all_static_sprites, game.climbs
+        else:
+            self.groups = game.elevations, game.all_static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)
@@ -4473,18 +4647,8 @@ class Jumpable(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x
         self.rect.y = y
-
-class Climbable(pg.sprite.Sprite):
-    def __init__(self, game, x, y, w, h):
-        self.groups = game.climbables, game.obstacles, game.all_static_sprites, game.climbables_and_jumpables
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.rect = pg.Rect(x, y, w, h)
-        self.hit_rect = self.rect
-        self.x = x
-        self.y = y
-        self.rect.x = x
-        self.rect.y = y
+        self.elevation = elev
+        self.climb = climb
 
 class Water(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
@@ -4542,23 +4706,26 @@ class Door(pg.sprite.Sprite):
         self.map = self.map[4:] + '.tmx'
 
 class Chest(pg.sprite.Sprite):
-    def __init__(self, game, x, y, w, h, name):
-        self.groups = game.containers, game.obstacles, game.all_static_sprites, game.jumpables
+    def __init__(self, game, x, y, w, h, name, elev = 2):
+        self.groups = game.containers, game.chest_containers, game.elevations, game.all_static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.name = name.replace('chest', '')
+        self.kind = 'chest'
         self.rect = pg.Rect(x, y, w, h)
         self.hit_rect = self.rect
         self.x = x
         self.y = y
         self.w = w
         self.h = h
+        self.elevation = elev
         self.rect.x = x
         self.rect.y = y
         self.temp_inventory = self.game.chests[self.name] # Creates a temporary reference to the chest contents dictionary.
         self.inventory = copy.deepcopy(self.game.chests[self.name]) # Creates an independent copy of the chest contents to later use and replace 'random' entries with actual items.
         random_inventory_item(self, self.temp_inventory)
         CHESTS[self.name] = self.inventory
+        self.locked = self.inventory['locked']
 
 class Work_Station(pg.sprite.Sprite): # Used for work benches, tanning racks, grinders, forges, enchanting tables, etc.
     def __init__(self, game, x, y, w, h, kind):
@@ -4574,8 +4741,8 @@ class Work_Station(pg.sprite.Sprite): # Used for work benches, tanning racks, gr
         self.rect.y = y
 
 class Bed(pg.sprite.Sprite): # Used to rest in
-    def __init__(self, game, x, y, w, h, name):
-        self.groups = game.beds, game.all_static_sprites, game.climbables, game.obstacles, game.climbables_and_jumpables
+    def __init__(self, game, x, y, w, h, name, elev = 2):
+        self.groups = game.beds, game.all_static_sprites, game.elevations
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.name = name
@@ -4590,10 +4757,11 @@ class Bed(pg.sprite.Sprite): # Used to rest in
         self.y = y
         self.rect.x = x
         self.rect.y = y
+        self.elevation = elev
 
 class Toilet(pg.sprite.Sprite): # Used to rest in
-    def __init__(self, game, x, y, w, h):
-        self.groups = game.toilets, game.all_static_sprites, game.climbables, game.obstacles, game.climbables_and_jumpables
+    def __init__(self, game, x, y, w, h, elev = 2):
+        self.groups = game.toilets, game.all_static_sprites, game.elevations, game.climbs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)
@@ -4602,6 +4770,7 @@ class Toilet(pg.sprite.Sprite): # Used to rest in
         self.y = y
         self.rect.x = x
         self.rect.y = y
+        self.elevation = elev
 
 class Detector(pg.sprite.Sprite): # Used to rest in
     def __init__(self, game, x, y, w, h, name):

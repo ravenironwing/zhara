@@ -1085,7 +1085,10 @@ class Lock_Menu():
         spacing = 20
         self.game = game
         self.lock = lock
-        self.key_name = self.lock.name + ' chest key'
+        if self.lock.kind == 'chest':
+            self.key_name = self.lock.name + ' chest key'
+        else:
+            self.key_name = self.lock.name + ' key'
         self.menu_sprites = pg.sprite.Group()
         self.keyway_sprite = pg.sprite.Group()
         self.running = True
@@ -1096,6 +1099,7 @@ class Lock_Menu():
         if self.key_name in self.game.player.inventory['items']:
             self.key_unlocked = True
             self.lock.inventory['locked'] = False
+            self.lock.locked = False
             self.game.effects_sounds['unlock'].play()
             self.game.player.stats['lock picking'] += 2
             self.keyway = Lock_Keyway(self.game, self, True)
@@ -1150,11 +1154,11 @@ class Lock_Menu():
         self.keyway_sprite.draw(self.game.screen)
         self.menu_sprites.draw(self.game.screen)
         if self.key_unlocked:
-            self.draw_text("You unlocked the chest with the key.", default_font, 60, WHITE, 120, self.game.screen_height/2, "topleft")
+            self.draw_text("You unlocked the lock with the key.", default_font, 60, WHITE, 120, int(self.game.screen_height * 3/4), "topleft")
         elif not self.lock.inventory['locked']:
-            self.draw_text("You successfully picked the lock!", default_font, 60, WHITE, 120, self.game.screen_height/2, "topleft")
+            self.draw_text("You successfully picked the lock!", default_font, 60, WHITE, 120, int(self.game.screen_height * 3/4), "topleft")
         if self.broken:
-            self.draw_text("You broke your lock pick!", default_font, 60, WHITE, 120, self.game.screen_height/2, "topleft")
+            self.draw_text("You broke your lock pick!", default_font, 60, WHITE, 120, int(self.game.screen_height * 3/4), "topleft")
         self.draw_text("Right Click to Select Menu    E: Exit menu    ESCAPE: Quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 
@@ -1209,7 +1213,7 @@ class Lock_Pick(pg.sprite.Sprite):
             now = pg.time.get_ticks()
             if now - self.last_move > self.game.effects_sounds['lock click'].get_length() * 1000:
                 self.last_move = now
-                if abs(self.rot - self.combo) < self.difficulty:
+                if abs(self.rot - self.combo) <= self.difficulty:
                     self.game.effects_sounds['lock click'].play()
                 else:
                     choice(self.game.lock_picking_sounds).play()
@@ -1217,7 +1221,7 @@ class Lock_Pick(pg.sprite.Sprite):
     def pick(self):
         self.pos.x += self.toggle
         self.y_offset += self.toggle
-        if abs(self.rot - self.combo) < self.difficulty:
+        if abs(self.rot - self.combo) <= self.difficulty:
             self.mother.keyway.turn = True
         else:
             self.hp -= 1
@@ -1233,6 +1237,7 @@ class Lock_Pick(pg.sprite.Sprite):
     def update(self):
         if self.mother.keyway.open:
             self.mother.lock.inventory['locked'] = False
+            self.mother.lock.locked = False
             self.game.effects_sounds['unlock'].play()
             self.game.player.stats['lock picking'] += 20 / self.difficulty
             self.kill()

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="943">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="987">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -609,7 +609,7 @@
 0,0,0,10,0,0,0,10,0,0,261,261,261,261,261,261,261,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,261,261,261,261,261,261,261,0,10,0,0,0,10,0,0,0,
 0,0,0,10,0,0,0,10,0,1610612997,0,0,0,0,0,0,0,2684354821,0,536870930,3758096400,0,0,3758096400,536870963,3758096400,2684354578,0,0,0,0,0,0,0,0,0,0,0,18,2684354576,2684354612,2684354576,2684354576,2684354613,2684354576,2684354578,0,1610612997,0,0,0,0,18,2684354576,2684354578,2684354821,10,0,0,0,10,0,0,0,
 0,0,0,10,0,0,0,10,0,1610612997,0,0,0,0,0,0,0,2684354821,0,1073741840,0,0,0,0,0,0,1073741840,0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,0,0,16,0,1610612997,0,0,0,0,3221225488,0,3221225488,2684354821,10,0,0,0,10,0,0,0,
-0,0,0,10,0,0,0,10,0,1610612997,0,0,0,0,0,0,0,2684354821,0,1073741837,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,52,0,0,0,0,0,0,16,0,1610612997,0,0,0,0,1610612754,1610612740,3221225490,2684354821,10,0,0,0,10,0,0,0,
+0,0,0,10,0,0,0,10,0,1610612997,0,0,0,0,0,0,0,2684354821,0,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,52,0,0,0,0,0,0,16,0,1610612997,0,0,0,0,1610612754,1610612740,3221225490,2684354821,10,0,0,0,10,0,0,0,
 0,0,0,10,0,0,0,10,0,1610612997,0,0,0,0,0,0,0,2684354821,0,1073741840,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,0,0,16,0,1610612997,0,0,0,0,0,0,0,2684354821,10,0,0,0,10,0,0,0,
 0,0,0,10,0,0,0,10,0,1610612997,0,0,0,0,0,0,0,2684354821,0,1073741875,0,0,0,0,0,0,1073741840,0,0,0,0,0,0,0,0,0,0,0,13,0,0,0,0,0,0,16,0,1610612997,0,0,0,0,0,0,0,2684354821,10,0,0,0,10,0,0,0,
 0,0,0,10,0,0,0,10,0,1610612997,0,0,0,0,0,0,0,2684354821,0,1073741875,0,0,0,0,0,0,1073741840,0,0,0,0,0,0,0,0,0,0,0,16,0,0,0,0,0,0,16,0,1610612996,3758096644,0,0,0,0,0,0,2684354821,10,0,0,0,10,0,0,0,
@@ -1232,7 +1232,7 @@
   <object id="145" name="wall" x="4936" y="1580" width="2038" height="40"/>
   <object id="147" name="climbable" x="5354" y="1926" width="306" height="242"/>
   <object id="150" name="inside" x="4960.61" y="1630.3" width="1981.82" height="839.394"/>
-  <object id="152" name="climbable" x="6404" y="2182.67" width="118.667" height="113.333"/>
+  <object id="152" name="wall" x="6404" y="2182.67" width="118.667" height="113.333"/>
   <object id="153" name="climbable" x="6788" y="1690.67" width="121.333" height="78.6667"/>
   <object id="154" name="this bed" x="6188" y="1694.66" width="173.333" height="213.333"/>
   <object id="155" name="chestdewcastle big house" x="6405.34" y="1685.33" width="120" height="82.6667"/>
@@ -1251,7 +1251,7 @@
   <object id="169" name="wall" x="2499" y="4261" width="788" height="46"/>
   <object id="170" name="wall" x="3235" y="3417" width="48" height="854"/>
   <object id="171" name="wall" x="2469" y="4649" width="219.333" height="42"/>
-  <object id="172" name="wall" x="2467" y="4979" width="54" height="480"/>
+  <object id="172" name="wall" x="2467" y="4975.67" width="54" height="483.333"/>
   <object id="173" name="wall" x="2469" y="4693" width="46" height="182"/>
   <object id="174" name="wall" x="2517" y="5415" width="900" height="46"/>
   <object id="175" name="wall" x="3365" y="5123.67" width="48" height="337.333"/>
@@ -1547,7 +1547,6 @@
   <object id="772" name="green tree" x="1581.5" y="539" width="45" height="42"/>
   <object id="773" name="green tree" x="2089.5" y="235" width="45" height="42"/>
   <object id="774" name="green tree" x="1993.5" y="923" width="45" height="42"/>
-  <object id="775" name="green tree" x="2577.5" y="407" width="45" height="42"/>
   <object id="776" name="green tree" x="2657.5" y="763" width="45" height="42"/>
   <object id="777" name="green tree" x="3205.5" y="271" width="45" height="42"/>
   <object id="778" name="green tree" x="3157.5" y="767" width="45" height="42"/>
@@ -1633,5 +1632,22 @@
   <object id="939" name="potato bush" x="1970.17" y="4652.91" width="59.6633" height="54.17"/>
   <object id="941" name="bill" x="5721.21" y="2787.88" width="48.4848" height="45.4545"/>
   <object id="942" name="climbable" x="1265.73" y="4600.52" width="14" height="902"/>
+  <object id="960" name="green tree" x="2641.5" y="256.333" width="45" height="42"/>
+  <object id="962" name="snake" x="1606" y="4886"/>
+  <object id="963" name="snake" x="4190" y="416"/>
+  <object id="964" name="entryway_R" x="2490.33" y="4884.67" width="10.6667" height="86.6667"/>
+  <object id="965" name="snake" x="3334" y="5352"/>
+  <object id="968" name="entryway_D_Kevin's house_True_bronze" x="1813" y="3387" width="88" height="10"/>
+  <object id="969" name="entryway_D" x="2707" y="3387" width="88" height="10"/>
+  <object id="970" name="entryway_R" x="4923" y="5141" width="10" height="86"/>
+  <object id="977" name="entryway_R" x="2490.67" y="6292.67" width="10.6667" height="86.6667"/>
+  <object id="978" name="entryway_R" x="4922.67" y="6293.67" width="10.6667" height="86.6667"/>
+  <object id="979" name="entryway_R" x="4921.67" y="3732.67" width="10.6667" height="86.6667"/>
+  <object id="980" name="entryway_D" x="6419.67" y="3383.67" width="89.6667" height="13.6667"/>
+  <object id="982" name="entryway_U_Name_False_heavy" x="5779.17" y="2489.17" width="89.6667" height="13.6667"/>
+  <object id="983" name="entryway_U_Name_False_heavy" x="5905.17" y="2489.17" width="89.6667" height="13.6667"/>
+  <object id="984" name="entryway_U_Name_False_steel" x="5909.17" y="954.167" width="89.6667" height="13.6667"/>
+  <object id="985" name="entryway_U_Name_False_steel" x="6037.17" y="954.167" width="89.6667" height="13.6667"/>
+  <object id="986" name="Kevin's house key" x="2237" y="3402" width="39" height="31"/>
  </objectgroup>
 </map>

@@ -66,6 +66,7 @@ male_goblin_parts_folder = path.join(img_folder, 'male_goblin_parts')
 female_goblin_parts_folder = path.join(img_folder, 'female_goblin_parts')
 animals_folder = path.join(img_folder, 'animals')
 items_folder = path.join(img_folder, 'items')
+doors_folder = path.join(img_folder, 'doors')
 bullets_folder = path.join(img_folder, 'bullets')
 fire_folder = path.join(img_folder, 'fire_animation')
 breakable_folder = path.join(img_folder, 'breakable')
@@ -158,6 +159,7 @@ PLAYER_STRENGTH = 1
 PLAYER_ACC = 28
 PLAYER_RUN = 38
 MAX_RUN = 80
+CLIMB_TIME = 1000
 PLAYER_CLIMB = 14
 PLAYER_FRIC = -.12
 PLAYER_ROT_SPEED = 200
@@ -172,7 +174,11 @@ WING2_OFFSET = (-15, -21)
 
 #Misc Sprite Settings
 TREE_SIZES = {'sm': 400, 'md': 580, 'lg': 750}
-
+DOOR_STYLES = {}
+DOOR_STYLES['wood'] = {'image': 0, 'hp': 500}
+DOOR_STYLES['heavy'] = {'image': 1, 'hp': 1000}
+DOOR_STYLES['steel'] = {'image': 2, 'hp': 2000}
+DOOR_STYLES['bronze'] = {'image': 3, 'hp': 1500}
 
 # Used for mapping portal firepot combos with map locations
 # 1234-Goblin Island, 4132: Demon's Lair, 3421-Dewcastle Graveyard, 2143-Norwald the Miewdra Village, 1342-Mechanima Village, 1243-Lacertolia, 2413-Zombieland, 4321-Elf Town, 3124-South Pole
@@ -231,6 +237,12 @@ number_of_files = len([name for name in os.listdir(explosion_folder) if os.path.
 for i in range(1, number_of_files + 1):
     filename = 'E000{}.png'.format(i)
     EXPLOSION_IMAGES.append(filename)
+
+DOOR_IMAGES = []
+number_of_files = len([name for name in os.listdir(doors_folder) if os.path.isfile(os.path.join(doors_folder, name))])
+for i in range(0, number_of_files):
+    filename = 'door{}.png'.format(i)
+    DOOR_IMAGES.append(filename)
 
 ITEM_IMAGES = []
 number_of_files = len([name for name in os.listdir(items_folder) if os.path.isfile(os.path.join(items_folder, name))])
@@ -397,7 +409,7 @@ ZOMBIE_MOAN_SOUNDS = ['brains2.wav', 'brains3.wav', 'zombie-roar-1.wav', 'zombie
                       'zombie-roar-3.wav', 'zombie-roar-5.wav', 'zombie-roar-6.wav', 'zombie-roar-7.wav']
 ZOMBIE_HIT_SOUNDS = ['splat-15.wav']
 WRAITH_SOUNDS = ['wraith1.wav', 'wraith2.wav', 'wraith3.wav', 'wraith4.wav']
-EFFECTS_SOUNDS = {'charge': 'charge.wav', 'bow reload': 'bow reload.wav', 'level_start': 'Day_1_v2_mod.ogg', 'click': 'click.wav', 'fanfare': 'fanfare.wav', 'rustle': 'rustle.wav', 'pickaxe': 'pickaxe.wav', 'rocks': 'rocks.wav', 'rock_hit': 'rock_hit.wav', 'fart': 'fart.wav', 'pee': 'pee.wav', 'toilet': 'toilet.wav',
+EFFECTS_SOUNDS = {'door close': 'door_close.wav', 'door open': 'door_open.wav', 'charge': 'charge.wav', 'bow reload': 'bow reload.wav', 'level_start': 'Day_1_v2_mod.ogg', 'click': 'click.wav', 'fanfare': 'fanfare.wav', 'rustle': 'rustle.wav', 'pickaxe': 'pickaxe.wav', 'rocks': 'rocks.wav', 'rock_hit': 'rock_hit.wav', 'fart': 'fart.wav', 'pee': 'pee.wav', 'toilet': 'toilet.wav',
                   'health_up': 'health_pack.wav', 'casting healing': 'casting_healing.wav', 'page turn': 'page_turn.wav',
                   'gun_pickup': 'gun_pickup.wav', 'jump': 'jump.wav', 'tank': 'tank.wav', 'splash': 'splash.wav', 'swim': 'swim.wav', 'shallows': 'shallows.wav', 'climb': 'climb.wav', 'unlock': 'unlock.wav', 'lock click': 'lock_click.wav', 'fire blast': 'fire_blast.wav', 'knock':
                   'knock.wav', 'metal hit': 'metal_hit.wav', 'anvil': 'anvil.wav', 'scrape': 'scrape.wav', 'grindstone': 'grindstone.wav', 'hammering': 'hammering.wav', 'snore': 'snore.wav', 'cashregister': 'cashregister.wav', 'alchemy': 'alchemy.wav', 'enchant': 'enchant.wav', 'fire crackle': 'fire_crackling.wav'}

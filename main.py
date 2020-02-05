@@ -180,6 +180,12 @@ def fire_collide(one, two):
     else:
         return False
 
+def entryway_collide(one, two):
+    if one.rect.colliderect(two.hit_rect):
+        return True
+    else:
+        return False
+
 class Game:
     def __init__(self):
         self.window_ratio = .97
@@ -439,6 +445,7 @@ class Game:
         self.keyed_keyway_image = pg.image.load(path.join(img_folder, 'keyed_keyway.png')).convert_alpha()
         self.lock_pick_image = pg.image.load(path.join(img_folder, 'lock_pick.png')).convert_alpha()
         self.swim_shadow_image = pg.image.load(path.join(img_folder, 'swim_shadow.png')).convert_alpha()
+        self.rock_shadow_image = pg.image.load(path.join(img_folder, 'rock_shadow.png')).convert_alpha()
         # creates a dictionary of animal images. This is not in the settings file like the others because of the order it needs to import info.
         ANIMAL_IMAGES = {}
         for animal in ANIMAL_ANIMATIONS:
@@ -494,6 +501,10 @@ class Game:
         #self.bullet_images['mdlz'] = pg.transform.scale(self.bullet_images['lglz'], (15, 15))
         #self.bullet_images['smlz'] = pg.transform.scale(self.bullet_images['lglz'], (10, 10))
 
+        self.door_images = []
+        for i, item in enumerate(DOOR_IMAGES):
+            img = pg.image.load(path.join(doors_folder, DOOR_IMAGES[i])).convert_alpha()
+            self.door_images.append(img)
         self.item_images = []
         for i, item in enumerate(ITEM_IMAGES):
             img = pg.image.load(path.join(items_folder, ITEM_IMAGES[i])).convert_alpha()
@@ -759,6 +770,7 @@ class Game:
         self.hud_map = False
         self.hud_overmap = False
         self.vehicle_text = False
+        self.door_text = False
         self.mechsuit_text = False
         self.vehicle_key_text = False
         self.talk_text = False
@@ -766,6 +778,7 @@ class Game:
         self.station_text = False
         self.loot_text = False
         self.bed_message = ''
+        self.door_message = ''
         self.lock_text = False
         self.bed_text = False
         self.toilet_text = False
@@ -782,13 +795,13 @@ class Game:
         self.detectors = pg.sprite.Group()
         self.detectables = pg.sprite.Group()
         self.portals = pg.sprite.Group()
+        self.entryways = pg.sprite.Group()
         self.obstacles = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.inside = pg.sprite.Group()
         self.nospawn = pg.sprite.Group()
-        self.jumpables = pg.sprite.Group()
-        self.climbables = pg.sprite.Group()
-        self.climbables_and_jumpables = pg.sprite.Group()
+        self.elevations = pg.sprite.Group()
+        self.climbs = pg.sprite.Group()
         self.doors = pg.sprite.Group()
         self.beds = pg.sprite.Group()
         self.toilets = pg.sprite.Group()
@@ -811,6 +824,7 @@ class Game:
         self.fireballs = pg.sprite.Group()
         self.firepits = pg.sprite.Group()
         self.containers = pg.sprite.Group()
+        self.chest_containers = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
         self.enemy_bullets = pg.sprite.Group()
         self.enemy_fireballs = pg.sprite.Group()
@@ -1278,12 +1292,22 @@ class Game:
                 if tile_object.name == 'nospawn':
                     NoSpawn(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
+                if 'EL' in tile_object.name:
+                    try:
+                        _, elev, climb = tile_object.name.split('_')
+                        climb = eval(climb)
+                    except:
+                        _, elev = tile_object.name.split('_')
+                        climb = False
+                    elev = int(elev)
+                    Elevation(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height, elev, climb)
                 if tile_object.name == 'jumpable':
-                    Jumpable(self, tile_object.x, tile_object.y,
-                             tile_object.width, tile_object.height)
+                    Elevation(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height, 2)
                 if tile_object.name == 'climbable':
-                    Climbable(self, tile_object.x, tile_object.y,
-                             tile_object.width, tile_object.height)
+                    Elevation(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height, 3)
                 if tile_object.name == 'water':
                     Water(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
@@ -1308,6 +1332,24 @@ class Game:
                 if 'toilet' in tile_object.name:
                     Toilet(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
+                if 'entryway' in tile_object.name:  # Used for animated doors that can be opened, closed or locked.
+                    numvars = tile_object.name.count('_')
+                    if numvars == 0:
+                        entryway = Entryway(self, tile_object.x, tile_object.y)
+                    elif numvars == 1:
+                        _, orientation  = tile_object.name.split('_')
+                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation)
+                    elif numvars == 2:
+                        _, orientation, name  = tile_object.name.split('_')
+                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, name)
+                    elif numvars == 3:
+                        _, orientation, name, locked = tile_object.name.split('_')
+                        locked = eval(locked)
+                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, name, locked)
+                    elif numvars == 4:
+                        _, orientation, name, locked, kind = tile_object.name.split('_')
+                        locked = eval(locked)
+                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, name, locked, kind)
                 if 'door' in tile_object.name:  # This block of code positions the player at the correct door when changing maps
                     door = Door(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height, tile_object.name)
@@ -1581,41 +1623,39 @@ class Game:
 
             # player hits bed
             self.bed_text = False
-            hits = pg.sprite.spritecollide(self.player, self.beds, False)
+            hits = pg.sprite.spritecollide(self.player, self.beds, False, pg.sprite.collide_rect_ratio(0.5))
             if hits:
-                if self.player.climbing:
-                    self.bed_text = True
-                    if hits[0].name == 'bed':
-                        if hits[0].cost > 0:
-                            if self.player.inventory['gold'] >= hits[0].cost:
-                                self.bed_message = 'Press E to pay ' + str(hits[0].cost) + ' gold to sleep in bed.'
-                                if self.e_down:
-                                    self.player.inventory['gold'] -= hits[0].cost
-                                    self.effects_sounds['cashregister'].play()
-                                    self.sleep_in_bed()
-                                    self.bed_text = False
-                                    self.e_down = False
-                            else:
-                                self.bed_message = 'You cannot afford this bed.'
-                        else:
-                            self.bed_message = 'Press E to sleep in bed.'
+                self.bed_text = True
+                if hits[0].name == 'bed':
+                    if hits[0].cost > 0:
+                        if self.player.inventory['gold'] >= hits[0].cost:
+                            self.bed_message = 'Press E to pay ' + str(hits[0].cost) + ' gold to sleep in bed.'
                             if self.e_down:
+                                self.player.inventory['gold'] -= hits[0].cost
+                                self.effects_sounds['cashregister'].play()
                                 self.sleep_in_bed()
                                 self.bed_text = False
                                 self.e_down = False
+                        else:
+                            self.bed_message = 'You cannot afford this bed.'
                     else:
-                        self.bed_message = 'You can not sleep in ' + hits[0].name + '.'
+                        self.bed_message = 'Press E to sleep in bed.'
+                        if self.e_down:
+                            self.sleep_in_bed()
+                            self.bed_text = False
+                            self.e_down = False
+                else:
+                    self.bed_message = 'You can not sleep in ' + hits[0].name + '.'
 
             # player hits toilet
             self.toilet_text = False
-            hits = pg.sprite.spritecollide(self.player, self.toilets, False)
+            hits = pg.sprite.spritecollide(self.player, self.toilets, False, pg.sprite.collide_rect_ratio(0.40))
             if hits:
-                if self.player.climbing:
-                    self.toilet_text = True
-                    if self.e_down:
-                        self.use_toilet()
-                        self.toilet_text = False
-                        self.e_down = False
+                self.toilet_text = True
+                if self.e_down:
+                    self.use_toilet()
+                    self.toilet_text = False
+                    self.e_down = False
 
             # player hit corps
             self.loot_text = False
@@ -1628,14 +1668,49 @@ class Game:
                         self.in_menu = True
                         self.loot_menu = Loot_Menu(self, hits[0])
 
-            # player hit container
+            # player melee hits entryway (door)
+            if self.player.melee_playing:
+                hits = pg.sprite.spritecollide(self.player.body, self.entryways, False, melee_hit_rect)
+                if hits:
+                    self.player.does_melee_damage(hits[0])
+
+            # player hits entryway (a door)
+            self.door_text = False
             self.lock_text = False
+            hits = pg.sprite.spritecollide(self.player, self.entryways, False, entryway_collide)
+            if hits:
+                self.door_text = True
+                if hits[0].locked:
+                    self.door_message = hits[0].name + ' is locked.'
+                    self.lock_text = True
+                    if self.e_down:
+                        if not self.in_lock_menu:
+                            self.in_lock_menu = self.in_menu = True
+                            self.lock_menu = Lock_Menu(self, hits[0])
+                elif not hits[0].opened:
+                    self.door_message = 'Press E to open.'
+                    if self.e_down:
+                        hits[0].open = True
+                        hits[0].close = False
+                        self.door_text = False
+                        self.e_down = False
+                elif hits[0].opened:
+                    self.door_message = 'Press E to close.'
+                    if self.e_down:
+                        hits[0].close = True
+                        hits[0].open = False
+                        self.door_text = False
+                        self.e_down = False
+
+            # player hit container
             hits = pg.sprite.spritecollide(self.player, self.containers, False)
             if hits:
                 if not hits[0].inventory['locked']:
                     self.loot_text = True
                     if self.e_down:
                         if not self.in_loot_menu:
+                            if hits[0] in self.chest_containers:
+                                self.effects_sounds['door open'].play()
                             self.in_loot_menu = True
                             self.loot_menu = Loot_Menu(self, hits[0])
                 else:
@@ -1648,7 +1723,7 @@ class Game:
 
             # Player is in talking range of NPC
             self.talk_text = False
-            if True not in [self.in_menu, self.vehicle_text, self.vehicle_key_text, self.loot_text, self.bed_text, self.lock_text, self.toilet_text, self.station_text, self.pick_up_text]:
+            if True not in [self.in_menu, self.vehicle_text, self.door_text, self.vehicle_key_text, self.loot_text, self.bed_text, self.lock_text, self.toilet_text, self.station_text, self.pick_up_text]:
                 hits = pg.sprite.spritecollide(self.player, self.npcs, False, npc_talk_rect)
                 if hits:
                     if hits[0].dialogue != None:
@@ -1686,8 +1761,8 @@ class Game:
             else:
                 self.player.in_shallows = False
 
-            # player hits climbable
-            hits = pg.sprite.spritecollide(self.player, self.climbables_and_jumpables, False)
+            # player hits elevation change
+            hits = pg.sprite.spritecollide(self.player, self.elevations, False)
             if hits:
                 keys = pg.key.get_pressed()
                 if keys[pg.K_v]:
@@ -1700,6 +1775,11 @@ class Game:
                                     self.player.climbing = True
             else:
                 self.player.climbing = False
+                if not self.player.jumping:
+                    if self.player.elevation > 1:
+                        self.player.falling = True
+                        self.player.pre_jump()
+                    self.player.elevation = 0
 
             # player hits dropped item
             self.pick_up_text = False
@@ -1755,7 +1835,6 @@ class Game:
                     self.player.hit_rect.centery = self.player.pos.y
                     collide_with_walls(self.player, [hit], 'y')
                     self.player.rect.center = self.player.hit_rect.center
-
 
             # player hits an empty vehicle or mech suit
             self.vehicle_text = False
@@ -2029,20 +2108,49 @@ class Game:
 
         # npc hit water
         hits = pg.sprite.groupcollide(self.npcs, self.water, False, False)
-        for npc in hits:
-            if not npc.in_player_vehicle:
-                npc.swimming = True
         for npc in self.npcs:
-            if not npc in hits:
+            if npc in hits:
+                if not npc.in_player_vehicle:
+                    npc.swimming = True
+            else:
                 npc.swimming = False
 
-        # companion hit climbable or jumpable
-        hits = pg.sprite.groupcollide(self.companions, self.climbables_and_jumpables, False, False)
+        # npc hits doors and opens them
+        hits = pg.sprite.groupcollide(self.npcs, self.entryways, False, False, entryway_collide)
         for npc in hits:
-            npc.climbing = True
+            for entryway in hits[npc]:
+                if not entryway.locked:
+                    if not entryway.opened:
+                        entryway.open = True
+                        entryway.close = False
+
+        # npc hit elevation object
+        hits = pg.sprite.groupcollide(self.npcs, self.elevations, False, False)
         for npc in self.npcs:
-            if not npc in hits:
+            if npc in hits:
+                for elev in hits[npc]:
+                    if elev.elevation - npc.elevation > 1:
+                        if npc in self.companions:
+                            npc.climbing = True
+                        else:
+                            chance = randrange(0, 600)
+                            if chance == 1:
+                                npc.climbing = True
+            else:
                 npc.climbing = False
+                if not npc.jumping:
+                    npc.elevation = 0
+
+        # animal hit elevation object
+        hits = pg.sprite.groupcollide(self.animals, self.elevations, False, False)
+        for animal in self.animals:
+            if animal in hits:
+                for elev in hits[animal]:
+                    if elev.elevation - animal.elevation > 1:
+                        npc.climbing = True
+            else:
+                animal.climbing = False
+                animal.elevation = 0
 
         # land vehicle hits water
         hits = pg.sprite.groupcollide(self.land_vehicles, self.water, False, False)
@@ -2051,10 +2159,10 @@ class Game:
 
         # npc hit shallows
         hits = pg.sprite.groupcollide(self.npcs, self.shallows, False, False)
-        for npc in hits:
-            npc.in_shallows = True
         for npc in self.npcs:
-            if not npc in hits:
+            if npc in hits:
+                npc.in_shallows = True
+            else:
                 npc.in_shallows = False
 
         # mob hits player's moving vehicle
@@ -2218,6 +2326,9 @@ class Game:
         if self.vehicle_text == True:
             self.draw_text('E to enter, X to exit', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
                            align="center")
+        if self.door_text == True:
+            self.draw_text(self.door_message, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
+                           align="center")
         if self.mechsuit_text == True:
             self.draw_text('E to enter, T to exit', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
                            align="center")
@@ -2240,7 +2351,7 @@ class Game:
             self.draw_text('You can\'t carry any more weight', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
                            align="center")
         if self.lock_text == True:
-            self.draw_text('E to pick lock', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
+            self.draw_text('E to unlock the lock', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 150,
                            align="center")
         if self.pick_up_text == True:
             self.draw_text('E to pickup item', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 150,

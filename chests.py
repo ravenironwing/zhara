@@ -1,3 +1,5 @@
+# The larger the difficulty the easier the lock is to pick. It's just how far off you can be from the actual value.
+
 # Chest contents
 EMPTY_CHEST = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': [None], 'magic': [None], 'gold': 0}
@@ -35,7 +37,7 @@ CHESTS['dangerman cave'] = {'locked': True, 'combo': 25, 'difficulty': 5,'weapon
                   'items': [None], 'magic': [None], 'gold': 0}
 CHESTS['dangerman cave2'] = {'locked': True, 'combo': 92, 'difficulty': 4,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': ['Zhara Talisman'], 'magic': [None], 'gold': 0}
-CHESTS['anttunnel1coffin'] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': ['grey baseball hat'], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
+CHESTS['anttunnel1coffin'] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': ['bone club'], 'hats': ['grey baseball hat'], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': [None], 'magic': [None], 'gold': 60}
 CHESTS['empty '] = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': [None], 'magic': [None], 'gold': 0}

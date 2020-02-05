@@ -240,7 +240,14 @@ ITEMS['airship key'] = {'image': 116, 'weight': 0.1, 'value': 10000}
 
 # Generates keys for all chests
 for chest in CHESTS:
-    key_name = chest + ' chest key'
+    key_name = chest + " chest key"
+    ITEMS[key_name] = {'image': 116, 'weight': 0.1, 'value': 100}
+
+
+NAMED_DOOR_LIST = ["Kevin's house"]
+# Generates keys for all doors in the list.
+for door in NAMED_DOOR_LIST:
+    key_name = door + " key"
     ITEMS[key_name] = {'image': 116, 'weight': 0.1, 'value': 100}
 
 

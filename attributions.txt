@@ -77,6 +77,8 @@ http://texturelib.com/#!/category/?path=/Textures/roof
 Sounds:
 http://en.soundeffect-lab.info/sound/battle/
 http://soundbible.com/tags-splash.html
+http://soundbible.com/1717-Creaking-Door-Spooky.html
+http://soundbible.com/900-Door-Close.html
 
 Potions:
 https://opengameart.org/content/12-pixie-dust-flasks
