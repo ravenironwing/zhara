@@ -3982,6 +3982,7 @@ class Entryway(pg.sprite.Sprite):
         self.health = DOOR_STYLES[self.kind]['hp']
         self.vel = vec(0, 0)
         self.protected = False
+        self.orig_rot = 0
         temp_img = self.game.door_images[DOOR_STYLES[self.kind]['image']]
         if self.orientation in 'L':
             self.image_orig = temp_img
@@ -3997,6 +3998,7 @@ class Entryway(pg.sprite.Sprite):
             self.rect.x = x - 10
             self.rect.y = y - self.length
             self.wall = Obstacle(self.game, self.rect.x, self.rect.y + self.length, 20, self.length)
+            self.orig_rot = 180
         elif self.orientation == 'D':
             self.image_orig = pg.transform.rotate(temp_img, 90)
             self.image = self.image_orig.copy()
@@ -4004,6 +4006,7 @@ class Entryway(pg.sprite.Sprite):
             self.rect.x = x
             self.rect.y = y - 10
             self.wall = Obstacle(self.game, self.rect.x, self.rect.y, self.length, 20)
+            self.orig_rot = 90
         elif self.orientation == 'U':
             self.image_orig = pg.transform.rotate(temp_img, -90)
             self.image = self.image_orig.copy()
@@ -4011,10 +4014,11 @@ class Entryway(pg.sprite.Sprite):
             self.rect.x = x - self.length
             self.rect.y = y - 19
             self.wall = Obstacle(self.game, self.rect.x + self.length, self.rect.y, self.length, 20)
+            self.orig_rot = -90
         self.last_move = 0
         self.rot = 0
-        self.animate_speed = 30
-        self.rotate_amount = 4
+        self.animate_speed = 10
+        self.rotate_amount = 5
         self.open = False
         self.close = False
         self.opened = False
@@ -4024,6 +4028,7 @@ class Entryway(pg.sprite.Sprite):
         self.inventory = {'locked': self.locked, 'combo': self.combo,'difficulty': self.difficulty}
         self.last_hit = 0
         self.living = True
+        self.frame = 0
 
     def update(self):
         if self.open:
@@ -4031,17 +4036,20 @@ class Entryway(pg.sprite.Sprite):
             if now - self.last_move > self.animate_speed:
                 self.animate_open()
                 self.rotate_image()
+                self.last_move = now
 
         if self.close:
             now = pg.time.get_ticks()
             if now - self.last_move > self.animate_speed:
                 self.animate_close()
                 self.rotate_image()
+                self.last_move = now
 
         if not self.living:
             now = pg.time.get_ticks()
             if now - self.last_move > self.animate_speed:
                 self.animate_death()
+                self.last_move = now
 
 
     def rotate_image(self):
@@ -4093,9 +4101,17 @@ class Entryway(pg.sprite.Sprite):
             self.game.effects_sounds['door close'].play()
 
     def animate_death(self):
-        self.game.effects_sounds['rocks'].play()
-        self.wall.kill()
-        self.kill()
+        if len(self.game.door_break_images) > self.frame:
+            temp_image = self.game.door_break_images[self.frame]
+            self.frame += 1
+            new_image = pg.transform.rotate(temp_image, self.rot + self.orig_rot)
+            old_center = self.rect.center
+            self.image = new_image
+            self.rect = self.image.get_rect()
+            self.rect.center = old_center
+        else:
+            self.wall.kill()
+            self.kill()
 
     def gets_hit(self, damage, knockback = 0, rot = 0):
         now = pg.time.get_ticks()
@@ -4103,6 +4119,10 @@ class Entryway(pg.sprite.Sprite):
             self.last_hit = now
             self.health -= damage
         if self.health <= 0:
+            if self.living:
+                self.game.channel5.stop()
+                self.game.channel5.play(self.game.effects_sounds['rocks'])
+                self.animate_speed = 50
             self.living = False
 
 class Explosion(pg.sprite.Sprite):

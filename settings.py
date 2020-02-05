@@ -67,6 +67,7 @@ female_goblin_parts_folder = path.join(img_folder, 'female_goblin_parts')
 animals_folder = path.join(img_folder, 'animals')
 items_folder = path.join(img_folder, 'items')
 doors_folder = path.join(img_folder, 'doors')
+door_break_folder = path.join(img_folder, 'door_break_animation')
 bullets_folder = path.join(img_folder, 'bullets')
 fire_folder = path.join(img_folder, 'fire_animation')
 breakable_folder = path.join(img_folder, 'breakable')
@@ -177,8 +178,8 @@ TREE_SIZES = {'sm': 400, 'md': 580, 'lg': 750}
 DOOR_STYLES = {}
 DOOR_STYLES['wood'] = {'image': 0, 'hp': 500}
 DOOR_STYLES['heavy'] = {'image': 1, 'hp': 1000}
-DOOR_STYLES['steel'] = {'image': 2, 'hp': 2000}
-DOOR_STYLES['bronze'] = {'image': 3, 'hp': 1500}
+DOOR_STYLES['steel'] = {'image': 2, 'hp': 3000}
+DOOR_STYLES['bronze'] = {'image': 3, 'hp': 2000}
 
 # Used for mapping portal firepot combos with map locations
 # 1234-Goblin Island, 4132: Demon's Lair, 3421-Dewcastle Graveyard, 2143-Norwald the Miewdra Village, 1342-Mechanima Village, 1243-Lacertolia, 2413-Zombieland, 4321-Elf Town, 3124-South Pole
@@ -243,6 +244,12 @@ number_of_files = len([name for name in os.listdir(doors_folder) if os.path.isfi
 for i in range(0, number_of_files):
     filename = 'door{}.png'.format(i)
     DOOR_IMAGES.append(filename)
+
+DOOR_BREAK_IMAGES = []
+number_of_files = len([name for name in os.listdir(door_break_folder) if os.path.isfile(os.path.join(door_break_folder, name))])
+for i in range(0, number_of_files):
+    filename = 'door{}.png'.format(i)
+    DOOR_BREAK_IMAGES.append(filename)
 
 ITEM_IMAGES = []
 number_of_files = len([name for name in os.listdir(items_folder) if os.path.isfile(os.path.join(items_folder, name))])

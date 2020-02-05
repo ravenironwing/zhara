@@ -199,7 +199,10 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
-        self.channel4 = pg.mixer.Channel(3)
+        self.channel3 = pg.mixer.Channel(2)
+        self.channel4 = pg.mixer.Channel(3) # Fire, water fall
+        self.channel5 = pg.mixer.Channel(4) # breaking sounds and other effects
+        self.channel6 = pg.mixer.Channel(5)
 
     def on_screen(self, sprite):
         rect = self.camera.apply(sprite)
@@ -505,6 +508,10 @@ class Game:
         for i, item in enumerate(DOOR_IMAGES):
             img = pg.image.load(path.join(doors_folder, DOOR_IMAGES[i])).convert_alpha()
             self.door_images.append(img)
+        self.door_break_images = []
+        for i, item in enumerate(DOOR_BREAK_IMAGES):
+            img = pg.image.load(path.join(door_break_folder, DOOR_BREAK_IMAGES[i])).convert_alpha()
+            self.door_break_images.append(img)
         self.item_images = []
         for i, item in enumerate(ITEM_IMAGES):
             img = pg.image.load(path.join(items_folder, ITEM_IMAGES[i])).convert_alpha()
