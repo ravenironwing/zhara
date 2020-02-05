@@ -919,7 +919,7 @@ class Character(pg.sprite.Sprite):
         self.weapon_offset_temp = self.weapon_pos.rotate(-self.mother.rot)
         self.melee_rect.center = self.mother.pos + self.weapon_offset_temp
         self.weapon2_offset_temp = self.weapon2_pos.rotate(-self.mother.rot)
-        self.melee2_rect.center = self.mother.pos + self.weapon_offset_temp
+        self.melee2_rect.center = self.mother.pos + self.weapon2_offset_temp
         if not self.mother.equipped['weapons'] == None:
             self.weapon_offset_temp = (self.weapon_pos + vec(self.weapon_width/2, 0)).rotate(-(self.mother.rot + self.weapon_angle))
             self.mid_weapon_melee_rect.center = self.mother.pos + self.weapon_offset_temp

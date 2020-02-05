@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="987">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="990">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="70" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="1792"/>
  </tileset>
@@ -1575,10 +1575,7 @@
   <object id="863" name="john" x="2917.33" y="4842.67" width="49.3333" height="49.3333"/>
   <object id="866" name="climbable" x="5518.67" y="3470.67" width="86.6667" height="601.333"/>
   <object id="867" name="climbable" x="5590.67" y="3978.67" width="145.333" height="92"/>
-  <object id="868" name="climbable" x="5432" y="3493.33" width="57.3333" height="49.3333"/>
-  <object id="870" name="climbable" x="5432.67" y="3623.33" width="57.3333" height="49.3333"/>
-  <object id="871" name="climbable" x="5434" y="3751.33" width="57.3333" height="49.3333"/>
-  <object id="873" name="climbable" x="5543.33" y="4115.33" width="57.3333" height="49.3333"/>
+  <object id="868" name="EL_2_True" x="5432" y="3493.33" width="57.3333" height="49.3333"/>
   <object id="875" name="climbable" x="5151.33" y="4240.67" width="186.667" height="73.3333"/>
   <object id="876" name="climbable" x="5131.33" y="3218" width="97.3333" height="89.3333"/>
   <object id="877" name="climbable" x="5515.33" y="3222" width="97.3333" height="89.3333"/>
@@ -1649,5 +1646,8 @@
   <object id="984" name="entryway_U_Name_False_steel" x="5909.17" y="954.167" width="89.6667" height="13.6667"/>
   <object id="985" name="entryway_U_Name_False_steel" x="6037.17" y="954.167" width="89.6667" height="13.6667"/>
   <object id="986" name="Kevin's house key" x="2237" y="3402" width="39" height="31"/>
+  <object id="987" name="EL_2_True" x="5430.33" y="3623.33" width="57.3333" height="49.3333"/>
+  <object id="988" name="EL_2_True" x="5433.33" y="3753.33" width="57.3333" height="49.3333"/>
+  <object id="989" name="EL_2_True" x="5539.33" y="4112.33" width="57.3333" height="49.3333"/>
  </objectgroup>
 </map>
