@@ -39,7 +39,7 @@ def group_draw(self, surface, game = None): # This is a modded version of the py
     gl = self.get_layer_of_sprite
     new_surfaces_append = new_surfaces.append
 
-    if game == None:
+    if game == None: #Used if there is not game running yet... kind of useless, but makes it not error out.
         for spr in self.sprites():
             new_rect = spr.rect.move(ox, oy)
             try:
@@ -50,13 +50,21 @@ def group_draw(self, surface, game = None): # This is a modded version of the py
 
     else:
         for spr in self.sprites(): # This modded version only adds the sprite images that are on screen using the game.camera and the on_screen method
-            if game.on_screen(spr):
+            if game.on_screen_no_edge(spr):
                 new_rect = spr.rect.move(ox, oy)
                 try:
                     new_surfaces_append((spr.image, new_rect, gl(spr), spr.blendmode))
                 except AttributeError:  # generally should only fail when no blendmode available
                     new_surfaces_append((spr.image, new_rect, gl(spr)))
                 spritedict[spr] = new_rect
+        #hits = pg.sprite.spritecollide(game.camera, self.sprites(), False)
+        #for spr in hits: # This modded version only adds the sprite images that are on screen by using only the sprites that collide with the camera object.
+        #    new_rect = spr.rect.move(ox, oy)
+        #    try:
+        #        new_surfaces_append((spr.image, new_rect, gl(spr), spr.blendmode))
+        #    except AttributeError:  # generally should only fail when no blendmode available
+        #        new_surfaces_append((spr.image, new_rect, gl(spr)))
+        #    spritedict[spr] = new_rect
 
     self.lostsprites = []
     return self._map_layer.draw(surface, surface.get_rect(), new_surfaces)
@@ -208,6 +216,13 @@ class Game:
         rect = self.camera.apply(sprite)
         threshold = 50
         if rect.right < -threshold or rect.bottom < -threshold or rect.left > self.screen_width + threshold or rect.top > self.screen_height + threshold:
+            return False
+        else:
+            return True
+
+    def on_screen_no_edge(self, sprite): #no threashold for slightly faster draw.
+        rect = self.camera.apply(sprite)
+        if rect.right < 0 or rect.bottom < 0 or rect.left > self.screen_width or rect.top > self.screen_height:
             return False
         else:
             return True
@@ -776,25 +791,56 @@ class Game:
         self.guard_alerted = False
         self.hud_map = False
         self.hud_overmap = False
-        self.vehicle_text = False
-        self.door_text = False
-        self.mechsuit_text = False
-        self.vehicle_key_text = False
-        self.talk_text = False
-        self.station_type = ''
-        self.station_text = False
-        self.loot_text = False
-        self.bed_message = ''
-        self.door_message = ''
-        self.lock_text = False
-        self.bed_text = False
-        self.toilet_text = False
-        self.too_much_weight = False
-        self.pick_up_text = False
+
+        self.message_text = True
+        self.message = ''
         self.map_type = None
         self.group = PyscrollGroup()
         self.all_sprites = pg.sprite.LayeredUpdates() # Used for all non_static sprites
         self.all_static_sprites = pg.sprite.Group() # used for all static sprites
+        self.sprites_on_screen = pg.sprite.Group()
+        self.moving_targets = pg.sprite.Group() # Used for all moving things bullets interact with
+        self.moving_targets_on_screen = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.mobs_on_screen = pg.sprite.Group()
+        self.npc_bodies = pg.sprite.Group()
+        self.npc_bodies_on_screen = pg.sprite.Group()
+        self.npcs =  pg.sprite.Group()
+        self.npcs_on_screen = pg.sprite.Group()
+        self.animals = pg.sprite.Group()
+        self.animals_on_screen = pg.sprite.Group()
+        self.fires = pg.sprite.Group()
+        self.fires_on_screen = pg.sprite.Group()
+        self.entryways = pg.sprite.Group()
+        self.entryways_on_screen = pg.sprite.Group()
+        self.breakable = pg.sprite.Group()
+        self.breakable_on_screen = pg.sprite.Group()
+        self.corpses = pg.sprite.Group()
+        self.corpses_on_screen = pg.sprite.Group()
+        self.dropped_items = pg.sprite.Group()
+        self.dropped_items_on_screen = pg.sprite.Group()
+
+        self.beds = pg.sprite.Group()
+        self.beds_on_screen = pg.sprite.Group()
+        self.obstacles = pg.sprite.Group()
+        self.obstacles_on_screen = pg.sprite.Group()
+        self.walls = pg.sprite.Group()
+        self.walls_on_screen = pg.sprite.Group()
+        self.elevations = pg.sprite.Group()
+        self.elevations_on_screen = pg.sprite.Group()
+        self.water = pg.sprite.Group()
+        self.water_on_screen = pg.sprite.Group()
+        self.shallows = pg.sprite.Group()
+        self.shallows_on_screen = pg.sprite.Group()
+        self.lava = pg.sprite.Group()
+        self.lava_on_screen = pg.sprite.Group()
+        self.inside = pg.sprite.Group()
+        self.inside_on_screen = pg.sprite.Group()
+        self.climbs = pg.sprite.Group()
+        self.climbs_on_screen = pg.sprite.Group()
+        self.vehicles = pg.sprite.Group()
+        self.vehicles_on_screen = pg.sprite.Group()
+
         self.firepots = pg.sprite.Group()
         self.arrows = pg.sprite.Group()
         self.chargers = pg.sprite.Group()
@@ -802,30 +848,13 @@ class Game:
         self.detectors = pg.sprite.Group()
         self.detectables = pg.sprite.Group()
         self.portals = pg.sprite.Group()
-        self.entryways = pg.sprite.Group()
-        self.obstacles = pg.sprite.Group()
-        self.walls = pg.sprite.Group()
-        self.inside = pg.sprite.Group()
+        self.door_walls = pg.sprite.Group()
         self.nospawn = pg.sprite.Group()
-        self.elevations = pg.sprite.Group()
-        self.climbs = pg.sprite.Group()
         self.doors = pg.sprite.Group()
-        self.beds = pg.sprite.Group()
         self.toilets = pg.sprite.Group()
-        self.water = pg.sprite.Group()
-        self.shallows = pg.sprite.Group()
-        self.lava = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
         self.player_group = pg.sprite.Group()
-        self.moving_targets = pg.sprite.Group() # Used for all moving things bullets interact with
-        self.breakable = pg.sprite.Group()
-        self.npc_bodies = pg.sprite.Group()
-        self.npcs =  pg.sprite.Group()
-        self.animals = pg.sprite.Group()
         self.players = pg.sprite.Group()
         self.grabable_animals = pg.sprite.Group()
-        self.corpses = pg.sprite.Group()
-        self.fires = pg.sprite.Group()
         self.explosions = pg.sprite.Group()
         self.shocks = pg.sprite.Group()
         self.fireballs = pg.sprite.Group()
@@ -835,10 +864,7 @@ class Game:
         self.bullets = pg.sprite.Group()
         self.enemy_bullets = pg.sprite.Group()
         self.enemy_fireballs = pg.sprite.Group()
-        self.items = pg.sprite.Group()
-        self.dropped_items = pg.sprite.Group()
         self.work_stations = pg.sprite.Group()
-        self.vehicles = pg.sprite.Group()
         self.all_vehicles = pg.sprite.Group()
         self.companions = pg.sprite.Group()
         self.companion_bodies = pg.sprite.Group()
@@ -1564,13 +1590,78 @@ class Game:
 
     def update(self):
         # update portion of the game loop
-        # updates all sprites that are on screen
-        fires_on_screen = []
+        # updates all sprites that are on screen and puts on screen sprites into groups for hit checks.
+        self.message_text = False
+        # finds static sprites (ones you don't see) on screen.
+        self.vehicles_on_screen.empty()
+        self.obstacles_on_screen.empty()
+        self.walls_on_screen.empty()
+        self.water_on_screen.empty()
+        self.shallows_on_screen.empty()
+        self.lava_on_screen.empty()
+        self.elevations_on_screen.empty()
+        self.climbs_on_screen.empty()
+        self.beds_on_screen.empty()
+        self.inside_on_screen.empty()
+        for sprite in self.all_static_sprites:
+            if self.on_screen_no_edge(sprite):
+                if sprite in self.vehicles:
+                    self.vehicles_on_screen.add(sprite)
+                elif sprite in self.obstacles:
+                    self.obstacles_on_screen.add(sprite)
+                    if sprite in self.walls:
+                        self.walls_on_screen.add(sprite)
+                    elif sprite in self.water:
+                        self.water_on_screen.add(sprite)
+                    elif sprite in self.shallows:
+                        self.shallows_on_screen.add(sprite)
+                    elif sprite in self.lava:
+                        self.lava_on_screen.add(sprite)
+                elif sprite in self.elevations:
+                    self.elevations_on_screen.add(sprite)
+                    if sprite in self.beds:
+                        self.beds_on_screen.add(sprite)
+                    if sprite in self.climbs:
+                        self.climbs_on_screen.add(sprite)
+                elif sprite in self.inside:
+                    self.inside_on_screen.add(sprite)
+
+        # dynamic sprites on screen
+        self.entryways_on_screen.empty()
+        self.breakable_on_screen.empty()
+        self.corpses_on_screen.empty()
+        self.dropped_items_on_screen.empty()
+        self.fires_on_screen.empty()
+        self.mobs_on_screen.empty()
+        self.npcs_on_screen.empty()
+        self.npc_bodies_on_screen.empty()
+        self.animals_on_screen.empty()
+        self.moving_targets_on_screen.empty()
+        self.sprites_on_screen.empty()
         for sprite in self.all_sprites:
             if self.on_screen(sprite):
+                self.sprites_on_screen.add(sprite)
                 sprite.update()
-                if sprite in self.fires:
-                    fires_on_screen.append(sprite) # Creates a list of all fires on screen so I can calculate their distance and play fire sounds at correct volumes.
+                if sprite in self.entryways:
+                    self.entryways_on_screen.add(sprite)
+                elif sprite in self.fires:
+                    self.fires_on_screen.add(sprite)
+                elif sprite in self.breakable:
+                        self.breakable_on_screen.add(sprite)
+                elif sprite in self.corpses:
+                        self.corpses_on_screen.add(sprite)
+                elif sprite in self.dropped_items:
+                        self.dropped_items_on_screen.add(sprite)
+                elif sprite in self.npc_bodies:
+                    self.npc_bodies_on_screen.add(sprite)
+                elif sprite in self.moving_targets:
+                    self.moving_targets_on_screen.add(sprite)
+                    if sprite in self.mobs:
+                        self.mobs_on_screen.add(sprite)
+                        if sprite in self.animals:
+                            self.animals_on_screen.add(sprite)
+                        elif sprite in self.npcs:
+                            self.npcs_on_screen.add(sprite)
             elif sprite == self.player.vehicle:
                 sprite.update()
             elif sprite in self.companions:
@@ -1583,7 +1674,7 @@ class Game:
         # Used for playing fire sounds at set distances:
         closest_fire = None
         previous_distance = 30000
-        for sprite in fires_on_screen:    # Finds the closest fire and ignores the others.
+        for sprite in self.fires_on_screen:    # Finds the closest fire and ignores the others.
             player_dist = self.player.pos - sprite.pos
             player_dist = player_dist.length()
             if previous_distance > player_dist:
@@ -1629,147 +1720,154 @@ class Game:
                     hits[0].charge(self.player)
 
             # player hits bed
-            self.bed_text = False
-            hits = pg.sprite.spritecollide(self.player, self.beds, False, pg.sprite.collide_rect_ratio(0.5))
+            hits = pg.sprite.spritecollide(self.player, self.beds_on_screen, False, pg.sprite.collide_rect_ratio(0.5))
             if hits:
-                self.bed_text = True
+                self.message_text = True
                 if hits[0].name == 'bed':
                     if hits[0].cost > 0:
                         if self.player.inventory['gold'] >= hits[0].cost:
-                            self.bed_message = 'Press E to pay ' + str(hits[0].cost) + ' gold to sleep in bed.'
+                            self.message = 'Press E to pay ' + str(hits[0].cost) + ' gold to sleep in bed.'
                             if self.e_down:
                                 self.player.inventory['gold'] -= hits[0].cost
                                 self.effects_sounds['cashregister'].play()
                                 self.sleep_in_bed()
-                                self.bed_text = False
+                                self.message_text = False
                                 self.e_down = False
                         else:
-                            self.bed_message = 'You cannot afford this bed.'
+                            self.message = 'You cannot afford this bed.'
                     else:
-                        self.bed_message = 'Press E to sleep in bed.'
+                        self.message = 'Press E to sleep in bed.'
                         if self.e_down:
                             self.sleep_in_bed()
-                            self.bed_text = False
+                            self.message_text = False
                             self.e_down = False
                 else:
-                    self.bed_message = 'You can not sleep in ' + hits[0].name + '.'
+                    self.message = 'You can not sleep in ' + hits[0].name + '.'
 
             # player hits toilet
-            self.toilet_text = False
             hits = pg.sprite.spritecollide(self.player, self.toilets, False, pg.sprite.collide_rect_ratio(0.40))
             if hits:
-                self.toilet_text = True
+                self.message_text = True
+                self.message = "E to use toilet"
                 if self.e_down:
                     self.use_toilet()
-                    self.toilet_text = False
+                    self.message_text = False
                     self.e_down = False
 
             # player hit corps
-            self.loot_text = False
-            hits = pg.sprite.spritecollide(self.player, self.corpses, False)
+            hits = pg.sprite.spritecollide(self.player, self.corpses_on_screen, False)
             if hits:
-                self.loot_text = True
+                self.message_text = True
+                self.message = "E to loot"
                 if self.e_down:
                     if not self.in_loot_menu:
                         self.in_loot_menu = True
                         self.in_menu = True
                         self.loot_menu = Loot_Menu(self, hits[0])
+                        self.message_text = False
 
             # player melee hits entryway (door)
             if self.player.melee_playing:
-                hits = pg.sprite.spritecollide(self.player.body, self.entryways, False, melee_hit_rect)
+                hits = pg.sprite.spritecollide(self.player.body, self.entryways_on_screen, False, melee_hit_rect)
                 if hits:
                     self.player.does_melee_damage(hits[0])
 
             # player hits entryway (a door)
-            self.door_text = False
-            self.lock_text = False
-            hits = pg.sprite.spritecollide(self.player, self.entryways, False, entryway_collide)
+            hits = pg.sprite.spritecollide(self.player, self.entryways_on_screen, False, entryway_collide)
             if hits:
-                self.door_text = True
+                self.message_text = True
                 if hits[0].locked:
-                    self.door_message = hits[0].name + ' is locked.'
-                    self.lock_text = True
+                    self.message = hits[0].name + ' is locked. E to unlock'
                     if self.e_down:
                         if not self.in_lock_menu:
                             self.in_lock_menu = self.in_menu = True
                             self.lock_menu = Lock_Menu(self, hits[0])
+                            self.message_text = False
+                        self.e_down = False
                 elif not hits[0].opened:
-                    self.door_message = 'Press E to open.'
+                    self.message = 'E to open'
                     if self.e_down:
                         hits[0].open = True
                         hits[0].close = False
-                        self.door_text = False
+                        self.message_text = False
                         self.e_down = False
                 elif hits[0].opened:
-                    self.door_message = 'Press E to close.'
+                    self.message = 'E to close'
                     if self.e_down:
                         hits[0].close = True
                         hits[0].open = False
-                        self.door_text = False
+                        self.message_text = False
                         self.e_down = False
 
             # player hit container
             hits = pg.sprite.spritecollide(self.player, self.containers, False)
             if hits:
                 if not hits[0].inventory['locked']:
-                    self.loot_text = True
+                    self.message_text = True
+                    self.message = "E to open"
                     if self.e_down:
                         if not self.in_loot_menu:
                             if hits[0] in self.chest_containers:
                                 self.effects_sounds['door open'].play()
                             self.in_loot_menu = True
                             self.loot_menu = Loot_Menu(self, hits[0])
+                        self.message_text = False
+                        self.e_down = False
                 else:
-                    self.lock_text = True
+                    self.message_text = True
+                    self.message = "E to unlock"
                     if self.e_down:
                         if not self.in_lock_menu:
                             self.in_lock_menu = self.in_menu = True
                             self.lock_menu = Lock_Menu(self, hits[0])
+                        self.message_text = False
+                        self.e_down = False
 
 
             # Player is in talking range of NPC
-            self.talk_text = False
-            if True not in [self.in_menu, self.vehicle_text, self.door_text, self.vehicle_key_text, self.loot_text, self.bed_text, self.lock_text, self.toilet_text, self.station_text, self.pick_up_text]:
-                hits = pg.sprite.spritecollide(self.player, self.npcs, False, npc_talk_rect)
+            if not self.message_text:
+                hits = pg.sprite.spritecollide(self.player, self.npcs_on_screen, False, npc_talk_rect)
                 if hits:
                     if hits[0].dialogue != None:
                         if not self.in_dialogue_menu:
                             now = pg.time.get_ticks()
                             if now - self.last_dialogue > 2000:
-                                self.talk_text = True
+                                self.message_text = True
+                                self.message = "E to talk"
                                 if self.e_down:
-                                    self.talk_text = False
+                                    self.message_text = False
                                     self.dialogue_menu = Dialogue_Menu(self, hits[0])
+                                    self.e_down = False
 
             # player hits work station (forge, grinder, work bench, etc)
-            self.station_text = False
             hits = pg.sprite.spritecollide(self.player, self.work_stations, False)
             if hits:
                 self.station_type = hits[0].kind
-                self.station_text = True
+                self.message_text = True
+                self.message = "E to use " + self.station_type
                 if self.e_down:
                     self.in_station_menu = True
                     self.in_menu = True
                     self.station_menu = Work_Station_Menu(self, hits[0].kind)
+                    self.message_text = False
                     self.e_down = False
 
             # player hits water
-            hits = pg.sprite.spritecollide(self.player, self.water, False)
+            hits = pg.sprite.spritecollide(self.player, self.water_on_screen, False)
             if hits:
                 self.player.swimming = True
             else:
                 self.player.swimming = False
 
             # player hits shallows
-            hits = pg.sprite.spritecollide(self.player, self.shallows, False)
+            hits = pg.sprite.spritecollide(self.player, self.shallows_on_screen, False)
             if hits:
                 self.player.in_shallows = True
             else:
                 self.player.in_shallows = False
 
             # player hits elevation change
-            hits = pg.sprite.spritecollide(self.player, self.elevations, False)
+            hits = pg.sprite.spritecollide(self.player, self.elevations_on_screen, False)
             if hits:
                 keys = pg.key.get_pressed()
                 if keys[pg.K_v]:
@@ -1788,26 +1886,28 @@ class Game:
                         self.player.pre_jump()
                     self.player.elevation = 0
 
+
             # player hits dropped item
-            self.pick_up_text = False
-            self.too_much_weight = False
-            hits = pg.sprite.spritecollide(self.player, self.dropped_items, False, pg.sprite.collide_circle_ratio(0.75))
+            hits = pg.sprite.spritecollide(self.player, self.dropped_items_on_screen, False, pg.sprite.collide_circle_ratio(0.75))
             for hit in hits:
                 if hit.name not in ['fire pit']:
-                    self.pick_up_text = True
+                    self.message_text = True
+                    self.message = "E to pick up"
                     if self.e_down:
                         self.player.inventory[hit.item_type].append(hit.item)
                         self.player.calculate_weight()
+                        self.e_down = False
                         if self.player.stats['weight'] > self.player.stats['max weight']:
                             self.player.inventory[hit.item_type].remove(hit.item)
                             self.player.calculate_weight()
-                            self.too_much_weight = True
+                            self.message_text = "You are carrying too much weight."
                         else:
+                            self.message_text = False
                             hit.kill()
 
             # player melee hits breakable: a bush, tree, rock, ore vein, shell, glass, etc.
             if self.player.melee_playing:
-                hits = pg.sprite.spritecollide(self.player.body, self.breakable, False, breakable_melee_hit_rect)
+                hits = pg.sprite.spritecollide(self.player.body, self.breakable_on_screen, False, breakable_melee_hit_rect)
                 for bush in hits:
                     if self.player.equipped[self.player.weapon_hand] == None:
                         weapon_type = None
@@ -1818,10 +1918,10 @@ class Game:
                     bush.gets_hit(weapon_type)
 
             # player hits lava
-            hits = pg.sprite.spritecollide(self.player, self.lava, False)
-            for hit in hits:
+            hits = pg.sprite.spritecollide(self.player, self.lava_on_screen, False)
+            if hits:
                 if not self.player.jumping:
-                    self.player.gets_hit(hit.damage, 0, 0)
+                    self.player.gets_hit(hit[0].damage, 0, 0)
                     now = pg.time.get_ticks()
                     if now - self.last_fire > 300:
                         pos = self.player.pos + vec(-1, -1)
@@ -1831,7 +1931,7 @@ class Game:
                         self.last_fire = now
 
             # NPC hit player
-            hits = pg.sprite.spritecollide(self.player, self.npcs, False, pg.sprite.collide_circle_ratio(0.7))
+            hits = pg.sprite.spritecollide(self.player, self.npcs_on_screen, False, pg.sprite.collide_circle_ratio(0.7))
             for hit in hits:
                 if hit.touch_damage:
                     if random() < 0.7:
@@ -1844,38 +1944,43 @@ class Game:
                     self.player.rect.center = self.player.hit_rect.center
 
             # player hits an empty vehicle or mech suit
-            self.vehicle_text = False
-            self.vehicle_key_text = False
-            self.mechsuit_text = False
             if not self.player.in_vehicle:
                 if self.player.possessing == None:
                     hits = pg.sprite.spritecollide(self.player, self.mechsuits, False)
                     if hits:
                         if (hits[0].driver == None) and hits[0].living:
-                            self.mechsuit_text = True
+                            self.message_text = True
+                            self.message = "E to enter, T to exit"
                         if self.e_down:
                             if hits[0].living:
                                 hits[0].possess(self.player)
-                            self.mechsuit_text = False
+                            self.message_text = False
+                            self.e_down = False
 
                 hits = pg.sprite.spritecollide(self.player, self.vehicles, False)
                 if hits:
                     if not hits[0].occupied and hits[0].living:
-                        self.vehicle_text = True
+                        self.message_text = True
+                        self.message = "E to enter, X to exit"
                     if self.e_down:
                         if hits[0].living:
                             hits[0].enter_vehicle(self.player)
-                        self.vehicle_text = False
+                        self.message_text = False
+                        self.e_down = False
                 hits = pg.sprite.spritecollide(self.player, self.flying_vehicles, False)
                 if hits:
                     if not hits[0].occupied and hits[0].living:
-                        self.vehicle_text = True
+                        self.message_text = True
+                        self.message = "E to enter, X to exit"
                     if self.e_down:
+                        self.e_down = False
                         if hits[0].living:
                             if hits[0].kind == 'airship':
                                 if 'airship key' in self.player.inventory['items']:
                                     hits[0].enter_vehicle(self.player)
+                                    self.message_text = False
                                 elif len(self.companions.sprites()) > 0:
+                                    self.message_text = False
                                     is_felius = False
                                     for companion in self.companions:
                                         if companion.name == 'Felius':
@@ -1883,60 +1988,98 @@ class Game:
                                     if is_felius:
                                         hits[0].enter_vehicle(self.player)
                                 else:
-                                    self.vehicle_key_text = True
+                                    self.message_text = "You need a key to operate this vehicle."
                             else:
                                 hits[0].enter_vehicle(self.player)
-                        self.vehicle_text = False
         else:
             self.player.swimming = False
             self.player.in_shallows = False
 
 
+        # These hit checks apply whether the player is in a flying vehicle or not.
+
         # Animal hit player
+        hits = pg.sprite.spritecollide(self.player, self.animals, False, pg.sprite.collide_circle_ratio(0.7))
         if self.player not in self.flying_vehicles:
-            hits = pg.sprite.spritecollide(self.player, self.animals, False, pg.sprite.collide_circle_ratio(0.7))
             for hit in hits:
                 if not hit.occupied:
                     if hit in self.grabable_animals:
-                        self.pick_up_text = True
+                        self.message_text = True
+                        self.message = "E to catch"
                         if self.e_down:
                             self.player.inventory[hit.item_type].append(hit.item)
                             hit.kill()
+                            self.message_text = False
+                            self.e_down = False
                     elif hit.mountable:
+                        self.message_text = True
+                        self.message = "E to mount, X to dismount"
                         if self.e_down:
                             hit.mount(self.player)
-                    if hit.touch_damage:
-                        if random() < 0.7:
-                            self.player.gets_hit(hit.damage, hit.knockback, hits[0].rot)
+                            self.message_text = False
+                            self.e_down = False
+                    elif hit.touch_damage:
+                         hit.does_melee_damage(self.player)
                     else:
                         self.player.gets_hit(0, hit.knockback, hits[0].rot)
+
         else:  # Makes it so flying animals still interact with flying players
-            hits = pg.sprite.spritecollide(self.player, self.animals, False, pg.sprite.collide_circle_ratio(0.7))
             for hit in hits:
                 if hit.flying:
                     if not hit.occupied:
                         if hit in self.grabable_animals:
-                            self.pick_up_text = True
+                            self.message_text = True
+                            self.message = "E to catch"
                             if self.e_down:
                                 self.player.inventory[hit.item_type].append(hit.item)
                                 hit.kill()
+                                self.message_text = False
+                                self.e_down = False
                         elif hit.mountable:
+                            self.message_text = True
+                            self.message = "E to mount, X to dismount"
                             if self.e_down:
                                 hit.mount(self.player)
+                                self.message_text = False
+                                self.e_down = False
                         if hit.touch_damage:
-                            if random() < 0.7:
-                                self.player.gets_hit(hit.damage, hit.knockback, hits[0].rot)
+                            hit.does_melee_damage(self.player)
                         else:
                             self.player.gets_hit(0, hit.knockback, hits[0].rot)
 
+        # animal hits mob
+        hits = pg.sprite.groupcollide(self.animals, self.mobs_on_screen, False, False, pg.sprite.collide_circle_ratio(0.7))
+        for animal in hits:
+            for mob in hits[animal]:
+                if mob != animal:
+                    if animal.touch_damage:
+                        if animal.kind != mob.kind:
+                            animal.does_melee_damage(mob)
+
+        # mob hit elevation object
+        hits = pg.sprite.groupcollide(self.mobs_on_screen, self.elevations, False, False)
+        for mob in hits:
+            for elev in hits[mob]:
+                if elev.elevation - mob.elevation > 1:
+                    if mob in self.companions:
+                        mob.climbing = True
+                    elif mob in self.npcs_on_screen:
+                        chance = randrange(0, 600)
+                        if chance == 1:
+                            mob.climbing = True
+            else:
+                mob.climbing = False
+                if not mob.jumping:
+                    mob.elevation = 0
+
         # NPC hits charger
-        hits = pg.sprite.groupcollide(self.npcs, self.chargers, False, False)
+        hits = pg.sprite.groupcollide(self.npcs_on_screen, self.chargers, False, False)
         for npc in hits:
             if npc.race in ['mechanima', 'mech_suit']:
                 hits[npc][0].charge(npc)
 
         # NPC or Player melee hits moving_target
-        hits = pg.sprite.groupcollide(self.npc_bodies, self.moving_targets, False, False, melee_hit_rect)
+        hits = pg.sprite.groupcollide(self.npc_bodies_on_screen, self.moving_targets_on_screen, False, False, melee_hit_rect)
         for body in hits:
             if body.mother.in_player_vehicle:
                 pass
@@ -1968,7 +2111,7 @@ class Game:
                     body.mother.does_melee_damage(mob)
 
         # fire hit moving target
-        hits = pg.sprite.groupcollide(self.moving_targets, self.fires, False, False, pg.sprite.collide_circle_ratio(0.5))
+        hits = pg.sprite.groupcollide(self.moving_targets, self.fires_on_screen, False, False, pg.sprite.collide_circle_ratio(0.5))
         for mob in hits:
             if mob in self.occupied_vehicles:
                 pass
@@ -2034,7 +2177,7 @@ class Game:
                     Stationary_Animated(self, center, 'fire')
                     Work_Station(self, center.x - 64, center.y - 64, 128, 128, 'cooking fire')
         # fire hits firepit
-        hits = pg.sprite.groupcollide(self.firepits, self.fires, False, False, pg.sprite.collide_circle_ratio(0.5))
+        hits = pg.sprite.groupcollide(self.firepits, self.fires_on_screen, False, False, pg.sprite.collide_circle_ratio(0.5))
         for item in hits:
             if not item.lit:
                 item.lit = True
@@ -2092,7 +2235,7 @@ class Game:
             self.player.stats['marksmanship hits'] += 1
 
         # dropped item hit water
-        hits = pg.sprite.groupcollide(self.dropped_items, self.water, False, False)
+        hits = pg.sprite.groupcollide(self.dropped_items_on_screen, self.water_on_screen, False, False)
         for hit in hits:
             if 'dead' in hit.item and 'fish' in hit.item:
                 if hit.dropped_fish:
@@ -2114,8 +2257,8 @@ class Game:
                             detectable.kill()
 
         # npc hit water
-        hits = pg.sprite.groupcollide(self.npcs, self.water, False, False)
-        for npc in self.npcs:
+        hits = pg.sprite.groupcollide(self.npcs_on_screen, self.water_on_screen, False, False)
+        for npc in self.npcs_on_screen:
             if npc in hits:
                 if not npc.in_player_vehicle:
                     npc.swimming = True
@@ -2123,57 +2266,32 @@ class Game:
                 npc.swimming = False
 
         # npc hits doors and opens them
-        hits = pg.sprite.groupcollide(self.npcs, self.entryways, False, False, entryway_collide)
+        hits = pg.sprite.groupcollide(self.npcs_on_screen, self.entryways_on_screen, False, False, entryway_collide)
         for npc in hits:
             for entryway in hits[npc]:
                 if not entryway.locked:
                     if not entryway.opened:
                         entryway.open = True
                         entryway.close = False
-
-        # npc hit elevation object
-        hits = pg.sprite.groupcollide(self.npcs, self.elevations, False, False)
-        for npc in self.npcs:
-            if npc in hits:
-                for elev in hits[npc]:
-                    if elev.elevation - npc.elevation > 1:
-                        if npc in self.companions:
-                            npc.climbing = True
-                        else:
-                            chance = randrange(0, 600)
-                            if chance == 1:
-                                npc.climbing = True
-            else:
-                npc.climbing = False
-                if not npc.jumping:
-                    npc.elevation = 0
-
-        # animal hit elevation object
-        hits = pg.sprite.groupcollide(self.animals, self.elevations, False, False)
-        for animal in self.animals:
-            if animal in hits:
-                for elev in hits[animal]:
-                    if elev.elevation - animal.elevation > 1:
-                        npc.climbing = True
-            else:
-                animal.climbing = False
-                animal.elevation = 0
+                    elif npc.target in self.entryways_on_screen:
+                        if not entryway.open:
+                            entryway.close = True
 
         # land vehicle hits water
-        hits = pg.sprite.groupcollide(self.land_vehicles, self.water, False, False)
+        hits = pg.sprite.groupcollide(self.land_vehicles, self.water_on_screen, False, False)
         for vcle in hits:
             vcle.gets_hit(2, 0, 0)
 
         # npc hit shallows
-        hits = pg.sprite.groupcollide(self.npcs, self.shallows, False, False)
-        for npc in self.npcs:
+        hits = pg.sprite.groupcollide(self.npcs_on_screen, self.shallows_on_screen, False, False)
+        for npc in self.npcs_on_screen:
             if npc in hits:
                 npc.in_shallows = True
             else:
                 npc.in_shallows = False
 
         # mob hits player's moving vehicle
-        hits = pg.sprite.groupcollide(self.mobs, self.occupied_vehicles, False, False, mob_hit_rect)
+        hits = pg.sprite.groupcollide(self.mobs_on_screen, self.occupied_vehicles, False, False, mob_hit_rect)
         for mob in hits:
             for vehicle in hits[mob]:
                 if vehicle not in self.flying_vehicles:
@@ -2195,7 +2313,6 @@ class Game:
                             elif vehicle in self.animals:
                                 mob.gets_hit(0, 20, 0)
                             mob.vel = vec(0, 0)
-
 
     def render_fog(self):
         # draw the light mask (gradient) onto fog image
@@ -2271,7 +2388,7 @@ class Game:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
 
         # Only draws roofs when outside of buildings
-        hits = pg.sprite.spritecollide(self.player, self.inside, False)
+        hits = pg.sprite.spritecollide(self.player, self.inside_on_screen, False)
         if not hits:
             self.player_inside = False
             #self.overlay_group.draw(self.screen, self)
@@ -2324,47 +2441,16 @@ class Game:
         draw_player_stats(self.screen, 10, 10, self.hud_health)
         draw_player_stats(self.screen, 10, 40, self.hud_stamina, BLUE)
         draw_player_stats(self.screen, 10, 70, self.hud_magica, CYAN)
-        self.draw_text(self.hud_ammo1, self.hud_font, 20, WHITE, 50, self.screen_height - 100, align="topleft")
-        self.draw_text(self.hud_ammo2, self.hud_font, 20, WHITE, 50, self.screen_height - 50, align="topleft")
+        if not self.hud_ammo1 == "":
+            self.draw_text(self.hud_ammo1, self.hud_font, 20, WHITE, 50, self.screen_height - 100, align="topleft")
+        if not self.hud_ammo2 == "":
+            self.draw_text(self.hud_ammo2, self.hud_font, 20, WHITE, 50, self.screen_height - 50, align="topleft")
         #self.draw_text('Zombies: {}'.format(len(self.mobs)), self.hud_font, 30, WHITE, self.screen_width - 10, 10, align="topright")
         if self.paused:
             self.screen.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.title_font, 105, RED, self.screen_width / 2, self.screen_height / 2, align="center")
-        if self.vehicle_text == True:
-            self.draw_text('E to enter, X to exit', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
-                           align="center")
-        if self.door_text == True:
-            self.draw_text(self.door_message, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
-                           align="center")
-        if self.mechsuit_text == True:
-            self.draw_text('E to enter, T to exit', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
-                           align="center")
-        if self.vehicle_key_text == True:
-            self.draw_text('You need a key to operate this vehicle.', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
-                           align="center")
-        if self.talk_text == True:
-            self.draw_text('E to Talk', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
-                           align="center")
-        if self.loot_text == True:
-            self.draw_text('E to loot/store items', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
-                           align="center")
-        if self.bed_text == True:
-            self.draw_text(self.bed_message, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 160,
-                           align="center")
-        if self.toilet_text == True:
-            self.draw_text('E to use toilet', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
-                           align="center")
-        if self.too_much_weight == True:
-            self.draw_text('You can\'t carry any more weight', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100,
-                           align="center")
-        if self.lock_text == True:
-            self.draw_text('E to unlock the lock', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 150,
-                           align="center")
-        if self.pick_up_text == True:
-            self.draw_text('E to pickup item', self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 150,
-                           align="center")
-        if self.station_text == True:
-            self.draw_text('E to use ' + self.station_type, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 150,
+        if self.message_text == True:
+            self.draw_text(self.message, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2,
                            align="center")
         self.draw_text("FPS {:.0f}".format(self.clock.get_fps()), self.hud_font, 20, WHITE,
                        25, 100, align="topleft")
@@ -2374,6 +2460,7 @@ class Game:
                        120, 40, align="topleft")
         self.draw_text("MP {:.0f}".format(self.player.stats['magica']), self.hud_font, 20, WHITE,
                        120, 70, align="topleft")
+
         pg.display.flip()
         if self.in_inventory_menu:
             self.menu.update()

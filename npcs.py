@@ -169,7 +169,7 @@ GUARD_WEAPONS = ['steel sword', 'steel mace']
 GUARD_HATS = ['guard helmet', 'steel helmet']
 GUARD_GLOVES = ['steel gauntlets', 'leather gauntlets']
 GUARD_BOTTOMS = ['chainmail leggings F', 'leather leggings F', 'chainmail leggings M', 'leather leggings M']
-PEOPLE['villager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 5, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
+PEOPLE['villager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 5, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'lava'],
     'gender': 'random', 'race': 'osidine',
     'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random OSIDINE_SKIN_TONES'}, 'dialogue': 'random VILLAGER_DLG', 'store': None,
@@ -178,7 +178,7 @@ PEOPLE['villager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'tou
 VILLAGER_TOPS = CASUAL_TOPS_LIST
 VILLAGER_BOTTOMS = CASUAL_BOTTOMS_LIST
 
-PEOPLE['shaktelevillager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 300, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
+PEOPLE['shaktelevillager'] = {'name': 'Villager', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 0, 'knockback': 2, 'walk speed': (90, 100), 'run speed': 300, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': False, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'lava'],
     'gender': 'random', 'race': 'shaktele',
     'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random SHAKTELE_SKIN_TONES'}, 'dialogue': 'random VILLAGER_DLG', 'store': None,

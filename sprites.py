@@ -25,13 +25,13 @@ def collide(sprite):
     for item in sprite.collide_list:
             collide_with_walls(sprite, item, 'x')
     if not (sprite.immaterial or sprite.flying):
-        collide_with_elevations(sprite, sprite.game.elevations, 'x')
+        collide_with_elevations(sprite, sprite.game.elevations_on_screen, 'x')
 
     sprite.hit_rect.centery = sprite.pos.y
     for item in sprite.collide_list:
             collide_with_walls(sprite, item, 'y')
     if not (sprite.immaterial or sprite.flying):
-        collide_with_elevations(sprite, sprite.game.elevations, 'y')
+        collide_with_elevations(sprite, sprite.game.elevations_on_screen, 'y')
     sprite.rect.center = sprite.hit_rect.center
 
 def collide_hit_rect(one, two):
@@ -414,7 +414,7 @@ class Vehicle(pg.sprite.Sprite):
             collide_list = ['walls', 'water']
         self.collide_list = []
         for item in collide_list:
-            self.collide_list.append(eval("self.game." + item))
+            self.collide_list.append(eval("self.game." + item + "_on_screen"))
 
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -995,6 +995,7 @@ class Player(pg.sprite.Sprite):
         self.in_flying_vehicle = False
         self.vehicle = None
         self.moving_melee = False
+        self.living = True
         # player stats. You gain skill according to the activities the player does.
         self.stats = {'health': 100, 'max health': 100, 'stamina': 100, 'max stamina': 100, 'magica': 100, 'max magica': 100, 'weight': 0, 'max weight': 100, 'strength': 1, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'level': 0}
         self.fire_damage = self.start_fire_damage = 20
@@ -1021,7 +1022,7 @@ class Player(pg.sprite.Sprite):
         # Player Body Customizations/Equipped
         self.inventory = {'gender': list(GENDER.keys()), 'hair': list(HAIR.keys()), 'race': list(RACE.keys()), 'weapons': [None], 'hats': [None], 'tops': [None], 'bottoms': [None], 'gloves': [None], 'shoes': [None], 'gold': 0, 'items': [None], 'magic': [None]}
         self.equipped = {'gender': 'female', 'race': 'osidine', 'weapons': None, 'weapons2': None, 'hair': None, 'hats': None, 'tops': None, 'bottoms': None, 'shoes': None, 'gloves': None, 'items': None, 'magic': None}
-        self.race = self.equipped['race']
+        self.race = self.kind = self.equipped['race']
         self.colors = {'hair': DEFAULT_HAIR_COLOR, 'skin': DEFAULT_SKIN_COLOR}
         self.ammo = {'pistol': 100, 'submachine gun': 100, 'shotgun': 100, 'rifle': 100, 'sniper rifle': 100, 'rocket launcher': 100, 'grenades': 100, 'turret': 1000, 'laser': 100, 'crystals': 100, 'bow': 100}
         self.mag1 = 0
@@ -1853,6 +1854,7 @@ class Player(pg.sprite.Sprite):
                     mob.gets_hit(damage, knockback, self.rot)
                 self.stats['melee'] += 0.1
                 self.last_damage = now
+                mob.target = self.possessing
             if not self.game.guard_alerted:
                 if mob.protected:
                     self.alert_guard()
@@ -1876,6 +1878,7 @@ class Player(pg.sprite.Sprite):
                 #choice(mob.hit_sounds).play()
                 self.stats['melee'] += 0.1
                 self.last_damage = now
+                mob.target = self
             if not self.game.guard_alerted:
                 if mob.protected:
                     self.alert_guard()
@@ -1887,6 +1890,7 @@ class Player(pg.sprite.Sprite):
                 npc.speed = npc.kind['walk speed'][1] * 1.5
                 npc.detect_radius = npc.default_detect_radius = self.game.screen_width * 2
                 npc.offensive = True
+                npc.provoked = True
                 npc.target = self.game.player
         self.game.guard_alerted = True
 
@@ -2194,11 +2198,11 @@ class Player(pg.sprite.Sprite):
         if not self.in_vehicle:
             if ('wraith' not in self.race) or self.stats['weight'] !=0:
                 self.hit_rect.centerx = self.pos.x
-                collide_with_walls(self, self.game.walls, 'x')
-                collide_with_elevations(self, self.game.elevations, 'x')
+                collide_with_walls(self, self.game.walls_on_screen, 'x')
+                collide_with_elevations(self, self.game.elevations_on_screen, 'x')
                 self.hit_rect.centery = self.pos.y
-                collide_with_walls(self, self.game.walls, 'y')
-                collide_with_elevations(self, self.game.elevations, 'y')
+                collide_with_walls(self, self.game.walls_on_screen, 'y')
+                collide_with_elevations(self, self.game.elevations_on_screen, 'y')
                 self.rect.center = self.hit_rect.center
         self.check_map_pos()
 
@@ -2452,6 +2456,7 @@ class Npc(pg.sprite.Sprite):
         self.last_damage = 0
         self.last_step = 0
         self.last_move = 0
+        self.last_move_check = 0
         self.last_wall_hit = 0
         self.hit_wall = False
         self.last_hit = 0
@@ -2463,6 +2468,7 @@ class Npc(pg.sprite.Sprite):
         self.last_melee = 0
         self.last_melee_sound = 0
         # State vars
+        self.needs_move = False
         self.last_weapon = None
         self.last_weapon2 = None
         self.current_weapon = None
@@ -2517,7 +2523,7 @@ class Npc(pg.sprite.Sprite):
             self.immaterial = False
         self.collide_list = []
         for item in self.kind['collide']:
-            self.collide_list.append(eval("self.game." + item))
+            self.collide_list.append(eval("self.game." + item + "_on_screen"))
 
         # These are empty dictionaries used for adding random values to.
         self.equipped = {'gender': self.kind['gender'], 'race': self.kind['race'], 'weapons': None, 'weapons2': None, 'hair': None, 'hats': None, 'tops': None, 'bottoms': None, 'shoes': None, 'gloves': None, 'items': None, 'magic': None}
@@ -2567,7 +2573,7 @@ class Npc(pg.sprite.Sprite):
             self.reload()
 
     def update_collide_list(self):
-        self.collide_list = [self.game.walls]
+        self.collide_list = [self.game.walls_on_screen]
 
     def set_vectors(self):
         # Makes it so immortui don't run after you if you are immortui
@@ -2594,7 +2600,7 @@ class Npc(pg.sprite.Sprite):
                 self.offensive = False
 
     def avoid_mobs(self):
-        for mob in self.game.mobs:
+        for mob in self.game.mobs_on_screen:
             if mob != self:
                 dist = self.pos - mob.pos
                 if 0 < dist.length() < self.avoid_radius:
@@ -2607,6 +2613,15 @@ class Npc(pg.sprite.Sprite):
         temp_dist = temp_dist.length()
         if temp_dist > self.detect_radius:
             self.target = choice(list(self.game.random_targets))
+        if randrange(0, 5) == 1: # Makes it so the villagers randomly target nearby doors.
+            last_dist = 3000
+            for entry in self.game.entryways:
+                dist = self.pos - entry.pos
+                dist = dist.length()
+                if last_dist > dist:  # Finds closest door
+                    self.target = entry
+                    self.approach_vector = vec(1, 0)
+                    last_dist = dist
         if temp_dist < 200:
             self.target = choice(list(self.game.random_targets))
 
@@ -2645,10 +2660,10 @@ class Npc(pg.sprite.Sprite):
                 else:
                     self.detect_radius = self.game.map.height / 2
 
-        for mob in self.game.moving_targets:
-            if self.game.on_screen(mob): # Only looks at mobs that are on screen
+        if self.aggression == 'awd' or self.guard:
+            for mob in self.game.moving_targets_on_screen: # Only looks at mobs that are on screen
                 if mob != self:
-                    if mob.aggression != 'awd':
+                    if mob.aggression != 'awd' or mob in self.game.animals_on_screen:
                         if self.aggression == 'awd':
                             self.offensive = True
                             dist = self.pos - mob.pos
@@ -2715,24 +2730,25 @@ class Npc(pg.sprite.Sprite):
                     self.depossess()
                     self.death()
             else:
-                if self.target != self.game.player:
-                    if not self.target.living:  # Makes it so the guards switch back to the player being their target if they kill the mob they are attacking.
-                        self.offensive = False
-                        self.seek_mobs()
-                    if self.aggression in ['awp', 'sap', 'fup']:
-                        if self.provoked:
-                            if not self.game.player.invisible:
-                                self.target = self.game.player
-                                self.offensive = True
-                elif self.aggression in ['awp', 'sap', 'fup']:
-                    if not self.provoked:
-                        self.offensive = False
-                    if self.race in ['osidine', 'shaktele', 'elf']: # Makes it so humans and elves attack you if you are zombie or skeleton.
-                        if self.target == self.game.player:
-                            if self.game.player.race in ['immortui', 'skeleton']:
-                                self.provoked = True
-                                self.offensive = True
-                                self.approach_vector = vec(1, 0)
+                if not self.needs_move:
+                    if self.target != self.game.player:
+                        if not self.target.living:  # Makes it so the guards switch back to the player being their target if they kill the mob they are attacking.
+                            self.offensive = False
+                            self.seek_mobs()
+                        if self.aggression in ['awp', 'sap', 'fup']:
+                            if self.provoked:
+                                if not self.game.player.invisible:
+                                    self.target = self.game.player
+                                    self.offensive = True
+                    elif self.aggression in ['awp', 'sap', 'fup']:
+                        if not self.provoked:
+                            self.offensive = False
+                        if self.race in ['osidine', 'shaktele', 'elf']: # Makes it so humans and elves attack you if you are zombie or skeleton.
+                            if self.target == self.game.player:
+                                if self.game.player.race in ['immortui', 'skeleton']:
+                                    self.provoked = True
+                                    self.offensive = True
+                                    self.approach_vector = vec(1, 0)
 
                 if self in self.game.companions:
                     if self.target == self.game.player:
@@ -2743,19 +2759,35 @@ class Npc(pg.sprite.Sprite):
                 elif self.reloading:
                     self.reload()
 
-                ora = pg.time.get_ticks()
+                ora = pg.time.get_ticks() # Makes it so the NPCs don't stay in one place too long.
+                if not self.offensive:
+                    if not self.needs_move:
+                        if ora - self.last_move_check > randrange(1000, 2000):
+                            if not self.check_moving():
+                                self.seek_random_target()
+                                self.needs_move = True
+                            self.last_move_check = ora
+                    else:
+                        if ora - self.last_move_check > randrange(3000, 6000):
+                            self.needs_move = False
+                            self.last_move_check = ora
+
+
+
                 if ora - self.last_hit > 3000: # Used to set the time NPCs flee for after being attacked.
                     if self.running:
                         if self.aggression == 'fwp':
                             self.approach_vector = vec(-1, -1)
                         self.running = False
-                if ora - self.last_seek > 1000: # Checks for the closest target
-                    self.seek_mobs()
-                    self.last_seek = ora
+
+                if not self.needs_move:
+                    if ora - self.last_seek > 1000: # Checks for the closest target
+                        self.seek_mobs()
+                        self.last_seek = ora
 
                 target_dist = self.target.pos - self.pos
                 if True not in [self.melee_playing, self.animating_reload]: # Only moves character if not attacking or reloading
-                    if not self.offensive and target_dist.length_squared() < 100 ** 2 and self.approach_vector != vec(-1, 0):
+                    if not self.offensive and target_dist.length_squared() < 100 ** 2 and self.approach_vector != vec(-1, 0) and (self.target not in self.game.entryways):
                         self.vel = vec(0, 0)
                         self.rot = target_dist.angle_to(vec(1, 0))
 
@@ -2789,12 +2821,13 @@ class Npc(pg.sprite.Sprite):
                         # This part makes the NPC avoid walls
                         now = pg.time.get_ticks()
                         if not self.immaterial:
-                            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+                            hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False)
                             if hits:
-                                self.hit_wall = True
-                                if now - self.last_wall_hit > 1000:
-                                    self.last_wall_hit = now
-                                    self.rot = (self.rot + (randrange(90, 180) * choice([-1, 1]))) % 360
+                                if hits[0] not in self.game.door_walls:
+                                    self.hit_wall = True
+                                    if now - self.last_wall_hit > 1000:
+                                        self.last_wall_hit = now
+                                        self.rot = (self.rot + (randrange(90, 180) * choice([-1, 1]))) % 360
                             elif now - self.last_wall_hit > randrange(3000, 5000):
                                 self.last_wall_hit = now
                                 self.hit_wall = False
@@ -3044,6 +3077,7 @@ class Npc(pg.sprite.Sprite):
 
             #choice(mob.hit_sounds).play()
             self.last_damage = now
+            mob.target = self
 
     def add_health(self, amount):
         self.health += amount
@@ -3319,7 +3353,7 @@ class Animal(pg.sprite.Sprite):
             self._layer = BULLET_LAYER
             self.in_flying_vehicle = False
         else:
-            self._layer = ITEMS_LAYER
+            self._layer = MOB_LAYER
         if self.kind['grabable']:
             self.groups = game.all_sprites, game.mobs, game.animals, game.grabable_animals, game.detectables, game.moving_targets
         else:
@@ -3332,7 +3366,7 @@ class Animal(pg.sprite.Sprite):
         self.touch_damage = self.kind['touch damage']
         self.damage = self.kind['damage']
         self.knockback = self.kind['knockback']
-        self.detect_radius = self.kind['detect radius']
+        self.detect_radius = self.default_detect_radius = self.kind['detect radius']
         self.avoid_radius = self.kind['avoid radius']
         if health == None:
             self.health = self.max_health = self.kind['health']
@@ -3352,7 +3386,7 @@ class Animal(pg.sprite.Sprite):
         self.item = self.kind['item']
         self.collide_list = []
         for item in self.kind['collide']:
-            self.collide_list.append(eval("self.game." + item))
+            self.collide_list.append(eval("self.game." + item + "_on_screen"))
         self.walk_image_list = self.game.animal_animations[self.name]['walk']
         if 'run' in list(self.game.animal_animations[self.name].keys()):
             self.run_image_list = self.game.animal_animations[self.name]['run']
@@ -3373,11 +3407,15 @@ class Animal(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.target = game.player
         self.last_hit = 0
+        self.last_damage = 0
+        self.melee_rate = 800
         self.last_move = 0
         self.last_wall_hit = 0
+        self.last_target_seek = 0
         self.hit_wall = False
         self.living = True
         self.immaterial = False
+        self.eating_corpse = 0
         self.rotate_direction = randrange(-1, 1)
         self.rotate_speed = 5 * (self.walk_speed / self.width)
         self.frame = 0 #used to keep track of what frame the animation is on.
@@ -3414,7 +3452,7 @@ class Animal(pg.sprite.Sprite):
             self.approach_vector = vec(0, -1)
 
     def avoid_mobs(self):
-        for mob in self.game.mobs:
+        for mob in self.game.mobs_on_screen:
             if mob != self:
                 dist = self.pos - mob.pos
                 if 0 < dist.length() < self.avoid_radius:
@@ -3425,6 +3463,92 @@ class Animal(pg.sprite.Sprite):
             dist = self.pos - self.game.player.pos
             if 0 < dist.length() < self.avoid_radius:
                 self.acc += dist.normalize()
+
+    def seek_random_target(self):
+        self.target = choice(list(self.game.random_targets))
+        self.detect_radius = self.game.map.height / 2
+        temp_dist = self.target.pos - self.pos
+        temp_dist = temp_dist.length()
+        if temp_dist > self.detect_radius:
+            self.target = choice(list(self.game.random_targets))
+        if temp_dist < 200:
+            self.target = choice(list(self.game.random_targets))
+
+    def seek_mobs(self):
+        last_dist = 100000
+        player_dist = self.game.player.pos - self.pos
+        player_dist = player_dist.length()
+
+        # Used for setting random NPC targets if the player isn't visible.
+        if self.game.player.invisible:
+            if self.target == self.game.player:
+                self.seek_random_target()
+
+        elif self.game.player.in_vehicle:
+            if self.game.player.vehicle.kind == 'airship':
+                if not self.flying:
+                    self.seek_random_target()
+            else:
+                if player_dist < self.detect_radius:
+                    self.target = self.game.player.vehicle
+                else:
+                    if self.target == self.game.player.vehicle:
+                        self.seek_random_target()
+        else:
+            if self.target not in self.game.npcs:
+                if player_dist < self.detect_radius * 2:
+                    self.target = self.game.player
+                else:
+                    if self.target == self.game.player:
+                        self.seek_random_target()
+
+        if self.aggression == 'awd':
+            self.offensive = True
+            for mob in self.game.moving_targets_on_screen: # Only looks at mobs that are on screen
+                if mob != self:
+                    if mob.aggression != 'awd' or mob in self.game.npcs_on_screen:
+                        dist = self.pos - mob.pos
+                        dist = dist.length()
+                        if 0 < dist < self.detect_radius:
+                            if last_dist > dist:  # Finds closest NPC
+                                if player_dist > dist: # Only targets player if you are closer than the others NPCs
+                                    self.target = mob
+                                    self.approach_vector = vec(1, 0)
+                                    last_dist = dist
+                                else:
+                                    if self.game.player.invisible:
+                                        self.target = mob
+                                    else:
+                                        self.target = self.game.player
+
+            if self.target == self.game.player or not self.target.living:
+                for item in self.game.dropped_items_on_screen:# animals target dead animals
+                    if 'dead' in item.name:
+                        dist = self.pos - item.pos
+                        dist = dist.length()
+                        if 0 < dist < self.detect_radius:
+                            if last_dist > dist:  # Finds closest item
+                                if player_dist > dist: # Only targets player if you are closer than the others NPCs
+                                    self.target = item
+                                    self.approach_vector = vec(1, 0)
+                                    last_dist = dist
+
+            if not self.target.living: # Kills corps after so many hits.
+                if self.target in self.game.animals_on_screen:
+                    self.target.kill()
+                    self.target = self.game.player
+                else:
+                    self.eating_corpse += 1
+                    if self.eating_corpse > 4:
+                        self.target.kill()
+                        self.target = self.game.player
+                        self.eating_coprse = 0
+                        self.health = self.max_health # heals animal
+            else:
+                self.eating_coprse = 0
+
+        if self.target not in self.game.random_targets:
+            self.detect_radius = self.default_detect_radius
 
     def animate(self, images):
         self.frame += 1
@@ -3518,7 +3642,7 @@ class Animal(pg.sprite.Sprite):
         self.run_speed = 100
 
     def update_collide_list(self):
-        self.collide_list = [self.game.walls]
+        self.collide_list = [self.game.walls_on_screen]
 
     def cast_spell(self):
         spell = choice(self.spells)
@@ -3535,8 +3659,12 @@ class Animal(pg.sprite.Sprite):
     def update(self):
         if self.living:
             if not self.occupied:
+                now0 = pg.time.get_ticks()
+                if now0 - self.last_target_seek > 4000:
+                    self.seek_mobs()
+                    self.last_target_seek = now0
                 target_dist = self.target.pos - self.pos
-                hits = pg.sprite.spritecollide(self, self.game.walls, False) + pg.sprite.spritecollide(self, self.game.shallows, False) # This part makes the animal avoid walls
+                hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False) + pg.sprite.spritecollide(self, self.game.shallows_on_screen, False) # This part makes the animal avoid walls
                 if hits:
                     self.hit_wall = True
                     now = pg.time.get_ticks()
@@ -3549,7 +3677,7 @@ class Animal(pg.sprite.Sprite):
                     self.avoid_mobs()
                     self.accelerate(self.walk_speed)
 
-                if target_dist.length_squared() < self.detect_radius**2:
+                if (target_dist.length_squared() < self.detect_radius**2) and (self.target not in self.game.random_targets):
                     #if random() < 0.002:
                     #    choice(self.game.zombie_moan_sounds).play()
                     if self.spells != None:
@@ -3654,6 +3782,14 @@ class Animal(pg.sprite.Sprite):
                 if self.aggression == 'fup':
                     self.approach_vector = vec(1, 0)
                 self.run_speed = self.kind['run speed'] * 1.5
+
+    def does_melee_damage(self, mob):
+        now = pg.time.get_ticks()
+        if now - self.last_damage > self.melee_rate:
+            mob.gets_hit(self.damage, self.knockback, self.rot)
+            self.last_damage = now
+            mob.target = self
+            self.melee_rate = randrange(800, 2000)
 
     def death(self, silent = False):
         if self in self.game.companions:
@@ -3784,7 +3920,7 @@ class Bullet(pg.sprite.Sprite):
     def update(self):
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
-        if pg.sprite.spritecollideany(self, self.game.walls):
+        if pg.sprite.spritecollideany(self, self.game.walls_on_screen):
             self.death()
         # Kills bullets of current and previous weapons
         if pg.time.get_ticks() - self.spawn_time > self.lifetime:
@@ -3861,6 +3997,7 @@ class Dropped_Item(pg.sprite.Sprite):
         self.floats = False
         self.random_spread = random_spread
         self.pos = pos
+        self.living = False
         # Looks up the item image from the list of dictionaries in the settings based on the item type and item name.
         if self.item_type[-1:] == 's':
             image_path = "self.game." + self.item_type[:-1] + "_images[" + self.item_type.upper() + '["' + item + '"]["image"]]'
@@ -3980,7 +4117,6 @@ class Entryway(pg.sprite.Sprite):
         self.difficulty = randrange(0, 30)
         self.length = 88
         self.health = DOOR_STYLES[self.kind]['hp']
-        self.vel = vec(0, 0)
         self.protected = False
         self.orig_rot = 0
         temp_img = self.game.door_images[DOOR_STYLES[self.kind]['image']]
@@ -3991,6 +4127,7 @@ class Entryway(pg.sprite.Sprite):
             self.rect.x = x - 19
             self.rect.y = y
             self.wall = Obstacle(self.game, self.rect.x, self.rect.y, 20, self.length)
+            self.wall.add(self.game.door_walls)
         elif self.orientation == 'R':
             self.image_orig = pg.transform.rotate(temp_img, 180)
             self.image = self.image_orig.copy()
@@ -3998,6 +4135,7 @@ class Entryway(pg.sprite.Sprite):
             self.rect.x = x - 10
             self.rect.y = y - self.length
             self.wall = Obstacle(self.game, self.rect.x, self.rect.y + self.length, 20, self.length)
+            self.wall.add(self.game.door_walls)
             self.orig_rot = 180
         elif self.orientation == 'D':
             self.image_orig = pg.transform.rotate(temp_img, 90)
@@ -4006,6 +4144,7 @@ class Entryway(pg.sprite.Sprite):
             self.rect.x = x
             self.rect.y = y - 10
             self.wall = Obstacle(self.game, self.rect.x, self.rect.y, self.length, 20)
+            self.wall.add(self.game.door_walls)
             self.orig_rot = 90
         elif self.orientation == 'U':
             self.image_orig = pg.transform.rotate(temp_img, -90)
@@ -4014,6 +4153,7 @@ class Entryway(pg.sprite.Sprite):
             self.rect.x = x - self.length
             self.rect.y = y - 19
             self.wall = Obstacle(self.game, self.rect.x + self.length, self.rect.y, self.length, 20)
+            self.wall.add(self.game.door_walls)
             self.orig_rot = -90
         self.last_move = 0
         self.rot = 0
@@ -4029,6 +4169,9 @@ class Entryway(pg.sprite.Sprite):
         self.last_hit = 0
         self.living = True
         self.frame = 0
+        self.pos = vec(self.hit_rect.centerx, self.hit_rect.centery)
+        self.vel = vec(0, 0)
+        self.acc = vec(0, 0)
 
     def update(self):
         if self.open:
@@ -4090,12 +4233,16 @@ class Entryway(pg.sprite.Sprite):
             self.wall.kill()
             if self.orientation == 'L':
                 self.wall = Obstacle(self.game, self.rect.x, self.rect.y, 20, self.length)
+                self.wall.add(self.game.door_walls)
             elif self.orientation == 'D':
                 self.wall = Obstacle(self.game, self.rect.x, self.rect.y, self.length, 20)
+                self.wall.add(self.game.door_walls)
             elif self.orientation == 'R':
                 self.wall = Obstacle(self.game, self.rect.x, self.rect.y + self.length, 20, self.length)
+                self.wall.add(self.game.door_walls)
             elif self.orientation == 'U':
                 self.wall = Obstacle(self.game, self.rect.x + self.length, self.rect.y, self.length, 20)
+                self.wall.add(self.game.door_walls)
             self.hit_rect = self.wall.rect
             self.hit_rect.center = self.wall.rect.center
             self.game.effects_sounds['door close'].play()
@@ -4247,7 +4394,7 @@ class Fireball(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.hit_rect.center = self.pos + self.offset
 
-        if pg.sprite.spritecollideany(self, self.game.walls, fire_collide):
+        if pg.sprite.spritecollideany(self, self.game.walls_on_screen, fire_collide):
             self.explode()
         # Kills bullets of current and previous weapons
         if pg.time.get_ticks() - self.spawn_time > self.lifetime:
@@ -4838,13 +4985,15 @@ class Detector(pg.sprite.Sprite): # Used to rest in
 
 # This class generates random points for NPCs and animals to walk towards
 class Random_Target(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
-    def __init__(self, game):
+    def __init__(self, game, x = 0, y = 0):
         self._layer = WALL_LAYER
         self.game = game
         self.groups = game.all_static_sprites, game.random_targets
         pg.sprite.Sprite.__init__(self, self.groups)
-        x = randrange(self.game.screen_width, self.game.map.width - self.game.screen_width)
-        y = randrange(self.game.screen_width, self.game.map.height - self.game.screen_width)
+        if x == 0:
+            x = randrange(self.game.screen_width, self.game.map.width - self.game.screen_width)
+            y = randrange(self.game.screen_width, self.game.map.height - self.game.screen_width)
+        self.rect = pg.Rect(x, y, 10, 10)
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)

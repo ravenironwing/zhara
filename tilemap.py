@@ -186,9 +186,9 @@ class MiniMap:
         self.rect = self.image.get_rect()
 
 
-class Camera:
+class Camera():
     def __init__(self, width, height):
-        self.camera = pg.Rect(0, 0, width, height)
+        self.camera = self.rect = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
         self.x = 0
