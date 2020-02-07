@@ -666,8 +666,7 @@ class Game:
         self.fog = pg.Surface((self.screen_width, self.screen_height))
         self.fog.fill(NIGHT_COLOR)
         self.light_mask = pg.image.load(path.join(img_folder, LIGHT_MASK)).convert_alpha()
-        self.light_mask = pg.transform.scale(self.light_mask, LIGHT_RADIUS)
-        self.light_rect = self.light_mask.get_rect()
+        self.square_light_mask = pg.image.load(path.join(img_folder, SQUARE_LIGHT_MASK)).convert_alpha()
         # Sound loading
         self.effects_sounds = {}
         for key in EFFECTS_SOUNDS:
@@ -730,7 +729,6 @@ class Game:
         pg.mixer.music.load(path.join(music_folder, TITLE_MUSIC))
         pg.mixer.music.play(loops=-1)
         self.title_image = pg.transform.scale(self.title_image, (self.screen_width, self.screen_height))
-
         self.continued_game = False
         self.in_load_menu = False
         self.in_npc_menu = False
@@ -773,6 +771,17 @@ class Game:
                 i = 255
 
         # initialize all variables and do all the setup for a new game
+
+        # Used for controlling day and night
+        self.darkness = 0
+        self.dark_color = (255, 255, 255)
+        self.time_of_day = 0
+        self.nightfall = False
+        self.sunrise = False
+        self.night = False
+        self.last_darkness_change = 0
+        self.day_start_time = pg.time.get_ticks()
+
         self.map_sprite_data_list = []
         self._player_inside = False
         self.compass_rot = 0
@@ -841,6 +850,7 @@ class Game:
         self.vehicles = pg.sprite.Group()
         self.vehicles_on_screen = pg.sprite.Group()
 
+        self.lights = pg.sprite.Group()
         self.firepots = pg.sprite.Group()
         self.arrows = pg.sprite.Group()
         self.chargers = pg.sprite.Group()
@@ -922,7 +932,6 @@ class Game:
         self.e_down = False
         self.draw_debug = False
         self.paused = False
-        self.night = False
         self.effects_sounds['level_start'].play()
         if self.continued_game:
             self.load_menu.update()
@@ -949,7 +958,6 @@ class Game:
             self.map.toggle_visible_layers()
         else:
             pass
-
 
     def load_over_map(self, map):
         # Loads data from overworld tmx file
@@ -1088,6 +1096,12 @@ class Game:
         sleep(10)
         self.clock.tick(FPS) # Characters randomly disappear without this for some reason. I have no clue why this fixes it
         pg.mixer.music.play(loops=-1)
+        # Changes it to sunrise when you sleep.
+        self.darkness = 225
+        color_val = 255 - self.darkness
+        self.dark_color = (color_val, color_val, color_val)
+        self.night = True
+        self.day_start_time = pg.time.get_ticks() - NIGHT_LENGTH
 
     def use_toilet(self):
         self.player.stats['health'] += 5
@@ -1319,6 +1333,9 @@ class Game:
                 if tile_object.name == 'wall':
                     Obstacle(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
+                if tile_object.name == 'light':
+                    LightSource(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height)
                 if tile_object.name == 'inside':
                     Inside(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
@@ -1541,7 +1558,6 @@ class Game:
                 if animal not in hits:
                     animal.death(True)
 
-
         # Adds all players and companions
         #self.group.add(self.player.body)
         #for sprite in self.companions:
@@ -1588,8 +1604,44 @@ class Game:
         pg.quit()
         sys.exit()
 
+    def night_transition(self):
+        now = pg.time.get_ticks()
+        if now - self.last_darkness_change > NIGHTFALL_SPEED:
+            self.darkness += 1
+            self.last_darkness_change = now
+            if self.darkness > 235:
+                self.darkness = 235
+                self.day_start_time = now
+                self.night = True
+                self.nightfall = False
+            color_val = 255 - self.darkness
+            self.dark_color = (color_val, color_val, color_val)
+
+    def day_transition(self):
+        now = pg.time.get_ticks()
+        if now - self.last_darkness_change > NIGHTFALL_SPEED:
+            self.darkness -= 1
+            if self.darkness < 0:
+                self.darkness = 0
+                self.day_start_time = now
+                self.night = False
+                self.sunrise = False
+            color_val = 255 - self.darkness
+            self.dark_color = (color_val, color_val, color_val)
+
     def update(self):
         # update portion of the game loop
+
+        # Controls the day turning to night and vice versa
+        now = pg.time.get_ticks()
+        if self.night:
+            if now - self.day_start_time > NIGHT_LENGTH:
+                self.sunrise = True
+                self.day_transition()
+        elif now - self.day_start_time > DAY_LENGTH:
+            self.nightfall = True
+            self.night_transition()
+
         # updates all sprites that are on screen and puts on screen sprites into groups for hit checks.
         self.message_text = False
         # finds static sprites (ones you don't see) on screen.
@@ -1604,7 +1656,7 @@ class Game:
         self.beds_on_screen.empty()
         self.inside_on_screen.empty()
         for sprite in self.all_static_sprites:
-            if self.on_screen_no_edge(sprite):
+            if self.on_screen(sprite):
                 if sprite in self.vehicles:
                     self.vehicles_on_screen.add(sprite)
                 elif sprite in self.obstacles:
@@ -1691,9 +1743,6 @@ class Game:
                 self.channel4.stop()
         else:
             self.channel4.stop()
-
-        #self.map.update()
-        #self.camera.update(self.map)
 
         # These hit checks only happen if the player insn't in a flying vehicle.
         if self.player not in self.flying_vehicles:
@@ -1921,7 +1970,7 @@ class Game:
             hits = pg.sprite.spritecollide(self.player, self.lava_on_screen, False)
             if hits:
                 if not self.player.jumping:
-                    self.player.gets_hit(hit[0].damage, 0, 0)
+                    self.player.gets_hit(hits[0].damage, 0, 0)
                     now = pg.time.get_ticks()
                     if now - self.last_fire > 300:
                         pos = self.player.pos + vec(-1, -1)
@@ -2314,11 +2363,20 @@ class Game:
                                 mob.gets_hit(0, 20, 0)
                             mob.vel = vec(0, 0)
 
-    def render_fog(self):
+    def render_lighting(self):
         # draw the light mask (gradient) onto fog image
-        self.fog.fill(NIGHT_COLOR)
-        self.light_rect.center = self.camera.apply(self.player).center
-        self.fog.blit(self.light_mask, self.light_rect)
+        self.fog.fill(self.dark_color)
+        if self.player_inside:
+            for light in self.lights:
+                if self.on_screen(light):
+                    lightrect = self.camera.apply_rect(light.light_mask_rect)
+                    self.fog.blit(light.light_mask, lightrect)
+        else:
+            for light in self.lights:
+                if self.on_screen(light):
+                    if not pg.sprite.spritecollide(light, self.inside_on_screen, False):
+                        lightrect = self.camera.apply_rect(light.light_mask_rect)
+                        self.fog.blit(light.light_mask, lightrect)
         self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
 
     def rot_center(self, image, angle):
@@ -2405,14 +2463,13 @@ class Game:
         #for sprite in self.flying_vehicles:
         #    self.screen.blit(sprite.image, self.camera.apply(sprite))
 
+        if True in [self.night, self.sunrise, self.nightfall]:
+            self.render_lighting()
         if self.hud_map:
             self.draw_minimap()
         if self.hud_overmap:
             self.draw_overmap()
 
-        # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
-        if self.night:
-            self.render_fog()
 
         # HUD functions
         now = pg.time.get_ticks() # Only updates HUD info every 10 cycles to help reduce lag.
@@ -2534,8 +2591,6 @@ class Game:
                     if self.player.vehicle != None:
                         print(self.group.get_layer_of_sprite(self.player.vehicle))
                     self.paused = not self.paused
-                if event.key == pg.K_n:
-                    self.night = not self.night
                 if event.key == pg.K_EQUALS:
                     self.map.minimap.resize()
                 if event.key == pg.K_MINUS:
@@ -2553,8 +2608,7 @@ class Game:
                     self.player.throw_grenade()
                 if event.key == pg.K_t:
                     if self.player.possessing == None:
-                        if self.player.stats['magica'] > 50 or self.player.dragon:
-                            self.player.transform()
+                        self.player.transform()
                     else:
                         self.player.possessing.depossess()
 

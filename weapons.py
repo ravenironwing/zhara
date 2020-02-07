@@ -808,6 +808,7 @@ WEAPONS['enchanted elven dagger'] = {'type': 'dagger','gun': False, 'value': 100
                       'bullet_size': 'lg2',
                       'bullet_count': 1,
                       'walk': 'WALK',
+                      'brightness': 100,
                       'melee animation': 'PUNCH',
                       'grip': 'CP_SWORD_GRIP',
                       'image': 0,
@@ -1084,6 +1085,29 @@ WEAPONS['long battle axe'] = {'type': 'axe','gun': False, 'value': 220,
                       'armor': 0,
                       'materials': {'steel ingot': 3, 'iron ingot': 2, 'leather strips': 2}, 'upgrade': {'steel ingot': 2, 'leather strips': 1},
                       'weight': 9}
+
+WEAPONS['lantern'] = {'type': 'mace','gun': False, 'value': 125,
+                      'bullet_speed': 0,
+                      'bullet_lifetime': 0,
+                      'magazine size': 0,
+                      'reload speed': 1,
+                      'rate': 300,
+                      'auto': False,
+                      'kickback': 0,
+                      'knockback': 30,
+                      'spread': 0,
+                      'damage': 0,
+                      'melee damage': 1,
+                      'bullet_size': 'sm1',
+                      'bullet_count': 0,
+                      'walk': 'WALK',
+                      'melee animation': 'SWIPE',
+                      'grip': 'CP_SWORD_GRIP',
+                      'image': 43,
+                      'offset': vec(0, 0),
+                      'armor': 0,
+                      'materials': {'steel ingot': 2, 'whale oil': 1}, 'brightness': 400,
+                      'weight': 1}
 
 UPGRADED_WEAPONS = {}
 

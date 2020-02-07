@@ -432,6 +432,11 @@ class Character_Design_Menu(Menu):
             self.character.body.update_animations()
         self.character.pre_reload()
         self.character.stats = RACE[self.character.race]['start_stats'] # Gives player different stats based on selected race.
+        if self.character.race == 'mechanima':
+            self.character.brightness = 400
+            self.game.lights.add(self.character)
+            self.character.light_mask = pg.transform.scale(self.game.light_mask, (self.character.brightness, self.character.brightness))
+            self.character.light_mask_rect = self.character.light_mask.get_rect()
 
 class Npc_Design_Menu(Character_Design_Menu):
     def __init__(self, game, character = 'player'):
@@ -793,8 +798,28 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                         self.printable_stat_list.append(item_stats)
                         i += 1
 
-
     def update_external_variables(self):
+        add_light = False
+        if self.character.equipped['weapons2'] in LIGHTS_LIST:
+            self.character.lamp_hand = 'weapons2'
+            self.character.brightness = WEAPONS[self.character.equipped['weapons2']]['brightness']
+            add_light = True
+        elif self.character.equipped['weapons'] in LIGHTS_LIST:
+            self.character.lamp_hand = 'weapons'
+            self.character.brightness = WEAPONS[self.character.equipped['weapons']]['brightness']
+            add_light = True
+        if add_light:
+            self.game.lights.add(self.character)
+            self.character.light_mask = pg.transform.scale(self.character.game.light_mask, (self.character.brightness, self.character.brightness))
+            self.character.light_mask_rect = self.character.light_mask.get_rect()
+            if self.character.lamp_hand == 'weapons2':
+                self.character.light_mask_rect.center = self.character.body.melee2_rect.center
+            else:
+                self.character.light_mask_rect.center = self.character.body.melee_rect.center
+        else:
+            if self.character.race != "mechanima":
+                if self.character in self.game.lights:
+                    self.game.remove(self.character)
         if 'Zhara Talisman' in self.game.player.inventory['items']: # Only lets you transform into a dragon if you have the Zhara Talisman
             self.game.player.transformable = True
         else:

@@ -376,8 +376,17 @@ MUZZLE_FLASHES = ['whitePuff15.png', 'whitePuff16.png', 'whitePuff17.png',
 FLASH_DURATION = 50
 DAMAGE_ALPHA = [i for i in range(0, 255, 55)]
 NIGHT_COLOR = (20, 20, 20)
-LIGHT_RADIUS = (500, 500)
-LIGHT_MASK = "light_350_soft.png"
+LIGHT_RADIUS = (400, 400)
+EXPLODE_LIGHT_RADIUS = (500, 500)
+FIRE_LIGHT_RADIUS = (650, 650)
+FIREBALL_LIGHT_RADIUS = (300, 300)
+LIGHT_MASK = "light_350_med2.png"
+SQUARE_LIGHT_MASK = 'light_square.png'
+
+# Day/Night
+DAY_LENGTH = 2 * 60 * 1000
+NIGHT_LENGTH = 1 * 60 * 1000
+NIGHTFALL_SPEED = 100 # The higher the slower. In ms.
 
 # Layers
 WALL_LAYER = 7

@@ -1,5 +1,8 @@
 from chests import *
 
+# This is a list of items and weapons that are light sources:
+LIGHTS_LIST = ['lantern', 'candle', 'candle burner', 'living water', 'enchanted elven dagger']
+
 # Items
 ITEMS = {}
 # First aid
@@ -49,8 +52,8 @@ ITEMS['empty barrel'] = {'image': 131, 'weight': 10, 'value': 100}
 ITEMS['empty mug'] = {'image': 147, 'weight': 0.4, 'value': 1}
 
 # Misc items
-ITEMS['candle burner'] = {'image': 61, 'weight': 1, 'value': 250}
-ITEMS['candle'] = {'image': 62, 'weight': 0.3, 'value': 25}
+ITEMS['candle burner'] = {'image': 61, 'weight': 1, 'value': 250, 'brightness': 100, 'materials': {'candle':1, 'steel pipe': 1, 'steel wire': 1}, 'forgeable': True}
+ITEMS['candle'] = {'image': 62, 'weight': 0.3, 'value': 25, 'brightness': 100}
 ITEMS['chop sticks'] = {'image': 106, 'weight': 0.1, 'value': 1}
 
 ITEMS['airship fuel'] = {'alchemy': True, 'image': 130, 'weight': 25, 'materials': {'empty barrel':1, 'whale oil':3, 'distilled alcohol':5}, 'value': 2000}
@@ -136,7 +139,7 @@ ITEMS['potassium nitrate crystals'] = {'image': 75, 'weight': 0.3, 'value': 54, 
 ITEMS['squid tentacle'] = {'image': 101, 'weight': 2, 'value': 28}
 ITEMS['squid eye'] = {'image': 102, 'weight': 0.5, 'value': 65}
 ITEMS['squid ink'] = {'health': 5, 'image': 10, 'weight': 0.5, 'value': 25}
-ITEMS['living water'] = {'health': 15, 'image': 7, 'weight': 0.2, 'value': 50}
+ITEMS['living water'] = {'health': 15, 'image': 7, 'weight': 0.2, 'value': 50, 'brightness': 30}
 ITEMS['bottled water'] = {'health': 5, 'image': 7, 'weight': 0.2, 'value': 2}
 ITEMS['distilled alcohol'] = {'health': -20, 'image': 6, 'weight': 0.2, 'value': 100}
 ITEMS['whale oil'] = {'image': 4, 'weight': 0.2, 'value': 100}
