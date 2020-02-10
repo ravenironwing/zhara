@@ -5,6 +5,7 @@ import gc
 import pygame as pg
 import sys
 import pickle
+import pygame.surfarray as surfarray
 from random import choice, random, choices
 from os import path
 from settings import *
@@ -16,6 +17,7 @@ from tilemap import *
 import datetime
 from time import sleep
 import math
+
 
 from pygame.locals import *
 from pytmx.util_pygame import load_pygame
@@ -567,6 +569,10 @@ class Game:
         for i, magic in enumerate(MAGIC_IMAGES):
             img = pg.image.load(path.join(magic_folder, MAGIC_IMAGES[i])).convert_alpha()
             self.magic_images.append(img)
+        self.light_mask_images = []
+        for i, val in enumerate(LIGHT_MASK_IMAGES):
+            img = pg.image.load(path.join(light_masks_folder, LIGHT_MASK_IMAGES[i])).convert_alpha()
+            self.light_mask_images.append(img)
 
         self.magic_animation_images = []
         for image in self.magic_images:
@@ -665,8 +671,6 @@ class Game:
         # lighting effect
         self.fog = pg.Surface((self.screen_width, self.screen_height))
         self.fog.fill(NIGHT_COLOR)
-        self.light_mask = pg.image.load(path.join(img_folder, LIGHT_MASK)).convert_alpha()
-        self.square_light_mask = pg.image.load(path.join(img_folder, SQUARE_LIGHT_MASK)).convert_alpha()
         # Sound loading
         self.effects_sounds = {}
         for key in EFFECTS_SOUNDS:
@@ -1141,6 +1145,11 @@ class Game:
         for sprite in self.all_static_sprites:
             sprite.kill()
             del sprite
+
+        for sprite in self.static_lights:
+            sprite.kill()
+            del sprite
+
         del self.map
         gc.collect()  # Forces garbage collection. Without this the game will quickly run out of memory.
 
@@ -1172,7 +1181,7 @@ class Game:
             self.garbage_collect()
         self.map = TiledMap(self, path.join(map_folder, map))
         self.group._map_layer = self.map.map_layer # Sets the map as the Pyscroll group base layer.
-        self.camera = Camera(self.map.width, self.map.height)
+        self.camera = Camera(self, self.map.width, self.map.height)
 
         for i in range(0, 10): # Creates random targets for Npcs
             Random_Target(self)
@@ -1336,6 +1345,21 @@ class Game:
                 if tile_object.name == 'light':
                     LightSource(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
+                if 'lightsource' in tile_object.name:
+                    _, kind, rot = tile_object.name.split('_')
+                    kind = int(kind)
+                    if rot == 'R':
+                        rot = 0
+                    elif rot == 'U':
+                        rot = 90
+                    elif rot == 'L':
+                        rot = 180
+                    elif rot == 'D':
+                        rot = 270
+                    else:
+                        rot = int(rot)
+                    LightSource(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height, kind, rot)
                 if tile_object.name == 'inside':
                     Inside(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
@@ -1425,18 +1449,20 @@ class Game:
                     pass
 
         # This section creates walls based off of which tile is used in the map rather than having to create wall objects
-        if self.map_type in ['ant_tunnel', 'cave', 'mine']:
-            wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 0) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
-            for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
-                Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
+        if self.map_type != None:
+            for type in UNDERWORLD:
+                if type in self.map_type:
+                    wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 0) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
+                    for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
+                        Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
 
-            # This section generates ore blocks to time in all the spaces with the tile specified in the position (1, 0).
-            if not self.sprite_data.visited:
-                block_tile = self.map.tmxdata.get_tile_gid(1, 0, 0)
-                for location in self.map.tmxdata.get_tile_locations_by_gid(block_tile):
-                    block_type = choice(choices(BLOCK_LIST, BLOCK_PROB, k = 10))
-                    center = vec(location[0] * self.map.tile_size + self.map.tile_size/2, location[1] * self.map.tile_size + self.map.tile_size/2)
-                    Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
+                    # This section generates ore blocks to time in all the spaces with the tile specified in the position (1, 0).
+                    if not self.sprite_data.visited:
+                        block_tile = self.map.tmxdata.get_tile_gid(1, 0, 0)
+                        for location in self.map.tmxdata.get_tile_locations_by_gid(block_tile):
+                            block_type = choice(choices(BLOCK_LIST, BLOCK_PROB, k = 10))
+                            center = vec(location[0] * self.map.tile_size + self.map.tile_size/2, location[1] * self.map.tile_size + self.map.tile_size/2)
+                            Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
 
         # Generates random drop items
         if self.map_type in ['mountain', 'forest', 'grassland', 'desert', 'beach']:
@@ -1609,13 +1635,13 @@ class Game:
         if now - self.last_darkness_change > NIGHTFALL_SPEED:
             self.darkness += 1
             self.last_darkness_change = now
-            if self.darkness > 235:
-                self.darkness = 235
+            if self.darkness > MAX_DARKNESS:
+                self.darkness = MAX_DARKNESS
                 self.day_start_time = now
                 self.night = True
                 self.nightfall = False
-            color_val = 255 - self.darkness
-            self.dark_color = (color_val, color_val, color_val)
+            #color_val = 255 - self.darkness
+            self.dark_color = (self.darkness, self.darkness, self.darkness)
 
     def day_transition(self):
         now = pg.time.get_ticks()
@@ -1626,8 +1652,8 @@ class Game:
                 self.day_start_time = now
                 self.night = False
                 self.sunrise = False
-            color_val = 255 - self.darkness
-            self.dark_color = (color_val, color_val, color_val)
+            #color_val = 255 - self.darkness
+            self.dark_color = (self.darkness, self.darkness, self.darkness)
 
     def update(self):
         # update portion of the game loop
@@ -1949,7 +1975,7 @@ class Game:
                         if self.player.stats['weight'] > self.player.stats['max weight']:
                             self.player.inventory[hit.item_type].remove(hit.item)
                             self.player.calculate_weight()
-                            self.message_text = "You are carrying too much weight."
+                            self.message = "You are carrying too much weight."
                         else:
                             self.message_text = False
                             hit.kill()
@@ -2363,9 +2389,12 @@ class Game:
                                 mob.gets_hit(0, 20, 0)
                             mob.vel = vec(0, 0)
 
-    def render_lighting(self):
+    def render_lighting(self, underworld = False):
         # draw the light mask (gradient) onto fog image
-        self.fog.fill(self.dark_color)
+        if self.underworld:
+            self.fog.fill((180, 180, 180))
+        else:
+            self.fog.fill(self.dark_color)
         if self.player_inside:
             for light in self.lights:
                 if self.on_screen(light):
@@ -2377,7 +2406,7 @@ class Game:
                     if not pg.sprite.spritecollide(light, self.inside_on_screen, False):
                         lightrect = self.camera.apply_rect(light.light_mask_rect)
                         self.fog.blit(light.light_mask, lightrect)
-        self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
+        self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_SUB)
 
     def rot_center(self, image, angle):
         """rotate an image while keeping its center and size"""
@@ -2463,13 +2492,14 @@ class Game:
         #for sprite in self.flying_vehicles:
         #    self.screen.blit(sprite.image, self.camera.apply(sprite))
 
-        if True in [self.night, self.sunrise, self.nightfall]:
+        if self.underworld:
+            self.render_lighting(True)
+        elif True in [self.night, self.sunrise, self.nightfall]:
             self.render_lighting()
         if self.hud_map:
             self.draw_minimap()
         if self.hud_overmap:
             self.draw_overmap()
-
 
         # HUD functions
         now = pg.time.get_ticks() # Only updates HUD info every 10 cycles to help reduce lag.
@@ -2619,6 +2649,8 @@ class Game:
                     self.in_station_menu = True
                     self.in_menu = True
                     self.station_menu = Work_Station_Menu(self, 'crafting')
+                if event.key == pg.K_n:
+                    self.player.light_on = not self.player.light_on
                 if event.key == pg.K_u:
                     if self.player.in_vehicle:
                         if self.player.vehicle in self.flying_vehicles:

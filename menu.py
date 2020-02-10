@@ -435,7 +435,8 @@ class Character_Design_Menu(Menu):
         if self.character.race == 'mechanima':
             self.character.brightness = 400
             self.game.lights.add(self.character)
-            self.character.light_mask = pg.transform.scale(self.game.light_mask, (self.character.brightness, self.character.brightness))
+            self.character.light_mask_orig = pg.transform.scale(self.game.light_mask_images[2], (self.character.brightness, self.character.brightness))
+            self.character.light_mask = self.character.light_mask_orig.copy()
             self.character.light_mask_rect = self.character.light_mask.get_rect()
 
 class Npc_Design_Menu(Character_Design_Menu):
@@ -800,17 +801,25 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
 
     def update_external_variables(self):
         add_light = False
+        light_reach = 1
         if self.character.equipped['weapons2'] in LIGHTS_LIST:
             self.character.lamp_hand = 'weapons2'
             self.character.brightness = WEAPONS[self.character.equipped['weapons2']]['brightness']
+            self.character.mask_kind = WEAPONS[self.character.equipped['weapons2']]['light mask']
+            if 'light reach' in WEAPONS[self.character.equipped['weapons2']]:
+                light_reach = WEAPONS[self.character.equipped['weapons2']]['light reach']
             add_light = True
         elif self.character.equipped['weapons'] in LIGHTS_LIST:
             self.character.lamp_hand = 'weapons'
             self.character.brightness = WEAPONS[self.character.equipped['weapons']]['brightness']
+            self.character.mask_kind = WEAPONS[self.character.equipped['weapons']]['light mask']
+            if 'light reach' in WEAPONS[self.character.equipped['weapons']]:
+                light_reach = WEAPONS[self.character.equipped['weapons']]['light reach']
             add_light = True
         if add_light:
             self.game.lights.add(self.character)
-            self.character.light_mask = pg.transform.scale(self.character.game.light_mask, (self.character.brightness, self.character.brightness))
+            self.character.light_mask_orig = pg.transform.scale(self.game.light_mask_images[self.character.mask_kind], (int(self.character.brightness * light_reach), self.character.brightness))
+            self.character.light_mask = self.character.light_mask_orig.copy()
             self.character.light_mask_rect = self.character.light_mask.get_rect()
             if self.character.lamp_hand == 'weapons2':
                 self.character.light_mask_rect.center = self.character.body.melee2_rect.center
@@ -819,7 +828,7 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         else:
             if self.character.race != "mechanima":
                 if self.character in self.game.lights:
-                    self.game.remove(self.character)
+                    self.game.lights.remove(self.character)
         if 'Zhara Talisman' in self.game.player.inventory['items']: # Only lets you transform into a dragon if you have the Zhara Talisman
             self.game.player.transformable = True
         else:

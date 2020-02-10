@@ -187,12 +187,13 @@ class MiniMap:
 
 
 class Camera():
-    def __init__(self, width, height):
+    def __init__(self, game, width, height):
         self.camera = self.rect = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
         self.x = 0
         self.y = 0
+        self.game = game
 
     def apply(self, entity):
         return entity.rect.move(self.camera.topleft)
@@ -201,13 +202,13 @@ class Camera():
         return rect.move(self.camera.topleft)
 
     def update(self, target): #Centers camera on player. target = player
-        self.x = -target.rect.centerx + int(WIDTH / 2)
-        self.y = -target.rect.centery + int(HEIGHT / 2)
+        self.x = -target.rect.centerx + int(self.game.screen_width / 2)
+        self.y = -target.rect.centery + int(self.game.screen_height / 2)
 
         # limit scrolling to map size
         self.x = min(0, self.x)  # left
         self.y = min(0, self.y)  # top
-        self.x = max(-(self.width - WIDTH), self.x)  # right
-        self.y = max(-(self.height - HEIGHT), self.y)  # bottom
+        self.x = max(-(self.width - self.game.screen_width), self.x)  # right
+        self.y = max(-(self.height - self.game.screen_height), self.y)  # bottom
 
         self.camera = pg.Rect(self.x, self.y, self.width, self.height)

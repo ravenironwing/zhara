@@ -192,11 +192,11 @@ PEOPLE['shaktele blacksmith'] = {'name': 'Hank the Blacksmith', 'protected': Tru
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer', 'lantern'], 'hats': [None], 'hair': ['dreadlocks'], 'tops': ['tshirt M'], 'bottoms': ['leather leggings F'], 'shoes': ['brown boots'], 'gloves': ['leather gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
-PEOPLE['shakteleguard'] = {'name': 'Guard', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (190, 200), 'run speed': 260, 'detect radius': 450, 'avoid radius': 130, 'aggression': 'awp', 'armed': True, 'dual wield': False,
+PEOPLE['shakteleguard'] = {'name': 'Guard', 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (190, 200), 'run speed': 260, 'detect radius': 500, 'avoid radius': 130, 'aggression': 'awp', 'armed': True, 'dual wield': False,
     'collide': ['vehicles', 'walls', 'water'],
     'gender': 'random', 'race': 'shaktele',
     'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random SHAKTELE_SKIN_TONES'}, 'dialogue': 'random GUARD_DLG', 'store': None,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['assault rifle'], 'hats': ['tactical helmet'], 'hair': ['random'], 'tops': ['shaktele guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['black combat'], 'gloves': ['leather gauntlets'], 'gold': 250, 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['assault rifle', 'lantern'], 'hats': ['tactical helmet'], 'hair': ['random'], 'tops': ['shaktele guard armor'], 'bottoms': ['random GUARD_'], 'shoes': ['black combat'], 'gloves': ['leather gauntlets'], 'gold': 250, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['kevin'] = {'name': 'Kevin', 'dead': False, 'protected': True, 'health': 100, 'touch damage': False, 'damage': 15, 'knockback': 10, 'walk speed': (190, 200), 'run speed': 260, 'detect radius': 450, 'avoid radius': 130, 'aggression': 'awp', 'armed': True, 'dual wield': False,

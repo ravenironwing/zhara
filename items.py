@@ -1,8 +1,5 @@
 from chests import *
 
-# This is a list of items and weapons that are light sources:
-LIGHTS_LIST = ['lantern', 'candle', 'candle burner', 'living water', 'enchanted elven dagger']
-
 # Items
 ITEMS = {}
 # First aid
@@ -52,8 +49,8 @@ ITEMS['empty barrel'] = {'image': 131, 'weight': 10, 'value': 100}
 ITEMS['empty mug'] = {'image': 147, 'weight': 0.4, 'value': 1}
 
 # Misc items
-ITEMS['candle burner'] = {'image': 61, 'weight': 1, 'value': 250, 'brightness': 100, 'materials': {'candle':1, 'steel pipe': 1, 'steel wire': 1}, 'forgeable': True}
-ITEMS['candle'] = {'image': 62, 'weight': 0.3, 'value': 25, 'brightness': 100}
+ITEMS['candle burner'] = {'image': 61, 'weight': 1, 'value': 250, 'brightness': 100, 'light mask': 1, 'materials': {'candle':1, 'steel pipe': 1, 'steel wire': 1}, 'forgeable': True}
+ITEMS['candle'] = {'image': 62, 'weight': 0.3, 'value': 25, 'brightness': 100, 'light mask': 1}
 ITEMS['chop sticks'] = {'image': 106, 'weight': 0.1, 'value': 1}
 
 ITEMS['airship fuel'] = {'alchemy': True, 'image': 130, 'weight': 25, 'materials': {'empty barrel':1, 'whale oil':3, 'distilled alcohol':5}, 'value': 2000}

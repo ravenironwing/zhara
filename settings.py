@@ -89,6 +89,7 @@ corpse_folder = path.join(img_folder, 'corpses')
 loading_screen_folder = path.join(img_folder, 'loading_screens')
 vehicles_folder = path.join(img_folder, 'vehicles')
 color_swatches_folder = path.join(img_folder, 'color_swatches')
+light_masks_folder = path.join(img_folder, 'light_masks')
 
 # Font settings:
 HEADING_FONT = path.join(fonts_folder, 'UncialAntiqua-Regular.ttf')
@@ -347,6 +348,12 @@ for i in range(0, number_of_files):
     filename = 'swatch{}.png'.format(i)
     COLOR_SWATCH_IMAGES.append(filename)
 
+LIGHT_MASK_IMAGES = []
+number_of_files = len([name for name in os.listdir(light_masks_folder) if os.path.isfile(os.path.join(light_masks_folder, name))])
+for i in range(0, number_of_files):
+    filename = 'light{}.png'.format(i)
+    LIGHT_MASK_IMAGES.append(filename)
+
 # Bullet Images
 BULLET_IMG = path.join(img_folder, 'bullet.png')
 BLUELASER_IMG = path.join(img_folder, 'laserBlue.png')
@@ -378,14 +385,24 @@ DAMAGE_ALPHA = [i for i in range(0, 255, 55)]
 NIGHT_COLOR = (20, 20, 20)
 LIGHT_RADIUS = (400, 400)
 EXPLODE_LIGHT_RADIUS = (500, 500)
-FIRE_LIGHT_RADIUS = (650, 650)
+FIRE_LIGHT_RADIUS = (800, 800)
 FIREBALL_LIGHT_RADIUS = (300, 300)
-LIGHT_MASK = "light_350_med2.png"
+LIGHT_MASK = "light_350_med.png"
 SQUARE_LIGHT_MASK = 'light_square.png'
+MAX_DARKNESS = 180
+DIRECTIONAL_LIGHTS = [3, 5]
+# This is a list of items and weapons that are light sources:
+LIGHTS_LIST = []
+for x in ITEMS:
+    if 'brightness' in ITEMS[x]:
+        LIGHTS_LIST.append(x)
+for x in WEAPONS:
+    if 'brightness' in WEAPONS[x]:
+        LIGHTS_LIST.append(x)
 
 # Day/Night
-DAY_LENGTH = 2 * 60 * 1000
-NIGHT_LENGTH = 1 * 60 * 1000
+DAY_LENGTH = 0.1 * 60 * 1000
+NIGHT_LENGTH = 10 * 60 * 1000
 NIGHTFALL_SPEED = 100 # The higher the slower. In ms.
 
 # Layers

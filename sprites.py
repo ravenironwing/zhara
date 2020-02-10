@@ -264,13 +264,18 @@ def lamp_check(character):
     if character.game.night:
         # checks for lamps
         add_light = False
+        light_reach = 1
         for item in character.inventory['weapons']:
             if item in LIGHTS_LIST:
                 character.equipped['weapons2'] = item
                 character.lamp_hand = 'weapons2'
                 character.brightness = WEAPONS[item]['brightness']
+                character.mask_kind = WEAPONS[item]['light mask']
+                if 'light reach' in WEAPONS[item]:
+                    light_reach = WEAPONS[item]['light reach']
                 character.game.lights.add(character)
-                character.light_mask = pg.transform.scale(character.game.light_mask, (character.brightness, character.brightness))
+                character.light_mask_orig = pg.transform.scale(character.game.light_mask_images[character.mask_kind], (int(character.brightness * light_reach), character.brightness))
+                character.light_mask = character.light_mask_orig.copy()
                 character.light_mask_rect = character.light_mask.get_rect()
                 character.light_mask_rect.center = character.body.melee2_rect.center
                 character.body.update_animations()
@@ -370,7 +375,7 @@ class Turret(pg.sprite.Sprite):
             self.vel = self.mother.vel
             self.rot_rel = (self.rot_rel + self.rot_speed * self.game.dt) % 360
             self.rot = (self.game.player.rot + self.rot_rel) % 360
-            self.image = pg.transform.rotate(self.game.player_tur, self.rot)
+            #self.image = pg.transform.rotate(self.game.player_tur, self.rot)
             new_image = pg.transform.rotate(self.image_orig, self.rot)
             old_center = self.rect.center
             self.image = new_image
@@ -978,7 +983,10 @@ class Player(pg.sprite.Sprite):
         self.hit_rect = PLAYER_HIT_RECT
         self.hit_rect.center = self.rect.center
         self.brightness = 1
-        self.light_mask = pg.transform.scale(self.game.light_mask, (self.brightness, self.brightness))
+        self.mask_kind = 0
+        self.light_on = False
+        self.light_mask_orig = pg.transform.scale(self.game.light_mask_images[0], (self.brightness, self.brightness))
+        self.light_mask = self.light_mask_orig.copy()
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.rect.center
         self.lamp_hand = 'weapons'
@@ -2240,12 +2248,22 @@ class Player(pg.sprite.Sprite):
                 collide_with_walls(self, self.game.walls_on_screen, 'y')
                 collide_with_elevations(self, self.game.elevations_on_screen, 'y')
                 self.rect.center = self.hit_rect.center
-        if self.race == 'mechanima':
-            self.light_mask_rect.center = self.rect.center
-        elif self.lamp_hand == 'weapons':
-            self.light_mask_rect.center = self.body.melee_rect.center
+        if self.light_on:
+            if self in self.game.lights:
+                if self.race == 'mechanima':
+                    self.light_mask_rect.center = self.rect.center
+                elif self.lamp_hand == 'weapons':
+                    self.light_mask_rect.center = self.body.melee_rect.center
+                else:
+                    self.light_mask_rect.center = self.body.melee2_rect.center
+                if self.mask_kind in DIRECTIONAL_LIGHTS:
+                    new_image = pg.transform.rotate(self.light_mask_orig, self.rot)
+                    old_center = self.light_mask_rect.center
+                    self.light_mask = new_image
+                    self.light_mask_rect = self.light_mask.get_rect()
+                    self.light_mask_rect.center = old_center
         else:
-            self.light_mask_rect.center = self.body.melee2_rect.center
+            self.light_mask_rect.center = (-2000, -2000) # Moves light off screen when off
         self.check_map_pos()
 
     def check_map_pos(self):
@@ -2461,7 +2479,9 @@ class Npc(pg.sprite.Sprite):
         self.hit_rect = MOB_HIT_RECT.copy()
         self.hit_rect.center = self.rect.center
         self.brightness = 1
-        self.light_mask = pg.transform.scale(self.game.light_mask, (self.brightness, self.brightness))
+        self.mask_kind = 0
+        self.light_mask_orig = pg.transform.scale(self.game.light_mask_images[0], (self.brightness, self.brightness))
+        self.light_mask = self.light_mask_orig.copy()
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.rect.center
         self.lamp_hand = 'weapons'
@@ -2622,12 +2642,12 @@ class Npc(pg.sprite.Sprite):
         if self.race == 'mechanima':
             self.brightness = 400
             self.game.lights.add(self)
-            self.light_mask = pg.transform.scale(self.game.light_mask, (self.brightness, self.brightness))
+            self.light_mask = pg.transform.scale(self.game.light_mask_images[2], (self.brightness, self.brightness))
             self.light_mask_rect = self.light_mask.get_rect()
         elif self.race == 'mech_suit':
             self.brightness = 550
             self.game.lights.add(self)
-            self.light_mask = pg.transform.scale(self.game.light_mask, (self.brightness, self.brightness))
+            self.light_mask = pg.transform.scale(self.game.light_mask_images[2], (self.brightness, self.brightness))
             self.light_mask_rect = self.light_mask.get_rect()
 
     def update_collide_list(self):
@@ -2726,7 +2746,7 @@ class Npc(pg.sprite.Sprite):
                 else:
                     self.detect_radius = self.game.map.height / 2
 
-        if self.aggression == 'awd' or self.guard:
+        if (self.aggression == 'awd') or self.guard:
             for mob in self.game.moving_targets_on_screen: # Only looks at mobs that are on screen
                 if mob != self:
                     if mob.aggression != 'awd' or mob in self.game.animals_on_screen:
@@ -2748,18 +2768,17 @@ class Npc(pg.sprite.Sprite):
                                         else:
                                             self.target = self.game.player
 
-                    else:
-                        if self.guard:
-                            if mob.kind != self.kind:
-                                dist = self.pos - mob.pos
-                                dist = dist.length()
-                                if 0 < dist < self.detect_radius:
-                                    if last_dist > dist: # Finds closest mob
-                                        self.target = mob
-                                        self.detect_radius = self.default_detect_radius
-                                        self.approach_vector = vec(1, 0)
-                                        self.offensive = True
-                                        last_dist = dist
+                    elif self.guard:
+                        if mob.kind != self.kind:
+                            dist = self.pos - mob.pos
+                            dist = dist.length()
+                            if 0 < dist < self.detect_radius:
+                                if last_dist > dist: # Finds closest mob
+                                    self.target = mob
+                                    self.detect_radius = self.default_detect_radius
+                                    self.approach_vector = vec(1, 0)
+                                    self.offensive = True
+                                    last_dist = dist
 
     def check_moving(self):
         # This checks to see if the NPC has moved since the last check.
@@ -2901,12 +2920,20 @@ class Npc(pg.sprite.Sprite):
                             self.rot = target_dist.angle_to(self.approach_vector)
 
                         self.rect.center = self.pos
-                        if self.race in ['mechanima', 'mech_suit']:
-                            self.light_mask_rect.center = self.rect.center
-                        elif self.lamp_hand == 'weapons':
-                            self.light_mask_rect.center = self.body.melee_rect.center
-                        else:
-                            self.light_mask_rect.center = self.body.melee2_rect.center
+                        if self in self.game.lights:
+                            if self.race in ['mechanima', 'mech_suit']:
+                                self.light_mask_rect.center = self.rect.center
+                            elif self.lamp_hand == 'weapons':
+                                self.light_mask_rect.center = self.body.melee_rect.center
+                            else:
+                                self.light_mask_rect.center = self.body.melee2_rect.center
+                            if self.mask_kind in DIRECTIONAL_LIGHTS:
+                                new_image = pg.transform.rotate(self.light_mask_orig, self.rot)
+                                old_center = self.light_mask_rect.center
+                                self.light_mask = new_image
+                                self.light_mask_rect = self.light_mask.get_rect()
+                                self.light_mask_rect.center = old_center
+
                         self.acc = vec(1, 0).rotate(-self.rot)
                         self.avoid_mobs()
                         try: #prevents scaling a vector of 0 length
@@ -4032,7 +4059,7 @@ class Bullet(pg.sprite.Sprite):
 class MuzzleFlash(pg.sprite.Sprite):
     def __init__(self, game, pos):
         self._layer = EFFECTS_LAYER
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.lights
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.game.group.add(self)
@@ -4042,6 +4069,10 @@ class MuzzleFlash(pg.sprite.Sprite):
         self.pos = pos
         self.rect.center = pos
         self.spawn_time = pg.time.get_ticks()
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[0], (150, 150))
+        self.light_mask_rect = self.light_mask.get_rect()
+        self.light_mask_rect.center = self.rect.center
+
 
     def update(self):
         if pg.time.get_ticks() - self.spawn_time > FLASH_DURATION:
@@ -4057,12 +4088,17 @@ class Dropped_Item(pg.sprite.Sprite):
         if 'fire pit' in item:
             self.groups = game.all_sprites, game.dropped_items, game.detectables, game.firepits
         elif item in LIGHTS_LIST:
-            self.groups = game.all_sprites, game.dropped_items, game.detectables, game.lights
-            self.light = True
-            if item in WEAPONS:
-                self.brightness = WEAPONS[item]['brightness']
+            if 'flashlight' not in item:
+                self.groups = game.all_sprites, game.dropped_items, game.detectables, game.lights
+                self.light = True
+                if item in WEAPONS:
+                    self.brightness = WEAPONS[item]['brightness']
+                    self.mask_type = WEAPONS[item]['light mask']
+                else:
+                    self.brightness = ITEMS[item]['brightness']
+                    self.mask_type = ITEMS[item]['light mask']
             else:
-                self.brightness = ITEMS[item]['brightness']
+                self.groups = game.all_sprites, game.dropped_items, game.detectables
         else:
             self.groups = game.all_sprites, game.dropped_items, game.detectables
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -4091,7 +4127,8 @@ class Dropped_Item(pg.sprite.Sprite):
             self.pos = self.pos + (randrange(-50, 50), randrange(-50, 50))
         self.rect.center = self.hit_rect.center = self.pos
         if self.brightness > 0:
-            self.light_mask = pg.transform.scale(self.game.light_mask, (self.brightness, self.brightness))
+            self.light_mask = pg.transform.scale(self.game.light_mask_images[self.mask_type], (self.brightness, self.brightness))
+            self.light_mask = pg.transform.rotate(self.light_mask, self.rot)
             self.light_mask_rect = self.light_mask.get_rect()
             self.light_mask_rect.center = self.rect.center
 
@@ -4120,19 +4157,24 @@ class Dropped_Item(pg.sprite.Sprite):
         pass
 
 class LightSource(pg.sprite.Sprite):
-    def __init__(self, game, x, y, w, h):
-        self.groups = game.lights
+    def __init__(self, game, x, y, w, h, kind = 1, rot = 0):
+        self.groups = game.lights, game.all_static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        self.kind = kind
+        self.rot = rot
         self.rect = pg.Rect(x, y, w, h)
         self.hit_rect = self.rect
         self.x = x
         self.y = y
         self.rect.x = x
         self.rect.y = y
-        self.light_mask = pg.transform.scale(self.game.light_mask, (int(w), int(h)))
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[self.kind], (int(w * 7), int(h * 7)))
+        if self.rot != 0:
+            self.light_mask = pg.transform.rotate(self.light_mask, self.rot)
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.rect.center
+
 
 class Stationary_Animated(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
     def __init__(self, game, obj_center, kind, lifetime = None, offset = False, sky = False):
@@ -4171,7 +4213,7 @@ class Stationary_Animated(pg.sprite.Sprite): # Used for fires and other stationa
         self.rect.center = self.center
         self.hit_rect = self.rect
         self.hit_rect.center = self.rect.center
-        self.light_mask = pg.transform.scale(self.game.light_mask, self.light_radius)
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[2], self.light_radius)
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.rect.center
         self.frame = 0
@@ -4407,7 +4449,7 @@ class Explosion(pg.sprite.Sprite):
         self.image = self.image_list[0]
         self.rect = self.image.get_rect()
         self.hit_rect = pg.Rect(0, 0, int(self.scale/2), int(self.scale/2))
-        self.light_mask = pg.transform.scale(self.game.light_mask, (self.scale + 100, self.scale + 100))
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[2], (self.scale + 100, self.scale + 100))
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.rect.center
         if self.target == None:
@@ -4477,7 +4519,7 @@ class Fireball(pg.sprite.Sprite):
         self.hit_rect = FIREBALL_HIT_RECT.copy()
         self.offset = vec(44, 0).rotate(-self.rot)
         self.hit_rect.center = vec(pos) + self.offset # A separate hitbox is used bexause the fireball is offset from the center of the image
-        self.light_mask = pg.transform.scale(self.game.light_mask, FIREBALL_LIGHT_RADIUS)
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[1], FIREBALL_LIGHT_RADIUS)
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.hit_rect.center
         self.frame = 0
@@ -4975,7 +5017,7 @@ class Lava(pg.sprite.Sprite):
         self.damage = 10
         mask_width = int(w * 9/5) + 256
         mask_height = int(h * 9/5) + 256
-        self.light_mask = pg.transform.scale(self.game.square_light_mask, (mask_width, mask_height))
+        self.light_mask = pg.transform.scale(self.game.square_light_mask_images[4], (mask_width, mask_height))
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.rect.center
 
