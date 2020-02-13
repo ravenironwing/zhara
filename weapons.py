@@ -6,7 +6,7 @@ ENCHANTED_BULLETS = ['2', '3', '5', '6', '7', '8', '9', '12']
 ROB_HEALTH_BULLETS = ['12']
 FIRE_BULLETS = ['3', '5', '6', '9']
 SHOCK_BULLETS = ['2', '7', '8', '9']
-EXPLOSIVE_BULLETS = ['4', '5', '8', '10']
+EXPLOSIVE_BULLETS = ['4', '5', '8', '10', '0']
 
 # Weapon settings
 WEAPON_SOUNDS = {'pistol': ['pistol.wav'], 'laser': ['laser.wav'], 'grenades': ['shotgun.wav'], 'pickaxe': ['mace_swipe.wav'], 'axe': ['mace_swipe.wav'],
@@ -51,7 +51,7 @@ WEAPONS['tank turret'] = {'type': 'turret',
                      'knockback': 25,
                      'spread': 1,
                      'damage': 200,
-                     'bullet_size': 'lg1',
+                     'bullet_size': 'lg0',
                      'bullet_count': 1,
                      'grip': 'CP_PISTOL0',
                      'melee animation': 'WALK',

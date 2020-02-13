@@ -1,7 +1,6 @@
 import pygame as pg
 from random import uniform, choice, randint, random, randrange
 from settings import *
-#from tilemap import collide_hit_rect
 from npcs import *
 from os import path
 import copy
@@ -25,13 +24,15 @@ def collide(sprite):
     for item in sprite.collide_list:
             collide_with_walls(sprite, item, 'x')
     if not (sprite.immaterial or sprite.flying):
-        collide_with_elevations(sprite, sprite.game.elevations_on_screen, 'x')
+        collide_with_elevations(sprite, 'x')
+        collide_with_vehicles(sprite, 'x')
 
     sprite.hit_rect.centery = sprite.pos.y
     for item in sprite.collide_list:
             collide_with_walls(sprite, item, 'y')
     if not (sprite.immaterial or sprite.flying):
-        collide_with_elevations(sprite, sprite.game.elevations_on_screen, 'y')
+        collide_with_elevations(sprite, 'y')
+        collide_with_vehicles(sprite, 'y')
     sprite.rect.center = sprite.hit_rect.center
 
 def collide_hit_rect(one, two):
@@ -55,10 +56,30 @@ def collide_with_walls(sprite, group, dir):
             sprite.vel.y = 0
             sprite.hit_rect.centery = sprite.pos.y
 
-def collide_with_elevations(sprite, group, dir):
+def collide_with_vehicles(sprite, dir):
+    hits = pg.sprite.spritecollide(sprite, sprite.game.vehicles_on_screen, False, pg.sprite.collide_circle_ratio(0.95))
+    if hits:
+        if sprite in sprite.game.mobs_on_screen:
+            sprite.gets_hit(hits[0].damage, 0, hits[0].rot)
+        if dir == 'x':
+            if hits[0].rect.centerx > sprite.hit_rect.centerx:
+                sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
+            if hits[0].rect.centerx < sprite.hit_rect.centerx:
+                sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
+            sprite.vel.x = 0
+            sprite.hit_rect.centerx = sprite.pos.x
+        if dir == 'y':
+            if hits[0].rect.centery > sprite.hit_rect.centery:
+                sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
+            if hits[0].rect.centery < sprite.hit_rect.centery:
+                sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
+            sprite.vel.y = 0
+            sprite.hit_rect.centery = sprite.pos.y
+
+def collide_with_elevations(sprite, dir):
     xwall = False
     ywall = False
-    hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+    hits = pg.sprite.spritecollide(sprite, sprite.game.elevations_on_screen, False, collide_hit_rect)
     if hits:
         if len(hits) == 1:
             hit_level = hits[0]
@@ -230,7 +251,7 @@ def change_clothing(character, best = False, naked = False):
             character.equipped[item_type] = None
         elif not best:
             if item_type == 'weapons':
-                not_lamps = list(set(character.inventory[item_type]) - set(LIGHTS_LIST))
+                not_lamps = list(set(character.inventory[item_type]) - set(NON_GUN_LIGHTS))
                 if len(not_lamps) == 0:
                     not_lamps = [None]
                 character.equipped[item_type] = choice(not_lamps)
@@ -267,8 +288,12 @@ def lamp_check(character):
         light_reach = 1
         for item in character.inventory['weapons']:
             if item in LIGHTS_LIST:
-                character.equipped['weapons2'] = item
-                character.lamp_hand = 'weapons2'
+                if WEAPONS[item]['gun']:
+                    character.equipped['weapons'] = item
+                    character.lamp_hand = 'weapons'
+                else:
+                    character.equipped['weapons2'] = item
+                    character.lamp_hand = 'weapons2'
                 character.brightness = WEAPONS[item]['brightness']
                 character.mask_kind = WEAPONS[item]['light mask']
                 if 'light reach' in WEAPONS[item]:
@@ -277,7 +302,10 @@ def lamp_check(character):
                 character.light_mask_orig = pg.transform.scale(character.game.light_mask_images[character.mask_kind], (int(character.brightness * light_reach), character.brightness))
                 character.light_mask = character.light_mask_orig.copy()
                 character.light_mask_rect = character.light_mask.get_rect()
-                character.light_mask_rect.center = character.body.melee2_rect.center
+                if WEAPONS[item]['gun']:
+                    character.light_mask_rect.center = character.body.melee_rect.center
+                else:
+                    character.light_mask_rect.center = character.body.melee2_rect.center
                 character.body.update_animations()
                 add_light = True
                 break
@@ -335,6 +363,9 @@ class Turret(pg.sprite.Sprite):
         self.rect.center = self.mother.rect.center
         self.hit_rect = SMALL_HIT_RECT.copy()
         self.hit_rect.center = self.rect.center
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[2], (500, 500))
+        self.light_mask_rect = self.light_mask.get_rect()
+        self.light_mask_rect.center = self.rect.center
         self.rot = 0
         self.rot_rel = 0
         self.rot_speed = 0
@@ -342,17 +373,18 @@ class Turret(pg.sprite.Sprite):
         self.occupied = False
         self.equipped = 'tank turret'
         self.vel = vec(0, 0)
+        self.max_rot_speed = 20
+        self.direction = vec(1, 0)
 
-    def get_keys(self):
-        self.rot_speed = 0
-        if pg.mouse.get_pressed() in [(1, 0, 1), (1, 1, 1), (1, 0, 0), (1, 1, 0)]:
-            self.shoot()
-
-        keys = pg.key.get_pressed()
-        if keys[pg.K_z]:
-            self.rot_speed = PLAYER_ROT_SPEED / 2
-        if keys[pg.K_c]:
-            self.rot_speed = -PLAYER_ROT_SPEED / 2
+    def rotate_to(self, vec):
+        vector = vec
+        angle = fix_angle(vector.angle_to(self.direction))
+        if angle < -1:
+            self.rot_speed = -self.max_rot_speed * 10 * abs(angle) / 180
+        elif angle > 1:
+            self.rot_speed = self.max_rot_speed * 10 * abs(angle) / 180
+        else:
+            self.rot_speed = 0
 
     def shoot(self):
         now = pg.time.get_ticks()
@@ -371,11 +403,13 @@ class Turret(pg.sprite.Sprite):
 
     def update(self):
         if self.occupied == True:
-            self.get_keys()
-            self.vel = self.mother.vel
-            self.rot_rel = (self.rot_rel + self.rot_speed * self.game.dt) % 360
-            self.rot = (self.game.player.rot + self.rot_rel) % 360
-            #self.image = pg.transform.rotate(self.game.player_tur, self.rot)
+            if self.mother.driver == self.game.player:
+                self.rotate_to(self.game.player.mouse_direction)
+                if pg.mouse.get_pressed() in [(1, 0, 1), (1, 1, 1), (1, 0, 0), (1, 1, 0)]:
+                    self.shoot()
+            self.rect.center = self.mother.rect.center
+            self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+            self.direction = vec(1, 0).rotate(-self.rot)
             new_image = pg.transform.rotate(self.image_orig, self.rot)
             old_center = self.rect.center
             self.image = new_image
@@ -383,6 +417,7 @@ class Turret(pg.sprite.Sprite):
             self.rect.center = old_center
             self.rect.center = self.mother.rect.center
             self.hit_rect.center = self.rect.center
+            self.light_mask_rect.center = self.rect.center
         if not self.mother.alive():
             self.kill()
 
@@ -393,6 +428,7 @@ class Vehicle(pg.sprite.Sprite):
         self._layer = self.data['layer']
         self.mountable = self.data['mountable']
         self.veh_acc = self.data['acceleration']
+        self.rot_speed = self.data['rot speed']
         self.aggression = "vehicle"
         if 'fuel' in self.data.keys():
             self.fuel = self.data['fuel']
@@ -400,12 +436,16 @@ class Vehicle(pg.sprite.Sprite):
             self.fuel = None
         self.cat = self.data['cat']
         if self.cat in BOATS:
+            self.flying = False
             self.groups = game.all_sprites, game.vehicles, game.obstacles, game.walls, game.boats, game.all_vehicles
         elif self.cat in AMPHIBIOUS_VEHICLES:
+            self.flying = False
             self.groups = game.all_sprites, game.vehicles, game.obstacles, game.walls, game.amphibious_vehicles, game.all_vehicles
         elif self.cat in FLYING_VEHICLES:
             self.groups = game.all_sprites, game.flying_vehicles, game.all_vehicles
+            self.flying = True
         else:
+            self.flying = False
             self.groups = game.all_sprites, game.vehicles, game.obstacles, game.walls, game.land_vehicles, game.all_vehicles
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -420,15 +460,20 @@ class Vehicle(pg.sprite.Sprite):
         self.player_walk_anim = self.data['walk animation']
         self.player_rattack_anim = self.data['rattack animation']
         self.player_lattack_anim = self.data['lattack animation']
+        self.damage = self.data['damage']
+        self.light_mask = None
         self.vel = vec(0, 0)
         self.pos = vec(center)
         self.rot = 0
+        self.prev_rot = 0
         self.occupied = False
         self.damaged = False
         self.jumping = False
         self.climbing = False
         self.immaterial = False
+        self.invisible = False
         self.protected = False
+        self.elevation = 0
         self.in_vehicle = self.in_player_vehicle = False
         if health == None:
             self.health = self.max_health = self.data['hp']
@@ -452,6 +497,11 @@ class Vehicle(pg.sprite.Sprite):
         for item in collide_list:
             self.collide_list.append(eval("self.game." + item + "_on_screen"))
 
+    def add_health(self, amount):
+        self.health += amount
+        if self.health > self.max_health:
+            self.health = self.max_health
+
     def get_keys(self):
         keys = pg.key.get_pressed()
         if keys[pg.K_x]:
@@ -465,6 +515,9 @@ class Vehicle(pg.sprite.Sprite):
 
     def enter_vehicle(self, driver):
         self.driver = driver
+        self.driver.pos = vec(self.rect.center)# centers the driver in the vehicle.
+        self.driver.rect.center = self.driver.hit_rect.center = self.rect.center
+        self.driver.rot = self.rot # rotates the driver to fit the vehicle's rotation.
         self.occupied = True
         self.driver.in_vehicle = True
         self.driver.vehicle = self
@@ -479,6 +532,7 @@ class Vehicle(pg.sprite.Sprite):
         if self.data['weapons'] != None or self.data['weapons2'] != None:
             self.driver.pre_reload()
         self.remove(self.game.walls)
+        self.remove(self.game.obstacles)
         if self.cat == 'airship':
             self.game.flying_vehicles.add(self.driver)
             if self.driver == self.game.player:
@@ -492,10 +546,15 @@ class Vehicle(pg.sprite.Sprite):
         if self.driver.has_dragon_body:
             self.driver.dragon_body.update_animations()
         if self.cat == 'tank':
+            self.light_mask = self.game.flashlight_masks[int(self.rot/3)]
+            self.light_mask_rect = self.light_mask.get_rect()
+            self.light_mask_rect.center = self.rect.center
+            self.game.lights.add(self)
             if self.driver == self.game.player:
                 for companion in self.game.companions:
                     companion.in_player_vehicle = True
             self.turret.add(self.game.occupied_vehicles)
+            self.turret.add(self.game.lights)
             self.turret.occupied = True
             self.driver.pre_reload()
         if self.kind == 'skiff':
@@ -505,12 +564,7 @@ class Vehicle(pg.sprite.Sprite):
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
 
     def exit_vehicle(self):
-        # Records the vehicle's position when you exit it.
-        self.game.vehicle_data[self.kind]['location'][0] = self.game.world_location.x
-        self.game.vehicle_data[self.kind]['location'][1] = self.game.world_location.y
-        self.game.vehicle_data[self.kind]['location'][2] = int(self.driver.pos.x / self.game.map.tile_size)
-        self.game.vehicle_data[self.kind]['location'][3] = int(self.driver.pos.y / self.game.map.tile_size)
-
+        self.pos = vec(self.rect.center)
         self.occupied = False
         self.driver.in_vehicle = False
         self.driver.friction = PLAYER_FRIC
@@ -529,9 +583,13 @@ class Vehicle(pg.sprite.Sprite):
                 self.driver.equipped['weapons2'] = None
         self.driver.vehicle = None
         if self.cat == 'tank':
+            self.light_mask = None
+            self.game.lights.remove(self)
             self.turret.remove(self.game.occupied_vehicles)
+            self.turret.remove (self.game.lights)
             self.turret.occupied = False
             self.game.walls.add(self)
+            self.game.obstacles.add(self)
             if self.driver == self.game.player:
                 for companion in self.game.companions:
                     companion.in_player_vehicle = False
@@ -543,6 +601,7 @@ class Vehicle(pg.sprite.Sprite):
                     companion.in_flying_vehicle = False
         else:
             self.game.walls.add(self)
+            self.game.obstacles.add(self)
         if self.kind == 'skiff':
             if self.driver == self.game.player:
                 for companion in self.game.companions:
@@ -566,7 +625,6 @@ class Vehicle(pg.sprite.Sprite):
                 self.game.effects_sounds[self.data['hit sound']].play()
                 self.last_hit = now
                 self.health -= damage
-                self.driver.pos += vec(0, 0).rotate(-rot)
                 self.transparency -= 2
                 if self.transparency < 30:
                     self.transparency = 30
@@ -602,9 +660,14 @@ class Vehicle(pg.sprite.Sprite):
                         self.transparency = 255
             self.driver.acceleration = self.veh_acc
             self.rot = self.driver.rot
+            if self.turret != None: # Rotates the turret if you rotate the vehicle.
+                delta_rot = self.prev_rot - self.rot
+                if delta_rot != 0:
+                    self.turret.rot -= delta_rot
+                self.prev_rot = self.rot
             self.rect = self.image.get_rect()
-            self.rect.center = self.driver.pos
-            self.pos = self.driver.pos
+            self.pos = self.driver.pos #vec(self.driver.rect.center)
+            self.rect.center = self.pos
             # This puts the companions in the vehicle with the player
             if self.driver == self.game.player:
                 offset_vec = vec(80, 0).rotate(-(self.rot + 180))
@@ -616,6 +679,11 @@ class Vehicle(pg.sprite.Sprite):
             self.get_keys() # this needs to be last in this method to avoid executing the rest of the update section if you exit
             if self.turret != None:
                 self.turret.update()
+            if self.light_mask != None:
+                self.light_mask = self.game.flashlight_masks[int(self.turret.rot/3)]
+                self.light_mask_rect = self.light_mask.get_rect()
+                self.light_mask_rect.center = self.rect.center
+                self.game.lights.add(self)
 
 
 class Character(pg.sprite.Sprite):
@@ -1169,9 +1237,9 @@ class Player(pg.sprite.Sprite):
                 self.rot_speed = -PLAYER_ROT_SPEED
         else:
             if keys[pg.K_a]:
-                self.rot_speed = PLAYER_ROT_SPEED
+                self.rot_speed = self.vehicle.rot_speed
             if keys[pg.K_d]:
-                self.rot_speed = -PLAYER_ROT_SPEED
+                self.rot_speed = -self.vehicle.rot_speed
             if keys[pg.K_w] or (pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0)):
                 self.accelerate()
             if keys[pg.K_s]:
@@ -1228,20 +1296,33 @@ class Player(pg.sprite.Sprite):
     def rotate_to(self, vec):
         vector = vec
         angle = fix_angle(vector.angle_to(self.direction))
-        if angle < 0:
-            self.rot_speed = -PLAYER_ROT_SPEED * 10 * abs(angle) / 180
+        if self.in_vehicle:
+            rot_speed = self.vehicle.rot_speed
+            if self.vehicle.turret == None:
+                self.set_rot_speed(rot_speed, vector, angle)
         else:
-            self.rot_speed = PLAYER_ROT_SPEED * 10 * abs(angle) / 180
+            rot_speed = PLAYER_ROT_SPEED
+            self.set_rot_speed(rot_speed, vector, angle)
+
+    def set_rot_speed(self, rot_speed, vector, angle):
+        if angle < 0:
+            self.rot_speed = -rot_speed * 10 * abs(angle) / 180
+        else:
+            self.rot_speed = rot_speed * 10 * abs(angle) / 180
 
     def rotate_and_move(self, vec):
+        if self.in_vehicle:
+            rot_speed = self.vehicle.rot_speed
+        else:
+            rot_speed = PLAYER_ROT_SPEED
         vector = vec
         angle = fix_angle(vector.angle_to(self.direction))
         if abs(angle) < 1:
             self.accelerate()
         elif angle < 0:
-            self.rot_speed = -PLAYER_ROT_SPEED * 10 * abs(angle) / 180
+            self.rot_speed = -rot_speed * 10 * abs(angle) / 180
         else:
-            self.rot_speed = PLAYER_ROT_SPEED * 10 * abs(angle) / 180
+            self.rot_speed = rot_speed * 10 * abs(angle) / 180
 
     def accelerate(self, power = 1, direction = "forward"):
         perp = 0
@@ -2243,10 +2324,10 @@ class Player(pg.sprite.Sprite):
             if ('wraith' not in self.race) or self.stats['weight'] !=0:
                 self.hit_rect.centerx = self.pos.x
                 collide_with_walls(self, self.game.walls_on_screen, 'x')
-                collide_with_elevations(self, self.game.elevations_on_screen, 'x')
+                collide_with_elevations(self, 'x')
                 self.hit_rect.centery = self.pos.y
                 collide_with_walls(self, self.game.walls_on_screen, 'y')
-                collide_with_elevations(self, self.game.elevations_on_screen, 'y')
+                collide_with_elevations(self, 'y')
                 self.rect.center = self.hit_rect.center
         if self.light_on:
             if self in self.game.lights:
@@ -2257,7 +2338,7 @@ class Player(pg.sprite.Sprite):
                 else:
                     self.light_mask_rect.center = self.body.melee2_rect.center
                 if self.mask_kind in DIRECTIONAL_LIGHTS:
-                    new_image = pg.transform.rotate(self.light_mask_orig, self.rot)
+                    new_image = self.game.flashlight_masks[int(self.rot/3)] # Uses preloaded rotated images to save on CPU usage.
                     old_center = self.light_mask_rect.center
                     self.light_mask = new_image
                     self.light_mask_rect = self.light_mask.get_rect()
@@ -2498,6 +2579,7 @@ class Npc(pg.sprite.Sprite):
         self.jumping = False
         self.climbing = False
         self.swimming = False
+        self.invisible = False
         self.flying = False
         self.in_shallows = False
         self.in_vehicle = False
@@ -2573,7 +2655,7 @@ class Npc(pg.sprite.Sprite):
         self.run_speed = self.kind['run speed']
         self.armed = self.kind['armed']
         self.dual_wield = self.kind['dual wield']
-        self.dual_melee = False
+        #self.dual_melee = False
         if not self.game.player.invisible:
             self.target = self.game.player
         else:
@@ -2699,9 +2781,9 @@ class Npc(pg.sprite.Sprite):
         temp_dist = temp_dist.length()
         if temp_dist > self.detect_radius:
             self.target = choice(list(self.game.random_targets))
-        if randrange(0, 5) == 1: # Makes it so the villagers randomly target nearby doors.
+        if randrange(0, 5) == 1: # Makes it so NPCs randomly target nearby doors.
             last_dist = 3000
-            for entry in self.game.entryways:
+            for entry in self.game.entryways_on_screen:
                 dist = self.pos - entry.pos
                 dist = dist.length()
                 if last_dist > dist:  # Finds closest door
@@ -2713,72 +2795,56 @@ class Npc(pg.sprite.Sprite):
 
     def seek_mobs(self):
         last_dist = 100000
-        player_dist = self.game.player.pos - self.pos
-        player_dist = player_dist.length()
+        non_targets = 0
 
-        # Used for setting random NPC targets if the player isn't visible.
-        if self.game.player.invisible:
-            if self.target == self.game.player:
-                self.seek_random_target()
-
-        elif self.game.player.in_vehicle:
-            if self.game.player.vehicle.kind == 'airship':
-                if not self.flying:
-                    self.seek_random_target()
-            else:
-                if not self.running:
-                    self.detect_radius = self.default_detect_radius
-                if player_dist < self.detect_radius:
-                    self.target = self.game.player.vehicle
-                else:
-                    if self.target == self.game.player.vehicle:
-                        self.seek_random_target()
+        if self.guard:
+            for mob in self.game.moving_targets_on_screen:
+                if mob != self:
+                    if not mob.invisible:
+                        if mob.aggression == 'awd':
+                            if mob.kind != self.kind:
+                                dist = self.pos - mob.pos
+                                dist = dist.length()
+                                if 0 < dist < self.detect_radius:
+                                    if last_dist > dist: # Finds closest mob
+                                        self.target = mob
+                                        self.detect_radius = self.default_detect_radius
+                                        self.approach_vector = vec(1, 0)
+                                        self.offensive = True
+                                        last_dist = dist
+                                else:
+                                    non_targets += 1
+                            else:
+                                non_targets += 1
+                        else:
+                            non_targets += 1
                     else:
-                        self.detect_radius = self.game.map.height / 2
-        else:
-            if not self.running:
-                self.detect_radius = self.default_detect_radius
-            if player_dist < self.detect_radius:
-                self.target = self.game.player
-            else:
-                if self.target == self.game.player:
-                    self.seek_random_target()
-                else:
-                    self.detect_radius = self.game.map.height / 2
+                        non_targets += 1
 
-        if (self.aggression == 'awd') or self.guard:
+        elif self.aggression == 'awd':
             for mob in self.game.moving_targets_on_screen: # Only looks at mobs that are on screen
                 if mob != self:
-                    if mob.aggression != 'awd' or mob in self.game.animals_on_screen:
-                        if self.aggression == 'awd':
+                    if not mob.invisible:
+                        if mob.kind != self.kind:
                             self.offensive = True
                             dist = self.pos - mob.pos
                             dist = dist.length()
                             if 0 < dist < self.detect_radius:
-                                if last_dist > dist:  # Finds closest NPC
-                                    if player_dist > dist: # Only targets player if you are closer than the others NPCs
-                                        self.target = mob
-                                        self.detect_radius = self.default_detect_radius
-                                        self.approach_vector = vec(1, 0)
-                                        last_dist = dist
-                                    else:
-                                        if self.game.player.invisible:
-                                            self.target = mob
-                                            self.detect_radius = self.default_detect_radius
-                                        else:
-                                            self.target = self.game.player
-
-                    elif self.guard:
-                        if mob.kind != self.kind:
-                            dist = self.pos - mob.pos
-                            dist = dist.length()
-                            if 0 < dist < self.detect_radius:
-                                if last_dist > dist: # Finds closest mob
+                                if last_dist > dist:  # Finds closest NPC and sets to target
                                     self.target = mob
                                     self.detect_radius = self.default_detect_radius
                                     self.approach_vector = vec(1, 0)
-                                    self.offensive = True
                                     last_dist = dist
+                            else:
+                                non_targets += 1
+                        else:
+                            non_targets += 1
+                    else:
+                        non_targets += 1
+        # Seeks a random target if there are no target mobs in range.
+        if non_targets == len(self.game.moving_targets_on_screen) - 1:
+            self.seek_random_target()
+
 
     def check_moving(self):
         # This checks to see if the NPC has moved since the last check.
@@ -2817,7 +2883,7 @@ class Npc(pg.sprite.Sprite):
             else:
                 if not self.needs_move:
                     if self.target != self.game.player:
-                        if not self.target.living:  # Makes it so the guards switch back to the player being their target if they kill the mob they are attacking.
+                        if not self.target.living:  # Makes it so NPC switches target after it kills one.
                             self.offensive = False
                             self.seek_mobs()
                         if self.aggression in ['awp', 'sap', 'fup']:
@@ -2856,8 +2922,6 @@ class Npc(pg.sprite.Sprite):
                         if ora - self.last_move_check > randrange(3000, 6000):
                             self.needs_move = False
                             self.last_move_check = ora
-
-
 
                 if ora - self.last_hit > 3000: # Used to set the time NPCs flee for after being attacked.
                     if self.running:
@@ -2928,7 +2992,7 @@ class Npc(pg.sprite.Sprite):
                             else:
                                 self.light_mask_rect.center = self.body.melee2_rect.center
                             if self.mask_kind in DIRECTIONAL_LIGHTS:
-                                new_image = pg.transform.rotate(self.light_mask_orig, self.rot)
+                                new_image = self.game.flashlight_masks[int(self.rot/3)]
                                 old_center = self.light_mask_rect.center
                                 self.light_mask = new_image
                                 self.light_mask_rect = self.light_mask.get_rect()
@@ -2944,7 +3008,10 @@ class Npc(pg.sprite.Sprite):
                             self.acc.scale_to_length(speed)
                         except:
                             self.acc = vec(0, 0)
-                        self.accelerate()
+                        if self.target == self.game.player:
+                            self.accelerate()
+                        elif target_dist.length() > 40: #Stops mobs from occupying the same space as you.
+                            self.accelerate()
                         collide(self)
 
                         if self.offensive:
@@ -2983,7 +3050,7 @@ class Npc(pg.sprite.Sprite):
                                         if now - self.last_melee > randrange(1000, 3000):
                                             self.last_melee = now
                                             self.pre_melee()
-                            elif not self.running:
+                            elif not self.running: # Non agressive but provoked NPCs
                                 if target_dist.length_squared() < self.melee_range**2:
                                     self.approach_vector = vec(1, 0)
                                     now = pg.time.get_ticks()
@@ -3293,7 +3360,7 @@ class Npc(pg.sprite.Sprite):
             if self.equipped['weapons'] != None:
                 if self.equipped['weapons2'] != None:
                     self.weapon_hand = choice(['weapons', 'weapons2'])
-                    self.dual_melee = choice([True, False])
+                    #self.dual_melee = choice([True, False])
                 else:
                     self.weapon_hand = 'weapons'
             elif self.equipped['weapons2'] != None:
@@ -3336,17 +3403,17 @@ class Npc(pg.sprite.Sprite):
                 self.melee_rate = self.melee_rate + WEAPONS[self.equipped[self.weapon_hand]]['weight'] * 20
                 speed = speed + WEAPONS[self.equipped[self.weapon_hand]]['weight'] * 5
 
-        if self.dual_melee:
-            self.animation_playing = self.body.dual_melee_anim
-            if self.equipped['weapons'] != None and self.equipped['weapons2'] != None:
-                self.melee_rate = self.melee_rate + (WEAPONS[self.equipped['weapons']]['weight'] + WEAPONS[self.equipped['weapons2']]['weight'])/2 * 30
-                speed = speed + (WEAPONS[self.equipped['weapons']]['weight'] + WEAPONS[self.equipped['weapons2']]['weight'])/4 * 5
-            elif self.equipped['weapons'] != None:
-                self.melee_rate = self.melee_rate + WEAPONS[self.equipped['weapons']]['weight'] * 20
-                speed = speed + WEAPONS[self.equipped['weapons']]['weight']/2 * 5
-            elif self.equipped['weapons2'] != None:
-                self.melee_rate = self.melee_rate + WEAPONS[self.equipped['weapons2']]['weight'] * 20
-                speed = speed + WEAPONS[self.equipped['weapons2']]['weight']/2 * 5
+        #if self.dual_melee:
+        #    self.animation_playing = self.body.dual_melee_anim
+        #    if self.equipped['weapons'] != None and self.equipped['weapons2'] != None:
+        #        self.melee_rate = self.melee_rate + (WEAPONS[self.equipped['weapons']]['weight'] + WEAPONS[self.equipped['weapons2']]['weight'])/2 * 30
+        #        speed = speed + (WEAPONS[self.equipped['weapons']]['weight'] + WEAPONS[self.equipped['weapons2']]['weight'])/4 * 5
+        #    elif self.equipped['weapons'] != None:
+        #        self.melee_rate = self.melee_rate + WEAPONS[self.equipped['weapons']]['weight'] * 20
+        #        speed = speed + WEAPONS[self.equipped['weapons']]['weight']/2 * 5
+        #    elif self.equipped['weapons2'] != None:
+        #        self.melee_rate = self.melee_rate + WEAPONS[self.equipped['weapons2']]['weight'] * 20
+        #        speed = speed + WEAPONS[self.equipped['weapons2']]['weight']/2 * 5
 
         now = pg.time.get_ticks()
         if now - self.last_shot > self.melee_rate:
@@ -3354,7 +3421,7 @@ class Npc(pg.sprite.Sprite):
                 self.body.animate(self.animation_playing, speed)
                 if self.body.frame > len(self.animation_playing[0]) - 1:
                     self.melee_playing = False
-                    self.dual_melee = False
+                    #self.dual_melee = False
                     self.last_shot = pg.time.get_ticks()
     def reload(self):
         speed = WEAPONS[self.equipped[self.weapon_hand]]['reload speed']
@@ -3523,6 +3590,7 @@ class Animal(pg.sprite.Sprite):
         self.climbing = False
         self.swimming = False
         self.falling = False
+        self.invisible = False
         self.in_shallows = False
         self.in_player_vehicle = False
         self.in_vehicle = False
@@ -4438,6 +4506,8 @@ class Explosion(pg.sprite.Sprite):
         self.damage = damage
         # Scales explosion's size based on damage
         self.scale = int(5 * damage)
+        if self.scale > 600:
+            self.scale = 600
         self.image_list = []
         if damage == 0:
             self.scale = 400

@@ -400,9 +400,15 @@ for x in WEAPONS:
     if 'brightness' in WEAPONS[x]:
         LIGHTS_LIST.append(x)
 
+NON_GUN_LIGHTS = []
+for x in WEAPONS:
+    if not WEAPONS[x]['gun']:
+        if 'brightness' in WEAPONS[x]:
+            NON_GUN_LIGHTS.append(x)
+
 # Day/Night
-DAY_LENGTH = 0.1 * 60 * 1000
-NIGHT_LENGTH = 10 * 60 * 1000
+DAY_LENGTH = 14 * 60 * 1000
+NIGHT_LENGTH = 8 * 60 * 1000
 NIGHTFALL_SPEED = 100 # The higher the slower. In ms.
 
 # Layers

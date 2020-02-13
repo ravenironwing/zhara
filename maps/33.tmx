@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="38" nextobjectid="320">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="38" nextobjectid="346">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="100" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="2560"/>
  </tileset>
@@ -567,7 +567,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1073743268,0,0,0,0,0,0,1610614178,0,0,0,0,0,0,0,0,0,0,0,2147485092,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1610614177,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1446,0,0,0,0,1610614177,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1610614180,0,0,0,0,1610614180,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -1384,5 +1384,21 @@
   <object id="315" name="lightsource_5_U" x="3968" y="4864" width="131" height="128"/>
   <object id="317" name="lightsource_5_L" x="5376" y="5504" width="128" height="128"/>
   <object id="319" name="lightsource_5_R" x="2944" y="5504" width="128" height="128"/>
+  <object id="320" name="light" x="3200" y="5632" width="128" height="128"/>
+  <object id="322" name="lightsource_2_0" x="3908" y="5514" width="128" height="128"/>
+  <object id="323" name="light" x="3587" y="5074" width="128" height="128"/>
+  <object id="326" name="light" x="5187" y="5651" width="128" height="128"/>
+  <object id="327" name="light" x="5190" y="4929" width="128" height="128"/>
+  <object id="328" name="light" x="5137" y="4246" width="128" height="128"/>
+  <object id="329" name="light" x="4352" y="4170" width="128" height="128"/>
+  <object id="331" name="light" x="5143" y="3708" width="128" height="128"/>
+  <object id="333" name="light" x="3130" y="3784" width="128" height="128"/>
+  <object id="334" name="light" x="3126" y="4355" width="128" height="128"/>
+  <object id="340" name="lightsource_2_0" x="3186" y="4830" width="128" height="128"/>
+  <object id="341" name="lightsource_2_0" x="3692" y="3814" width="128" height="128"/>
+  <object id="342" name="lightsource_2_0" x="4448" y="3706" width="128" height="128"/>
+  <object id="343" name="lightsource_2_0" x="4626" y="5504" width="128" height="128"/>
+  <object id="344" name="lightsource_2_0" x="4464" y="4948" width="128" height="128"/>
+  <object id="345" name="tank" x="7380" y="6724" width="412" height="240"/>
  </objectgroup>
 </map>

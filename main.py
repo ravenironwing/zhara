@@ -263,8 +263,9 @@ class Game:
                 item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
                 self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].items = item_list
             for vehicle in self.vehicles:
-                vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
-                self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles = vehicle_list
+                if vehicle.driver != self.player:
+                    vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
+                    self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles = vehicle_list
             for breakable in self.breakable:
                 breakable_list.append({'name': breakable.name, 'location': breakable.center, 'w': breakable.w, 'h': breakable.h,  'rotation': breakable.rot})
                 self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].breakable = breakable_list
@@ -300,21 +301,12 @@ class Game:
         self.draw_text('Saving....', self.script_font, 50, WHITE, self.screen_width / 2, self.screen_height / 2, align="topright")
         pg.display.flip()
         sleep(0.5)
-        if self.player.in_vehicle:
-            vehicle_name = self.player.vehicle.species
-            if self.player.vehicle not in self.animals:
-                self.vehicle_data[vehicle_name]['location'][0] = self.world_location.x
-                self.vehicle_data[vehicle_name]['location'][1] = self.world_location.y
-                self.vehicle_data[vehicle_name]['location'][2] = int(self.player.pos.x / self.map.tile_size)
-                self.vehicle_data[vehicle_name]['location'][3] = int(self.player.pos.y / self.map.tile_size)
-        else:
-            vehicle_name = None
         companion_list = []
         for companion in self.companions:
             companion_list.append(companion.species)
 
         updated_equipment = [UPGRADED_WEAPONS, UPGRADED_HATS, UPGRADED_TOPS, UPGRADED_GLOVES, UPGRADED_BOTTOMS, UPGRADED_SHOES, UPGRADED_ITEMS]
-        save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.vehicle_data, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict, self.player.colors]
+        save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.player.colors, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict]
         with open(path.join(saves_folder, self.player.race + "_" + self.format_date() + ".sav"), "wb", -1) as FILE:
             pickle.dump(save_list, FILE)
         if possessing != None:
@@ -327,7 +319,6 @@ class Game:
         # Loads saved upgraded equipment:
         self.people = load_file[9] # Updates NPCs
         self.quests = load_file[10] # Updates Quests from save
-        self.vehicle_data = load_file[11]  # Updates Quests from save
         self.saved_vehicle = load_file[12]
         self.chests = load_file[6] # Updates chests from dave
         self.saved_companions = load_file[13]
@@ -352,7 +343,7 @@ class Game:
         self.player.equipped = load_file[1]
         self.player.race = self.player.equipped['race']
         self.player.stats = load_file[2]
-        self.player.colors = load_file[16]
+        self.player.colors = load_file[11]
         self.previous_map = load_file[4]
         self.world_location = vec(load_file[5])
         self.load_map(self.previous_map)
@@ -381,13 +372,11 @@ class Game:
         self.saved_companions = []
         # Enters vehicle if you saved it inside a vehicle
         for vehicle in self.vehicles:
-            if self.world_location == (self.vehicle_data[vehicle.kind]['location'][0], self.vehicle_data[vehicle.kind]['location'][1]):
-                if vehicle.kind == self.saved_vehicle:
-                    vehicle.enter_vehicle(self.player)
+            if vehicle.kind == self.saved_vehicle:
+                vehicle.enter_vehicle(self.player)
         for vehicle in self.flying_vehicles:
-            if self.world_location == (self.vehicle_data[vehicle.kind]['location'][0], self.vehicle_data[vehicle.kind]['location'][1]):
-                if vehicle.kind == self.saved_vehicle:
-                    vehicle.enter_vehicle(self.player)
+            if vehicle.kind == self.saved_vehicle:
+                vehicle.enter_vehicle(self.player)
         if self.saved_vehicle in ANIMALS:
             mount = Animal(self, self.player.pos.x, self.player.pos.y, self.map, self.saved_vehicle)
             mount.mount(self.player)
@@ -400,7 +389,6 @@ class Game:
             load_file = pickle.load(FILE)
         # Loads saved upgraded equipment:
         self.people = PEOPLE # Updates NPCs
-        self.vehicle_data = VEHICLES
         self.quests = QUESTS # Updates Quests from save
         self.chests = CHESTS # Updates chests from dave
         updated_equipment = load_file[8]
@@ -498,28 +486,14 @@ class Game:
             for i, item in enumerate(BULLET_IMAGES):
                 bullet_img = pg.image.load(path.join(bullets_folder, BULLET_IMAGES[i])).convert_alpha()
                 if size != 'ar':
-                    img = pg.transform.scale(bullet_img, (6*(x + 1), 4*(x + 1)))
+                    if i != 0:
+                        img = pg.transform.scale(bullet_img, (6*(x + 1), 4*(x + 1)))
+                    else:
+                        img = pg.transform.scale(bullet_img, (12 * (x + 1), 4 * (x + 1)))
                 else:
                     img = pg.transform.scale(bullet_img, (80, 10))
-                bullet_name = size + str(i + 1)
+                bullet_name = size + str(i)
                 self.bullet_images[bullet_name] = img
-
-           # img = pg.transform.scale(bullet_img, (15, 15))
-           # bullet_name = 'md' + str(i + 1)
-           # self.bullet_images[bullet_name] = img
-
-           # img = pg.transform.scale(bullet_img, (40, 40))
-           # bullet_name = 'lg' + str(i + 1)
-           # self.bullet_images[bullet_name] = img
-
-        #self.bullet_images = {}
-        #    for x in self.bullet_images_list:
-        #self.bullet_images['lg'] = pg.image.load(BULLET_IMG).convert_alpha()
-        #self.bullet_images['md'] = pg.transform.scale(self.bullet_images['lg'], (15, 15))
-        #self.bullet_images['sm'] = pg.transform.scale(self.bullet_images['lg'], (10, 10))
-        #self.bullet_images['lglz'] = pg.image.load(BLUELASER_IMG).convert_alpha()
-        #self.bullet_images['mdlz'] = pg.transform.scale(self.bullet_images['lglz'], (15, 15))
-        #self.bullet_images['smlz'] = pg.transform.scale(self.bullet_images['lglz'], (10, 10))
 
         self.door_images = []
         for i, item in enumerate(DOOR_IMAGES):
@@ -573,6 +547,12 @@ class Game:
         for i, val in enumerate(LIGHT_MASK_IMAGES):
             img = pg.image.load(path.join(light_masks_folder, LIGHT_MASK_IMAGES[i])).convert_alpha()
             self.light_mask_images.append(img)
+
+        self.flashlight_masks = []
+        temp_img = pg.transform.scale(self.light_mask_images[3], (int(600 * 2.8), 600))
+        for rot in range(0, 120):
+            new_image = pg.transform.rotate(temp_img, rot*3)
+            self.flashlight_masks.append(new_image)
 
         self.magic_animation_images = []
         for image in self.magic_images:
@@ -790,7 +770,6 @@ class Game:
         self._player_inside = False
         self.compass_rot = 0
         self.people = PEOPLE
-        self.vehicle_data = VEHICLES
         self.saved_vehicle = []
         self.saved_companions = []
         self.underworld = False
@@ -1029,6 +1008,14 @@ class Game:
                     else:
                         self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].moved_animals.append(animal)
                     self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals.remove(animal)
+            for vehicle in self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles:
+                temp_loc = self.on_map(vehicle)
+                if not temp_loc[0]:
+                    if self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].visited:
+                        self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].vehicles.append(vehicle)
+                    else:
+                        self.map_sprite_data_list[int(self.world_location.x) + temp_loc[1]][int(self.world_location.y) + temp_loc[2]].moved_vehicles.append(vehicle)
+                    self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles.remove(vehicle)
 
         self.guard_alerted = False # Makes it so guards stop attacking you after you change maps
         self.player.vel = vec(0, 0)
@@ -1126,10 +1113,10 @@ class Game:
                 if sprite in [self.player.possessing, self.player.possessing.body]:
                     continue
             if self.player.in_vehicle:
-                try:
+                if self.player.vehicle.turret != None:
                     if sprite in [self.player.vehicle, self.player.vehicle.turret]:
                         continue
-                except:
+                else:
                     if sprite in [self.player.vehicle]:
                         continue
             if sprite in self.companions:
@@ -1143,10 +1130,6 @@ class Game:
                 del sprite
 
         for sprite in self.all_static_sprites:
-            sprite.kill()
-            del sprite
-
-        for sprite in self.static_lights:
             sprite.kill()
             del sprite
 
@@ -1185,12 +1168,6 @@ class Game:
 
         for i in range(0, 10): # Creates random targets for Npcs
             Random_Target(self)
-
-        if not self.underworld:
-            # Loads vehicles based off of their recorded locations in vehicles.py or the saved vehicle dictionary.... This while part should probably be taken out since the vehicle data should be stored in the MapData object
-            for vehicle in self.vehicle_data:
-                if self.world_location == (self.vehicle_data[vehicle]['location'][0], self.vehicle_data[vehicle]['location'][1]):
-                    ship = Vehicle(self, (self.vehicle_data[vehicle]['location'][2] * self.map.tile_size, self.vehicle_data[vehicle]['location'][3] * self.map.tile_size), vehicle, map)
 
         if self.sprite_data.visited: # Loads stored map data for sprites if you have visited before.
             companion_names = []
@@ -1237,12 +1214,15 @@ class Game:
                             else:
                                 if self.is_living(tile_object.name):
                                     Npc(self, obj_center.x, obj_center.y, map, tile_object.name)
-
+                    # Loads vehicles
+                    for vehicle in VEHICLES:
+                        if vehicle == tile_object.name:
+                            Vehicle(self, obj_center, vehicle, map)
                     # Loads items, weapons, and armor placed on the map
                     for item_type in ITEM_TYPE_LIST:
                         if tile_object.name in eval(item_type.upper()):
                             Dropped_Item(self, obj_center, item_type, tile_object.name)
-                    # Loads fixed roated items:
+                    # Loads fixed rotated items:
                     if '@' in tile_object.name:
                         item, rot = tile_object.name.split('@')
                         rot = int(rot)
@@ -1671,7 +1651,6 @@ class Game:
         # updates all sprites that are on screen and puts on screen sprites into groups for hit checks.
         self.message_text = False
         # finds static sprites (ones you don't see) on screen.
-        self.vehicles_on_screen.empty()
         self.obstacles_on_screen.empty()
         self.walls_on_screen.empty()
         self.water_on_screen.empty()
@@ -1683,9 +1662,7 @@ class Game:
         self.inside_on_screen.empty()
         for sprite in self.all_static_sprites:
             if self.on_screen(sprite):
-                if sprite in self.vehicles:
-                    self.vehicles_on_screen.add(sprite)
-                elif sprite in self.obstacles:
+                if sprite in self.obstacles:
                     self.obstacles_on_screen.add(sprite)
                     if sprite in self.walls:
                         self.walls_on_screen.add(sprite)
@@ -1705,6 +1682,7 @@ class Game:
                     self.inside_on_screen.add(sprite)
 
         # dynamic sprites on screen
+        self.vehicles_on_screen.empty()
         self.entryways_on_screen.empty()
         self.breakable_on_screen.empty()
         self.corpses_on_screen.empty()
@@ -1719,9 +1697,12 @@ class Game:
         for sprite in self.all_sprites:
             if self.on_screen(sprite):
                 self.sprites_on_screen.add(sprite)
-                sprite.update()
                 if sprite in self.entryways:
                     self.entryways_on_screen.add(sprite)
+                elif sprite in self.vehicles:
+                    self.vehicles_on_screen.add(sprite)
+                    if sprite in self.walls:
+                        self.walls_on_screen.add(sprite)
                 elif sprite in self.fires:
                     self.fires_on_screen.add(sprite)
                 elif sprite in self.breakable:
@@ -1740,12 +1721,15 @@ class Game:
                             self.animals_on_screen.add(sprite)
                         elif sprite in self.npcs:
                             self.npcs_on_screen.add(sprite)
+            elif sprite in self.bullets: # Kills bullets not on screen.
+                sprite.kill()
             elif sprite == self.player.vehicle:
                 sprite.update()
             elif sprite in self.companions:
                 sprite.update()
             elif sprite in self.companion_bodies:
                 sprite.update()
+        self.sprites_on_screen.update()
         self.camera.update(self.player)
         self.group.center(self.player.rect.center)
 
@@ -1900,7 +1884,7 @@ class Game:
 
 
             # Player is in talking range of NPC
-            if not self.message_text:
+            if True not in [self.message_text, self.in_menu]:
                 hits = pg.sprite.spritecollide(self.player, self.npcs_on_screen, False, npc_talk_rect)
                 if hits:
                     if hits[0].dialogue != None:
@@ -2008,15 +1992,14 @@ class Game:
             # NPC hit player
             hits = pg.sprite.spritecollide(self.player, self.npcs_on_screen, False, pg.sprite.collide_circle_ratio(0.7))
             for hit in hits:
+                self.player.hit_rect.centerx = self.player.pos.x
+                collide_with_walls(self.player, [hit], 'x')
+                self.player.hit_rect.centery = self.player.pos.y
+                collide_with_walls(self.player, [hit], 'y')
+                self.player.rect.center = self.player.hit_rect.center
                 if hit.touch_damage:
                     if random() < 0.7:
                         self.player.gets_hit(hit.damage, hit.knockback, hits[0].rot)
-                else:
-                    self.player.hit_rect.centerx = self.player.pos.x
-                    collide_with_walls(self.player, [hit], 'x')
-                    self.player.hit_rect.centery = self.player.pos.y
-                    collide_with_walls(self.player, [hit], 'y')
-                    self.player.rect.center = self.player.hit_rect.center
 
             # player hits an empty vehicle or mech suit
             if not self.player.in_vehicle:
@@ -2449,27 +2432,7 @@ class Game:
 
     def draw(self):
         pg.display.set_caption("Legends of Zhara  FPS: {:.2f}".format(self.clock.get_fps()))
-        # self.screen.fill(BGCOLOR)
-        #self.screen.blit(self.map.image, self.camera.apply(self.map))
-        #self.overlay_group.center(self.player.body.rect.center)
         self.group.draw(self.screen, self)
-        #for sprite in self.all_sprites:
-            #if isinstance(sprite, Mob):
-            #    sprite.draw_health()
-        #    if sprite not in self.group:
-        #        if sprite not in self.flying_vehicles:
-        #            if self.on_screen(sprite): # Only blits sprites if they are on screen.
-        #                self.screen.blit(sprite.image, self.camera.apply(sprite))
-        #            elif sprite == self.player.vehicle:
-        #                if self.player.vehicle not in self.flying_vehicles:
-        #                    self.screen.blit(sprite.image, self.camera.apply(sprite))
-        #            elif sprite in self.companion_bodies:
-        #                self.screen.blit(sprite.image, self.camera.apply(sprite))
-        #            if self.draw_debug:
-        #                try:
-        #                    pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect), 1)
-        #                except:
-        #                    pass
         if self.draw_debug:
             for wall in self.walls:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
@@ -2478,15 +2441,11 @@ class Game:
         hits = pg.sprite.spritecollide(self.player, self.inside_on_screen, False)
         if not hits:
             self.player_inside = False
-            #self.overlay_group.draw(self.screen, self)
-            #self.screen.blit(self.map.overlay.image, self.camera.apply(self.map))
         else:
             self.player_inside = True
             if self.player.in_vehicle:
                 if self.player.vehicle in self.flying_vehicles:
                     self.player_inside = False
-                    #self.overlay_group.draw(self.screen)
-                    #self.screen.blit(self.map.overlay.image, self.camera.apply(self.map))
 
         # Draws flying vehicle sprites after roves.
         #for sprite in self.flying_vehicles:

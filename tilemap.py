@@ -16,6 +16,7 @@ class MapData: #Used to keep track of what NPCs, animals and objects move to wha
         self.animals = []
         self.moved_npcs = []
         self.moved_animals = []
+        self.moved_vehicles = []
         self.items = []
         self.vehicles = []
         self.breakable = []
