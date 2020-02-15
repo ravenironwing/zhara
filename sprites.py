@@ -56,25 +56,76 @@ def collide_with_walls(sprite, group, dir):
             sprite.vel.y = 0
             sprite.hit_rect.centery = sprite.pos.y
 
+def vehicle_collide_hit_rect(one, two):
+    return one.hit_rect.colliderect(two.hit_rect)
+def vehicle_collide_hit2_rect(one, two):
+    return one.hit_rect.colliderect(two.hit_rect2)
+def vehicle_collide_hit3_rect(one, two):
+    return one.hit_rect.colliderect(two.hit_rect3)
+def vehicle_collide_any(one, two):
+    return (one.hit_rect.colliderect(two.hit_rect) or one.hit_rect.colliderect(two.hit_rect2) or one.hit_rect.colliderect(two.hit_rect3))
+
 def collide_with_vehicles(sprite, dir):
-    hits = pg.sprite.spritecollide(sprite, sprite.game.vehicles_on_screen, False, pg.sprite.collide_circle_ratio(0.95))
+    forward = False
+    hits = pg.sprite.spritecollide(sprite, sprite.game.vehicles_on_screen, False, vehicle_collide_any)
     if hits:
-        if sprite in sprite.game.mobs_on_screen:
-            sprite.gets_hit(hits[0].damage, 0, hits[0].rot)
-        if dir == 'x':
-            if hits[0].rect.centerx > sprite.hit_rect.centerx:
-                sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
-            if hits[0].rect.centerx < sprite.hit_rect.centerx:
-                sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
-            sprite.vel.x = 0
-            sprite.hit_rect.centerx = sprite.pos.x
-        if dir == 'y':
-            if hits[0].rect.centery > sprite.hit_rect.centery:
-                sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
-            if hits[0].rect.centery < sprite.hit_rect.centery:
-                sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
-            sprite.vel.y = 0
-            sprite.hit_rect.centery = sprite.pos.y
+        if sprite != hits[0]:
+            if hits[0].forward:
+                forward = True
+                sprite.gets_hit(hits[0].damage, 10, sprite.rot -180, 0)
+
+    if not forward:
+        hits = pg.sprite.spritecollide(sprite, sprite.game.vehicles_on_screen, False, vehicle_collide_hit_rect)
+        if hits:
+            if sprite != hits[0]:
+                if dir == 'x':
+                    if hits[0].rect.centerx > sprite.hit_rect.centerx:
+                        sprite.pos.x = hits[0].hit_rect.left - sprite.hit_rect.width / 2
+                    if hits[0].rect.centerx < sprite.hit_rect.centerx:
+                        sprite.pos.x = hits[0].hit_rect.right + sprite.hit_rect.width / 2
+                    sprite.vel.x = 0
+                    sprite.hit_rect.centerx = sprite.pos.x
+                if dir == 'y':
+                    if hits[0].rect.centery > sprite.hit_rect.centery:
+                        sprite.pos.y = hits[0].hit_rect.top - sprite.hit_rect.height / 2
+                    if hits[0].rect.centery < sprite.hit_rect.centery:
+                        sprite.pos.y = hits[0].hit_rect.bottom + sprite.hit_rect.height / 2
+                    sprite.vel.y = 0
+                    sprite.hit_rect.centery = sprite.pos.y
+        hits = pg.sprite.spritecollide(sprite, sprite.game.vehicles_on_screen, False, vehicle_collide_hit2_rect)
+        if hits:
+            if sprite != hits[0]:
+                if dir == 'x':
+                    if hits[0].rect.centerx > sprite.hit_rect.centerx:
+                        sprite.pos.x = hits[0].hit_rect2.left - sprite.hit_rect.width / 2
+                    if hits[0].rect.centerx < sprite.hit_rect.centerx:
+                        sprite.pos.x = hits[0].hit_rect2.right + sprite.hit_rect.width / 2
+                    sprite.vel.x = 0
+                    sprite.hit_rect.centerx = sprite.pos.x
+                if dir == 'y':
+                    if hits[0].rect.centery > sprite.hit_rect.centery:
+                        sprite.pos.y = hits[0].hit_rect2.top - sprite.hit_rect.height / 2
+                    if hits[0].rect.centery < sprite.hit_rect.centery:
+                        sprite.pos.y = hits[0].hit_rect2.bottom + sprite.hit_rect.height / 2
+                    sprite.vel.y = 0
+                    sprite.hit_rect.centery = sprite.pos.y
+        hits = pg.sprite.spritecollide(sprite, sprite.game.vehicles_on_screen, False, vehicle_collide_hit3_rect)
+        if hits:
+            if sprite != hits[0]:
+                if dir == 'x':
+                    if hits[0].rect.centerx > sprite.hit_rect.centerx:
+                        sprite.pos.x = hits[0].hit_rect3.left - sprite.hit_rect.width / 2
+                    if hits[0].rect.centerx < sprite.hit_rect.centerx:
+                        sprite.pos.x = hits[0].hit_rect3.right + sprite.hit_rect.width / 2
+                    sprite.vel.x = 0
+                    sprite.hit_rect.centerx = sprite.pos.x
+                if dir == 'y':
+                    if hits[0].rect.centery > sprite.hit_rect.centery:
+                        sprite.pos.y = hits[0].hit_rect3.top - sprite.hit_rect.height / 2
+                    if hits[0].rect.centery < sprite.hit_rect.centery:
+                        sprite.pos.y = hits[0].hit_rect3.bottom + sprite.hit_rect.height / 2
+                    sprite.vel.y = 0
+                    sprite.hit_rect.centery = sprite.pos.y
 
 def collide_with_elevations(sprite, dir):
     xwall = False
@@ -455,6 +506,10 @@ class Vehicle(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = center
         self.hit_rect = self.data['hit rect'].copy()
+        self.hit_rect2 = pg.Rect(0, 0, int(self.hit_rect.width*(5/6)), int(self.hit_rect.width*(5/6)))
+        self.hit_rect3 = self.hit_rect2.copy()
+        self.hrect_offset2 = vec(self.hit_rect2.width/2, 0)
+        self.hrect_offset3 = vec(-self.hit_rect3.width/2, 0)
         self.hit_rect.center = self.rect.center
         self.transparency = 255 # Used to make vehicles look like they are sinking
         self.player_walk_anim = self.data['walk animation']
@@ -473,6 +528,7 @@ class Vehicle(pg.sprite.Sprite):
         self.immaterial = False
         self.invisible = False
         self.protected = False
+        self.forward = False
         self.elevation = 0
         self.in_vehicle = self.in_player_vehicle = False
         if health == None:
@@ -618,10 +674,10 @@ class Vehicle(pg.sprite.Sprite):
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
     
 
-    def gets_hit(self, damage, knockback = 0, rot = 0):
+    def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
         if self.living:
             now = pg.time.get_ticks()
-            if now - self.last_hit > DAMAGE_RATE * 2:
+            if now - self.last_hit > dam_rate * 2:
                 self.game.effects_sounds[self.data['hit sound']].play()
                 self.last_hit = now
                 self.health -= damage
@@ -668,6 +724,8 @@ class Vehicle(pg.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.pos = self.driver.pos #vec(self.driver.rect.center)
             self.rect.center = self.pos
+            self.hit_rect2.center = self.pos + self.hrect_offset2.rotate(-self.rot)
+            self.hit_rect3.center = self.pos + self.hrect_offset3.rotate(-self.rot)
             # This puts the companions in the vehicle with the player
             if self.driver == self.game.player:
                 offset_vec = vec(80, 0).rotate(-(self.rot + 180))
@@ -1236,12 +1294,14 @@ class Player(pg.sprite.Sprite):
             if keys[pg.K_d]:
                 self.rot_speed = -PLAYER_ROT_SPEED
         else:
+            self.vehicle.forward = False
             if keys[pg.K_a]:
                 self.rot_speed = self.vehicle.rot_speed
             if keys[pg.K_d]:
                 self.rot_speed = -self.vehicle.rot_speed
             if keys[pg.K_w] or (pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0)):
                 self.accelerate()
+                self.vehicle.forward = True
             if keys[pg.K_s]:
                 self.accelerate(0.5, "rev")
         now = pg.time.get_ticks()
@@ -1937,14 +1997,14 @@ class Player(pg.sprite.Sprite):
 
 
 
-    def gets_hit(self, damage, knockback = 0, rot = 0):
+    def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
         if self.in_vehicle:
             self.vehicle.gets_hit(damage, knockback, rot)
         elif self.possessing != None:
             self.possessing.gets_hit(damage, knockback, rot)
         else:
             now = pg.time.get_ticks()
-            if now - self.last_hit > DAMAGE_RATE:
+            if now - self.last_hit > dam_rate:
                 self.last_hit = now
                 # Player takes damage based on their armor rating/
                 temp_val = (damage + self.stats['armor']) # This part prevents division by 0 in the damage_reduction_factor calculation
@@ -2846,7 +2906,7 @@ class Npc(pg.sprite.Sprite):
             self.seek_random_target()
 
 
-    def check_moving(self):
+    def is_moving(self):
         # This checks to see if the NPC has moved since the last check.
         dist = self.pos - self.last_pos
         if dist.length() < 10:
@@ -2914,7 +2974,7 @@ class Npc(pg.sprite.Sprite):
                 if not self.offensive:
                     if not self.needs_move:
                         if ora - self.last_move_check > randrange(1000, 2000):
-                            if not self.check_moving():
+                            if not self.is_moving():
                                 self.seek_random_target()
                                 self.needs_move = True
                             self.last_move_check = ora
@@ -3188,9 +3248,9 @@ class Npc(pg.sprite.Sprite):
             if 'bow' in self.equipped[self.weapon_hand]:
                 self.bow = True
 
-    def gets_hit(self, damage, knockback = 0, rot = 0):
+    def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
         now = pg.time.get_ticks()
-        if now - self.last_hit > DAMAGE_RATE:
+        if now - self.last_hit > dam_rate:
             self.last_hit = now
             self.health -= damage
             self.pos += vec(knockback, 0).rotate(-rot)
@@ -3935,9 +3995,9 @@ class Animal(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.hit_rect.center = vec(old_center) #+ self.rect_offset.rotate(-self.rot)
 
-    def gets_hit(self, damage, knockback = 0, rot = 0, player_attack = True):
+    def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
         now = pg.time.get_ticks()
-        if now - self.last_hit > DAMAGE_RATE:
+        if now - self.last_hit > dam_rate:
             self.last_hit = now
             self.health -= damage
             self.pos += vec(knockback, 0).rotate(-rot)
@@ -4477,9 +4537,9 @@ class Entryway(pg.sprite.Sprite):
             self.wall.kill()
             self.kill()
 
-    def gets_hit(self, damage, knockback = 0, rot = 0):
+    def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
         now = pg.time.get_ticks()
-        if now - self.last_hit > DAMAGE_RATE:
+        if now - self.last_hit > dam_rate:
             self.last_hit = now
             self.health -= damage
         if self.health <= 0:
@@ -4896,9 +4956,9 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
             self.image = pg.transform.rotate(self.image_list[0], self.rot)
             self.rect.center = self.trunk.rect.center = self.hit_rect.center = self.center
 
-    def gets_hit(self, weapon_type):
+    def gets_hit(self, weapon_type, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
         now = pg.time.get_ticks()
-        if now - self.last_hit > DAMAGE_RATE * 10:
+        if now - self.last_hit > dam_rate * 10:
             if not self.hit:
                 if self.hp > 0:
                     if weapon_type == self.weapon_required:
@@ -4914,6 +4974,13 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
             if weapon_type == self.weapon_required:
                 self.hp -= 1
                 self.right_hits += 1
+            elif weapon_type == 'explosion':
+                self.hp -= 1
+                self.right_hits += 1
+            elif weapon_type == 'tank':
+                if ('block' not in self.name) and ('vein' not in self.name):
+                    self.hp -= 1
+                    self.right_hits += 1
             if self.hp < 1:
                 self.dead = True
 

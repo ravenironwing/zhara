@@ -1176,8 +1176,6 @@
   <object id="41" name="wall" x="4906" y="3536" width="44" height="104"/>
   <object id="42" name="wall" x="3626" y="4174" width="44" height="190"/>
   <object id="43" name="wall" x="3624" y="4470" width="44" height="192"/>
-  <object id="50" name="wall" x="5502.67" y="3308.67" width="37.3333" height="36"/>
-  <object id="51" name="wall" x="5105.33" y="3314" width="37.3333" height="36"/>
   <object id="57" name="bed" x="3101.33" y="4772" width="220" height="174.667"/>
   <object id="58" name="bed" x="4378" y="4774.67" width="220" height="174.667"/>
   <object id="59" name="bed" x="5128" y="4396.67" width="220" height="174.667"/>

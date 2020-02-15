@@ -2015,7 +2015,7 @@ class Game:
                             self.message_text = False
                             self.e_down = False
 
-                hits = pg.sprite.spritecollide(self.player, self.vehicles, False)
+                hits = pg.sprite.spritecollide(self.player, self.vehicles_on_screen, False)
                 if hits:
                     if not hits[0].occupied and hits[0].living:
                         self.message_text = True
@@ -2129,6 +2129,19 @@ class Game:
                 mob.climbing = False
                 if not mob.jumping:
                     mob.elevation = 0
+
+        # vehicle hit breakable
+        hits = pg.sprite.groupcollide(self.breakable_on_screen, self.vehicles_on_screen, False, False, vehicle_collide_any)
+        for breakable in hits:
+           for vehicle in hits[breakable]:
+               if not vehicle.flying:
+                    breakable.gets_hit(vehicle.cat, 0, 0, 0)
+
+        # explosion hit breakable
+        hits = pg.sprite.groupcollide(self.breakable_on_screen, self.explosions, False, False, pg.sprite.collide_circle_ratio(0.5))
+        for breakable in hits:
+           for exp in hits[breakable]:
+                breakable.gets_hit('explosion', 0, 0, 0)
 
         # NPC hits charger
         hits = pg.sprite.groupcollide(self.npcs_on_screen, self.chargers, False, False)
@@ -2349,28 +2362,28 @@ class Game:
                 npc.in_shallows = False
 
         # mob hits player's moving vehicle
-        hits = pg.sprite.groupcollide(self.mobs_on_screen, self.occupied_vehicles, False, False, mob_hit_rect)
-        for mob in hits:
-            for vehicle in hits[mob]:
-                if vehicle not in self.flying_vehicles:
-                    if vehicle == self.player.vehicle:
-                        if not mob.in_player_vehicle:
-                            keys = pg.key.get_pressed()
-                            if keys[pg.K_w] or pg.mouse.get_pressed() == (0, 0, 1) or keys[pg.K_s] or keys[pg.K_RIGHT] or keys[pg.K_LEFT] or keys[pg.K_UP] or keys[pg.K_DOWN]:
-                                try:
-                                    self.player.friction = -10/self.player.vel.length()
-                                except:
-                                    self.player.friction = -.08
-                                if self.player.friction < -.08:
-                                    self.player.friction = -.08
-                                if vehicle in self.animals:
-                                    knockback = 20
-                                else:
-                                    knockback = 0
-                                mob.gets_hit(self.player.vel.length()/80, knockback, 0)
-                            elif vehicle in self.animals:
-                                mob.gets_hit(0, 20, 0)
-                            mob.vel = vec(0, 0)
+        #hits = pg.sprite.groupcollide(self.mobs_on_screen, self.occupied_vehicles, False, False, mob_hit_rect)
+        #for mob in hits:
+        #    for vehicle in hits[mob]:
+        #        if vehicle not in self.flying_vehicles:
+        #            if vehicle == self.player.vehicle:
+        #                if not mob.in_player_vehicle:
+        #                    keys = pg.key.get_pressed()
+        #                    if keys[pg.K_w] or pg.mouse.get_pressed() == (0, 0, 1) or keys[pg.K_s] or keys[pg.K_RIGHT] or keys[pg.K_LEFT] or keys[pg.K_UP] or keys[pg.K_DOWN]:
+        #                        try:
+        #                            self.player.friction = -10/self.player.vel.length()
+        #                        except:
+        #                            self.player.friction = -.08
+        #                        if self.player.friction < -.08:
+        #                            self.player.friction = -.08
+        #                        if vehicle in self.animals:
+        #                            knockback = 20
+        #                        else:
+        #                            knockback = 0
+        #                        mob.gets_hit(self.player.vel.length()/80, knockback, 0)
+        #                    elif vehicle in self.animals:
+        #                        mob.gets_hit(0, 20, 0)
+        #                    mob.vel = vec(0, 0)
 
     def render_lighting(self, underworld = False):
         # draw the light mask (gradient) onto fog image
@@ -2434,8 +2447,13 @@ class Game:
         pg.display.set_caption("Legends of Zhara  FPS: {:.2f}".format(self.clock.get_fps()))
         self.group.draw(self.screen, self)
         if self.draw_debug:
-            for wall in self.walls:
+            for wall in self.walls_on_screen:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
+            for vehicle in self.vehicles_on_screen:
+                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(vehicle.hit_rect), 1)
+                pg.draw.rect(self.screen, GREEN, self.camera.apply_rect(vehicle.hit_rect2), 1)
+                pg.draw.rect(self.screen, RED, self.camera.apply_rect(vehicle.hit_rect3), 1)
+
 
         # Only draws roofs when outside of buildings
         hits = pg.sprite.spritecollide(self.player, self.inside_on_screen, False)
