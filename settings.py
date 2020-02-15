@@ -144,6 +144,8 @@ FPS = 60
 TITLE = "Legends of Zhara"
 BGCOLOR = BROWN
 TITLE_IMAGE = 'skyrealm.png'
+LOGO_IMAGE = 'a two headed snick.png'
+MPY_WORDS = 'mpy_words.png'
 ICON_IMG = 'zhara_icon.png'
 OVERWORLD_MAP_IMAGE = 'worldmap.png'
 #MAP_TILE_WIDTH = 64 # 64 tiles by 64 tiles per map
@@ -450,7 +452,7 @@ ZOMBIE_HIT_SOUNDS = ['splat-15.wav']
 WRAITH_SOUNDS = ['wraith1.wav', 'wraith2.wav', 'wraith3.wav', 'wraith4.wav']
 EFFECTS_SOUNDS = {'door close': 'door_close.wav', 'door open': 'door_open.wav', 'charge': 'charge.wav', 'bow reload': 'bow reload.wav', 'level_start': 'Day_1_v2_mod.ogg', 'click': 'click.wav', 'fanfare': 'fanfare.wav', 'rustle': 'rustle.wav', 'pickaxe': 'pickaxe.wav', 'rocks': 'rocks.wav', 'rock_hit': 'rock_hit.wav', 'fart': 'fart.wav', 'pee': 'pee.wav', 'toilet': 'toilet.wav',
                   'health_up': 'health_pack.wav', 'casting healing': 'casting_healing.wav', 'page turn': 'page_turn.wav',
-                  'gun_pickup': 'gun_pickup.wav', 'jump': 'jump.wav', 'tank': 'tank.wav', 'splash': 'splash.wav', 'swim': 'swim.wav', 'shallows': 'shallows.wav', 'climb': 'climb.wav', 'unlock': 'unlock.wav', 'lock click': 'lock_click.wav', 'fire blast': 'fire_blast.wav', 'knock':
+                  'gun_pickup': 'gun_pickup.wav', 'jump': 'jump.wav', 'tank': 'tank.wav', 'tank engine': 'tank_engine.wav','splash': 'splash.wav', 'swim': 'swim.wav', 'shallows': 'shallows.wav', 'climb': 'climb.wav', 'unlock': 'unlock.wav', 'lock click': 'lock_click.wav', 'fire blast': 'fire_blast.wav', 'knock':
                   'knock.wav', 'metal hit': 'metal_hit.wav', 'anvil': 'anvil.wav', 'scrape': 'scrape.wav', 'grindstone': 'grindstone.wav', 'hammering': 'hammering.wav', 'snore': 'snore.wav', 'cashregister': 'cashregister.wav', 'alchemy': 'alchemy.wav', 'enchant': 'enchant.wav', 'fire crackle': 'fire_crackling.wav'}
 
 PUNCH_SOUNDS = []

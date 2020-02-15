@@ -42,19 +42,59 @@ def collide_with_walls(sprite, group, dir):
     hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
     if hits:
         if dir == 'x':
-            if hits[0].rect.centerx > sprite.hit_rect.centerx:
+            if hits[0].rect.centerx > sprite.hit_rect.centerx: # going right
                 sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
-            if hits[0].rect.centerx < sprite.hit_rect.centerx:
+            if hits[0].rect.centerx < sprite.hit_rect.centerx: # going left
                 sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
             sprite.vel.x = 0
             sprite.hit_rect.centerx = sprite.pos.x
         if dir == 'y':
-            if hits[0].rect.centery > sprite.hit_rect.centery:
+            if hits[0].rect.centery > sprite.hit_rect.centery: # going down
                 sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
-            if hits[0].rect.centery < sprite.hit_rect.centery:
+            if hits[0].rect.centery < sprite.hit_rect.centery: # going up
                 sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
             sprite.vel.y = 0
             sprite.hit_rect.centery = sprite.pos.y
+
+    """
+    if sprite in sprite.game.vehicles_on_screen:
+        hits = pg.sprite.spritecollide(sprite, group, False, wall_vehicle_collide_hit2_rect)
+        if hits:
+            if dir == 'x':
+                if hits[0].rect.centerx > sprite.hit_rect2.centerx: # Heading Right
+                    sprite.pos.x = hits[0].rect.left - (sprite.hit_rect2.width / 2 + sprite.hrect_offset2.rotate(-sprite.rot).x)
+                if hits[0].rect.centerx < sprite.hit_rect2.centerx: # Heading Left
+                    sprite.pos.x = hits[0].rect.right + sprite.hit_rect2.width / 2 + sprite.hrect_offset2.rotate(-sprite.rot).x
+                sprite.vel.x = 0
+                sprite.hit_rect.centerx = sprite.pos.x
+                sprite.hit_rect2.centerx = sprite.pos.x + sprite.hrect_offset2.rotate(-sprite.rot).x
+            if dir == 'y':
+                if hits[0].rect.centery > sprite.hit_rect2.centery: # Heading down
+                    sprite.pos.y = hits[0].rect.top - (sprite.hit_rect2.height / 2 + sprite.hrect_offset2.rotate(-sprite.rot).y)
+                if hits[0].rect.centery < sprite.hit_rect2.centery: # Heading up
+                    sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect2.height / 2  + sprite.hrect_offset2.rotate(-sprite.rot).y
+                sprite.vel.y = 0
+                sprite.hit_rect.centery = sprite.pos.y
+                sprite.hit_rect2.centery = sprite.pos.y + sprite.hrect_offset2.rotate(-sprite.rot).y
+        hits = pg.sprite.spritecollide(sprite, group, False, wall_vehicle_collide_hit3_rect)
+        if hits:
+            if dir == 'x':
+                if hits[0].rect.centerx > sprite.hit_rect3.centerx:  # Heading Right
+                    sprite.pos.x = hits[0].rect.left - (sprite.hit_rect3.width / 2 + sprite.hrect_offset3.rotate(-sprite.rot).x)
+                if hits[0].rect.centerx < sprite.hit_rect3.centerx:  # Heading Left
+                    sprite.pos.x = hits[0].rect.right + sprite.hit_rect3.width / 2 + sprite.hrect_offset3.rotate(-sprite.rot).x
+                sprite.vel.x = 0
+                sprite.hit_rect.centerx = sprite.pos.x
+                sprite.hit_rect3.centerx = sprite.pos.x + sprite.hrect_offset3.rotate(-sprite.rot).x
+            if dir == 'y':
+                if hits[0].rect.centery > sprite.hit_rect3.centery:  # Heading down
+                    sprite.pos.y = hits[0].rect.top - (sprite.hit_rect3.height / 2 + sprite.hrect_offset3.rotate(-sprite.rot).y)
+                if hits[0].rect.centery < sprite.hit_rect3.centery:  # Heading up
+                    sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect3.height / 2 + sprite.hrect_offset3.rotate(-sprite.rot).y
+                sprite.vel.y = 0
+                sprite.hit_rect.centery = sprite.pos.y
+                sprite.hit_rect3.centery = sprite.pos.y + sprite.hrect_offset3.rotate(-sprite.rot).y
+        """
 
 def vehicle_collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.hit_rect)
@@ -64,6 +104,10 @@ def vehicle_collide_hit3_rect(one, two):
     return one.hit_rect.colliderect(two.hit_rect3)
 def vehicle_collide_any(one, two):
     return (one.hit_rect.colliderect(two.hit_rect) or one.hit_rect.colliderect(two.hit_rect2) or one.hit_rect.colliderect(two.hit_rect3))
+def wall_vehicle_collide_hit2_rect(one, two):
+    return one.hit_rect2.colliderect(two.rect)
+def wall_vehicle_collide_hit3_rect(one, two):
+    return one.hit_rect3.colliderect(two.rect)
 
 def collide_with_vehicles(sprite, dir):
     forward = False
@@ -481,6 +525,15 @@ class Vehicle(pg.sprite.Sprite):
         self.veh_acc = self.data['acceleration']
         self.rot_speed = self.data['rot speed']
         self.aggression = "vehicle"
+        self.forward_sound_playing = False
+        if 'run sound' in self.data.keys():
+            self.run_sound = self.data['run sound']
+        else:
+            self.run_sound = None
+        if 'drive sound' in self.data.keys():
+            self.drive_sound = self.data['drive sound']
+        else:
+            self.drive_sound = None
         if 'fuel' in self.data.keys():
             self.fuel = self.data['fuel']
         else:
@@ -488,16 +541,16 @@ class Vehicle(pg.sprite.Sprite):
         self.cat = self.data['cat']
         if self.cat in BOATS:
             self.flying = False
-            self.groups = game.all_sprites, game.vehicles, game.obstacles, game.walls, game.boats, game.all_vehicles
+            self.groups = game.all_sprites, game.vehicles, game.boats, game.all_vehicles
         elif self.cat in AMPHIBIOUS_VEHICLES:
             self.flying = False
-            self.groups = game.all_sprites, game.vehicles, game.obstacles, game.walls, game.amphibious_vehicles, game.all_vehicles
+            self.groups = game.all_sprites, game.vehicles, game.amphibious_vehicles, game.all_vehicles
         elif self.cat in FLYING_VEHICLES:
             self.groups = game.all_sprites, game.flying_vehicles, game.all_vehicles
             self.flying = True
         else:
             self.flying = False
-            self.groups = game.all_sprites, game.vehicles, game.obstacles, game.walls, game.land_vehicles, game.all_vehicles
+            self.groups = game.all_sprites, game.vehicles, game.land_vehicles, game.all_vehicles
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.game.group.add(self)
@@ -510,6 +563,8 @@ class Vehicle(pg.sprite.Sprite):
         self.hit_rect3 = self.hit_rect2.copy()
         self.hrect_offset2 = vec(self.hit_rect2.width/2, 0)
         self.hrect_offset3 = vec(-self.hit_rect3.width/2, 0)
+        self.hit_rect2.center = self.rect.center + self.hrect_offset2
+        self.hit_rect3.center = self.rect.center + self.hrect_offset3
         self.hit_rect.center = self.rect.center
         self.transparency = 255 # Used to make vehicles look like they are sinking
         self.player_walk_anim = self.data['walk animation']
@@ -528,7 +583,7 @@ class Vehicle(pg.sprite.Sprite):
         self.immaterial = False
         self.invisible = False
         self.protected = False
-        self.forward = False
+        self._forward = False
         self.elevation = 0
         self.in_vehicle = self.in_player_vehicle = False
         if health == None:
@@ -553,6 +608,27 @@ class Vehicle(pg.sprite.Sprite):
         for item in collide_list:
             self.collide_list.append(eval("self.game." + item + "_on_screen"))
 
+    @property
+    def forward(self): #This is the method that is called whenever you access
+        return self._forward
+    @forward.setter #This is the method that is called whenever you set a value
+    def forward(self, value):
+        if value!=self._forward:
+            self._forward = value
+            if self.occupied:
+                if value:
+                    if self.drive_sound != None:
+                        if not self.forward_sound_playing:
+                            self.forward_sound_playing = True
+                            self.game.channel6.stop()
+                            self.game.channel6.play(self.game.effects_sounds[self.drive_sound], loops=-1)
+                else:
+                    if self.run_sound != None:
+                        if self.forward_sound_playing:
+                            self.game.channel6.stop()
+                            self.game.channel6.play(self.game.effects_sounds[self.run_sound], loops=-1)
+                            self.forward_sound_playing = False
+
     def add_health(self, amount):
         self.health += amount
         if self.health > self.max_health:
@@ -570,6 +646,8 @@ class Vehicle(pg.sprite.Sprite):
             self.driver.equipped['weapons2'] = self.driver.current_weapon2 = self.data['weapons2']
 
     def enter_vehicle(self, driver):
+        if self.run_sound != None:
+            self.game.channel6.play(self.game.effects_sounds[self.run_sound], loops=-1)
         self.driver = driver
         self.driver.pos = vec(self.rect.center)# centers the driver in the vehicle.
         self.driver.rect.center = self.driver.hit_rect.center = self.rect.center
@@ -587,8 +665,6 @@ class Vehicle(pg.sprite.Sprite):
             self.driver.equipped['weapons2'] = self.driver.current_weapon2 = self.data['weapons2']
         if self.data['weapons'] != None or self.data['weapons2'] != None:
             self.driver.pre_reload()
-        self.remove(self.game.walls)
-        self.remove(self.game.obstacles)
         if self.cat == 'airship':
             self.game.flying_vehicles.add(self.driver)
             if self.driver == self.game.player:
@@ -620,6 +696,8 @@ class Vehicle(pg.sprite.Sprite):
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
 
     def exit_vehicle(self):
+        self.game.channel6.stop()
+        self.forward_sound_playing = False
         self.pos = vec(self.rect.center)
         self.occupied = False
         self.driver.in_vehicle = False
@@ -644,8 +722,6 @@ class Vehicle(pg.sprite.Sprite):
             self.turret.remove(self.game.occupied_vehicles)
             self.turret.remove (self.game.lights)
             self.turret.occupied = False
-            self.game.walls.add(self)
-            self.game.obstacles.add(self)
             if self.driver == self.game.player:
                 for companion in self.game.companions:
                     companion.in_player_vehicle = False
@@ -655,9 +731,6 @@ class Vehicle(pg.sprite.Sprite):
                 for companion in self.game.companions:
                     companion.in_player_vehicle = False
                     companion.in_flying_vehicle = False
-        else:
-            self.game.walls.add(self)
-            self.game.obstacles.add(self)
         if self.kind == 'skiff':
             if self.driver == self.game.player:
                 for companion in self.game.companions:
@@ -1294,7 +1367,6 @@ class Player(pg.sprite.Sprite):
             if keys[pg.K_d]:
                 self.rot_speed = -PLAYER_ROT_SPEED
         else:
-            self.vehicle.forward = False
             if keys[pg.K_a]:
                 self.rot_speed = self.vehicle.rot_speed
             if keys[pg.K_d]:
@@ -1302,6 +1374,8 @@ class Player(pg.sprite.Sprite):
             if keys[pg.K_w] or (pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0)):
                 self.accelerate()
                 self.vehicle.forward = True
+            else:
+                self.vehicle.forward = False
             if keys[pg.K_s]:
                 self.accelerate(0.5, "rev")
         now = pg.time.get_ticks()
@@ -2385,9 +2459,11 @@ class Player(pg.sprite.Sprite):
                 self.hit_rect.centerx = self.pos.x
                 collide_with_walls(self, self.game.walls_on_screen, 'x')
                 collide_with_elevations(self, 'x')
+                collide_with_vehicles(self, 'x')
                 self.hit_rect.centery = self.pos.y
                 collide_with_walls(self, self.game.walls_on_screen, 'y')
                 collide_with_elevations(self, 'y')
+                collide_with_vehicles(self, 'y')
                 self.rect.center = self.hit_rect.center
         if self.light_on:
             if self in self.game.lights:
@@ -4600,7 +4676,7 @@ class Explosion(pg.sprite.Sprite):
             self.last_update = now
             self.frame += 1
             if self.frame == 1:
-                self.game.effects_sounds['fire blast'].play()
+                self.game.channel7.play(self.game.effects_sounds['fire blast'])
             if self.frame == len(self.image_list):
                 if self.target == None:
                     if self.after_effect == 'fire':

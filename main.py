@@ -208,11 +208,45 @@ class Game:
         self.screen = pg.display.set_mode((self.screen_width, self.screen_height), self.flags)
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
+        # Loads Mutant Python Logo Faid in/out.
+        mpy_logo_image = pg.image.load(path.join(img_folder, LOGO_IMAGE)).convert_alpha()
+        mpy_logo_image = pg.transform.scale(mpy_logo_image, (int(self.screen_height/4), int(self.screen_height/4)))
+        logo_width = mpy_logo_image.get_width()
+        logo_placement = ((self.screen_width - logo_width)/2, (self.screen_height - logo_width)/2)
+        mpy_words_image = pg.image.load(path.join(img_folder, MPY_WORDS)).convert_alpha()
+        mpy_words_image = pg.transform.scale(mpy_words_image, (int(self.screen_height/4), int(self.screen_height/4)))
+        words_height = mpy_words_image.get_height()
+        words_placement = ((self.screen_width - logo_width)/2, (self.screen_height - logo_width)/2 + words_height + 20)
+        for i in range(0, 256):
+            self.clock.tick(120)
+            self.screen.fill(BLACK)
+            mpy_logo_image.set_alpha(i)
+            self.screen.blit(mpy_logo_image, logo_placement)
+            pg.display.flip()
+        for i in range(255, 0, -1):
+            self.clock.tick(120)
+            self.screen.fill(BLACK)
+            mpy_logo_image.set_alpha(i)
+            self.screen.blit(mpy_logo_image, logo_placement)
+            pg.display.flip()
+        for i in range(0, 256):
+            self.clock.tick(120)
+            self.screen.fill(BLACK)
+            mpy_words_image.set_alpha(i)
+            self.screen.blit(mpy_words_image, logo_placement)
+            pg.display.flip()
         self.load_data()
+        for i in range(255, 0, -1):
+            self.clock.tick(120)
+            self.screen.fill(BLACK)
+            mpy_words_image.set_alpha(i)
+            self.screen.blit(mpy_words_image, logo_placement)
+            pg.display.flip()
         self.channel3 = pg.mixer.Channel(2)
         self.channel4 = pg.mixer.Channel(3) # Fire, water fall
         self.channel5 = pg.mixer.Channel(4) # breaking sounds and other effects
-        self.channel6 = pg.mixer.Channel(5)
+        self.channel6 = pg.mixer.Channel(5) # vehicle sounds
+        self.channel7 = pg.mixer.Channel(6) # explosions
 
     def on_screen(self, sprite):
         rect = self.camera.apply(sprite)
@@ -1745,7 +1779,7 @@ class Game:
 
         if closest_fire != None:
             if previous_distance < 400:  # This part makes it so the fire volume decreases as you walk away from it.
-                volume = 150 / (previous_distance * 2)
+                volume = 150 / (previous_distance * 2 + 0.001)
                 self.channel4.set_volume(volume)
                 if not self.channel4.get_busy():
                     self.channel4.play(self.effects_sounds['fire crackle'], loops=-1)
@@ -2001,7 +2035,7 @@ class Game:
                     if random() < 0.7:
                         self.player.gets_hit(hit.damage, hit.knockback, hits[0].rot)
 
-            # player hits an empty vehicle or mech suit
+            # player hits empty vehicle or mech suit
             if not self.player.in_vehicle:
                 if self.player.possessing == None:
                     hits = pg.sprite.spritecollide(self.player, self.mechsuits, False)
@@ -2015,7 +2049,7 @@ class Game:
                             self.message_text = False
                             self.e_down = False
 
-                hits = pg.sprite.spritecollide(self.player, self.vehicles_on_screen, False)
+                hits = pg.sprite.spritecollide(self.player, self.vehicles_on_screen, False, pg.sprite.collide_circle_ratio(0.95))
                 if hits:
                     if not hits[0].occupied and hits[0].living:
                         self.message_text = True
@@ -2029,7 +2063,8 @@ class Game:
                 if hits:
                     if not hits[0].occupied and hits[0].living:
                         self.message_text = True
-                        self.message = "E to enter, X to exit"
+                        if self.message != "You need a key to operate this vehicle.":
+                            self.message = "E to enter, X to exit"
                     if self.e_down:
                         self.e_down = False
                         if hits[0].living:
@@ -2046,7 +2081,7 @@ class Game:
                                     if is_felius:
                                         hits[0].enter_vehicle(self.player)
                                 else:
-                                    self.message_text = "You need a key to operate this vehicle."
+                                    self.message = "You need a key to operate this vehicle."
                             else:
                                 hits[0].enter_vehicle(self.player)
         else:
@@ -2140,8 +2175,9 @@ class Game:
         # explosion hit breakable
         hits = pg.sprite.groupcollide(self.breakable_on_screen, self.explosions, False, False, pg.sprite.collide_circle_ratio(0.5))
         for breakable in hits:
-           for exp in hits[breakable]:
-                breakable.gets_hit('explosion', 0, 0, 0)
+            for exp in hits[breakable]:
+                if exp.damage > 200:
+                    breakable.gets_hit('explosion', 0, 0, 0)
 
         # NPC hits charger
         hits = pg.sprite.groupcollide(self.npcs_on_screen, self.chargers, False, False)
@@ -2453,6 +2489,8 @@ class Game:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(vehicle.hit_rect), 1)
                 pg.draw.rect(self.screen, GREEN, self.camera.apply_rect(vehicle.hit_rect2), 1)
                 pg.draw.rect(self.screen, RED, self.camera.apply_rect(vehicle.hit_rect3), 1)
+            for mob in self.mobs_on_screen:
+                pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(mob.hit_rect), 1)
 
 
         # Only draws roofs when outside of buildings
