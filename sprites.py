@@ -116,7 +116,7 @@ def collide_with_vehicles(sprite, dir):
         if sprite != hits[0]:
             if hits[0].forward:
                 forward = True
-                sprite.gets_hit(hits[0].damage, 10, sprite.rot -180, 0)
+                sprite.gets_hit(hits[0].damage, 10, sprite.rot -180, 80)
 
     if not forward:
         hits = pg.sprite.spritecollide(sprite, sprite.game.vehicles_on_screen, False, vehicle_collide_hit_rect)
@@ -458,7 +458,7 @@ class Turret(pg.sprite.Sprite):
         self.rect.center = self.mother.rect.center
         self.hit_rect = SMALL_HIT_RECT.copy()
         self.hit_rect.center = self.rect.center
-        self.light_mask = pg.transform.scale(self.game.light_mask_images[2], (500, 500))
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[2], (600, 600))
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.rect.center
         self.rot = 0
@@ -666,6 +666,10 @@ class Vehicle(pg.sprite.Sprite):
         if self.data['weapons'] != None or self.data['weapons2'] != None:
             self.driver.pre_reload()
         if self.cat == 'airship':
+            self.light_mask = pg.transform.scale(self.game.light_mask_images[6], (800, 800))
+            self.light_mask_rect = self.light_mask.get_rect()
+            self.light_mask_rect.center = self.rect.center
+            self.game.lights.add(self)
             self.game.flying_vehicles.add(self.driver)
             if self.driver == self.game.player:
                 self.driver.in_flying_vehicle = True
@@ -726,6 +730,8 @@ class Vehicle(pg.sprite.Sprite):
                 for companion in self.game.companions:
                     companion.in_player_vehicle = False
         elif self.cat == 'airship':
+            self.light_mask = None
+            self.game.lights.remove(self)
             self.driver.remove(self.game.flying_vehicles)
             if self.driver == self.game.player:
                 for companion in self.game.companions:
@@ -811,10 +817,10 @@ class Vehicle(pg.sprite.Sprite):
             if self.turret != None:
                 self.turret.update()
             if self.light_mask != None:
-                self.light_mask = self.game.flashlight_masks[int(self.turret.rot/3)]
-                self.light_mask_rect = self.light_mask.get_rect()
+                if self.cat == 'tank':
+                    self.light_mask = self.game.flashlight_masks[int(self.turret.rot/3)]
+                    self.light_mask_rect = self.light_mask.get_rect()
                 self.light_mask_rect.center = self.rect.center
-                self.game.lights.add(self)
 
 
 class Character(pg.sprite.Sprite):
@@ -3656,6 +3662,7 @@ class Animal(pg.sprite.Sprite):
             self.in_flying_vehicle = False
         else:
             self._layer = MOB_LAYER
+            self.in_flying_vehicle = False
         if self.kind['grabable']:
             self.groups = game.all_sprites, game.mobs, game.animals, game.grabable_animals, game.detectables, game.moving_targets
         else:
@@ -3719,7 +3726,7 @@ class Animal(pg.sprite.Sprite):
         self.immaterial = False
         self.eating_corpse = 0
         self.rotate_direction = randrange(-1, 1)
-        self.rotate_speed = 5 * (self.walk_speed / self.width)
+        self.rot_speed = 5 * (self.walk_speed / self.width)
         self.frame = 0 #used to keep track of what frame the animation is on.
         self.running = False
         self.jumping = False
@@ -3730,6 +3737,7 @@ class Animal(pg.sprite.Sprite):
         self.in_shallows = False
         self.in_player_vehicle = False
         self.in_vehicle = False
+        self.turret = None
         self.driver = None
         if 'a' in self.aggression:
             self.aggressive = True
@@ -4015,8 +4023,8 @@ class Animal(pg.sprite.Sprite):
                         self.last_move = now
                         if random() < 0.25:
                             self.rotate_direction = choice([-1, 0, 1])
-                        self.rotate_speed = 6 * self.walk_speed / self.width
-                        self.rot += (self.rotate_speed * self.rotate_direction) % 360
+                        self.rot_speed = 6 * self.walk_speed / self.width
+                        self.rot += (self.rot_speed * self.rotate_direction) % 360
                     if self.frame > len(self.walk_image_list) - 1:
                         self.frame = 0
                     self.rotate_image(self.walk_image_list)
@@ -4102,6 +4110,10 @@ class Animal(pg.sprite.Sprite):
         if not silent:
             choice(self.game.zombie_hit_sounds).play()
         self.game.player.stats['kills'] += 1
+        if 'death action' in self.kind.keys():
+            if self.kind['death action'] == 'explode':
+                Explosion(self.game, self, 0.5, self.damage * 4)
+
         if self.kind['corpse'] != None:
             self.living = False
             self.inventory = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
@@ -4430,7 +4442,6 @@ class Stationary_Animated(pg.sprite.Sprite): # Used for fires and other stationa
             self.pos = vec(self.center.x, self.center.y)
         except:
             self.pos = vec(0, 0)
-            print('attribute error')
 
     def update(self):
         now = pg.time.get_ticks()

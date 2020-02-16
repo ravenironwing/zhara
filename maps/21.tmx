@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="997">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="1000">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="100" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="2560"/>
  </tileset>
@@ -1144,7 +1144,6 @@
   <object id="31" name="wall" x="7168" y="16" width="128" height="1192.85"/>
   <object id="32" name="wall" x="7688" y="8" width="120" height="2040"/>
   <object id="33" name="wall" x="7776" y="1928" width="288" height="114.788"/>
-  <object id="34" name="wall" x="8060.24" y="2065.09" width="615.03" height="117.939" rotation="90"/>
   <object id="35" name="wall" x="7632" y="2568" width="312" height="112"/>
   <object id="36" name="wall" x="904" y="8" width="104" height="1198"/>
   <object id="37" name="wall" x="392" y="8" width="120" height="1912"/>
@@ -1486,9 +1485,9 @@
   <object id="430" name="fire" x="4395.5" y="7978.5" width="43" height="43"/>
   <object id="431" name="kimmy" x="2849.55" y="1461.06" width="90.9092" height="87.8789"/>
   <object id="435" name="butterfly ideopsis" x="1717.57" y="6271.85" width="29" height="27"/>
-  <object id="457" name="sheep" x="6532" y="6315" width="36" height="34"/>
+  <object id="457" name="pig" x="6532" y="6315" width="36" height="34"/>
   <object id="458" name="sheep" x="6424" y="5991" width="36" height="34"/>
-  <object id="459" name="sheep" x="6833.88" y="6011.06" width="36" height="34"/>
+  <object id="459" name="pig" x="6833.88" y="6011.06" width="36" height="34"/>
   <object id="462" name="guard" x="6278" y="5824" width="52" height="46"/>
   <object id="560" name="chicken" x="6501" y="5221" width="34" height="37"/>
   <object id="583" name="brown bird" x="4287" y="6654" width="25" height="28"/>
@@ -1617,5 +1616,6 @@
   <object id="992" name="lantern" x="5138.67" y="6696" width="22.6667" height="24"/>
   <object id="993" name="light" x="2636" y="6378.67" width="349.333" height="172"/>
   <object id="994" name="light" x="2653.33" y="5852" width="156" height="162.667"/>
+  <object id="999" name="wall" x="7938.67" y="2025.33" width="126.667" height="658.667"/>
  </objectgroup>
 </map>
