@@ -1237,7 +1237,8 @@ class Player(pg.sprite.Sprite):
         self.jump_count = 0
         self._climbing = False
         self._swimming = False
-        self._in_shallows = False
+        self.in_shallows = False
+        self.in_grass = False
         self.driver = None
         self.falling = False
         self.in_vehicle = self.in_player_vehicle = False
@@ -1323,15 +1324,15 @@ class Player(pg.sprite.Sprite):
         else:
             pass
 
-    @property
-    def in_shallows(self): #This is the method that is called whenever you access in_shallows
-        return self._in_shallows
-    @in_shallows.setter #This is the method that is called whenever you set a value for in_shallows
-    def in_shallows(self, value):
-        if value!=self._in_shallows:
-            self._in_shallows = value
-        else:
-            pass
+    #@property
+    #def in_shallows(self): #This is the method that is called whenever you access in_shallows
+    #    return self._in_shallows
+    #@in_shallows.setter #This is the method that is called whenever you set a value for in_shallows
+    #def in_shallows(self, value):
+    #    if value!=self._in_shallows:
+    #        self._in_shallows = value
+    #    else:
+    #        pass
 
     def get_keys(self):
         self.rot_speed = 0
@@ -1483,7 +1484,7 @@ class Player(pg.sprite.Sprite):
             if self.swimming:
                 self.animation_playing = self.body.swim_anim
                 animate_speed = 120
-            elif self.in_shallows:
+            elif self.in_shallows or self.in_grass:
                 self.animation_playing = self.body.shallows_anim
                 animate_speed = 120
             elif self.climbing:
@@ -1521,11 +1522,17 @@ class Player(pg.sprite.Sprite):
                         self.add_stamina(-1)   # This part makes it so you get hurt and drown if you run out of stamina in the water
                         if self.stats['stamina'] < 4:
                             self.add_health(-1)
-            if self.in_shallows:
+            elif self.in_shallows:
                 if now - self.last_move > self.game.effects_sounds['shallows'].get_length() * 1000:
                     self.last_move = now
                     self.game.effects_sounds['shallows'].play()
-            if self.climbing:
+
+            elif self.in_grass:
+                if now - self.last_move > self.game.effects_sounds['grass'].get_length() * 1000:
+                    self.last_move = now
+                    self.game.effects_sounds['grass'].play()
+
+            elif self.climbing:
                 self.acceleration = PLAYER_CLIMB
                 if now - self.last_move > self.game.effects_sounds['climb'].get_length() * 1000: # I really should reuse this code for parts where I need to end the sound before playing another.
                     self.last_move = now
@@ -2724,6 +2731,7 @@ class Npc(pg.sprite.Sprite):
         self.invisible = False
         self.flying = False
         self.in_shallows = False
+        self.in_grass = False
         self.in_vehicle = False
         self.in_player_vehicle = False
         self.in_flying_vehicle = False
@@ -3095,6 +3103,8 @@ class Npc(pg.sprite.Sprite):
                         if self.swimming:
                             self.body.animate(self.body.swim_anim, temp_animate_speed)
                         elif self.in_shallows:
+                            self.body.animate(self.body.shallows_anim, temp_animate_speed)
+                        elif self.in_grass:
                             self.body.animate(self.body.shallows_anim, temp_animate_speed)
                         elif self.running:
                             self.body.animate(self.body.run_anim, temp_animate_speed)
@@ -3701,6 +3711,8 @@ class Animal(pg.sprite.Sprite):
             self.run_image_list = self.game.animal_animations[self.name]['run']
         else:
             self.run_image_list = self.walk_image_list
+        self.old_run_image_list = None
+        self.old_walk_image_list = None
         self.selected_image_list = self.walk_image_list
         self.image = self.walk_image_list[1].copy()
         self.rot = randrange(0, 360)
@@ -3710,6 +3722,11 @@ class Animal(pg.sprite.Sprite):
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
+        self.hideable = False
+        if self.kind['hit rect'] == SMALL_HIT_RECT:
+            if not self.flying:
+                self.hideable = True # Used for animals that can hide in long grass
+        self._in_grass = False
         self.hit_rect = self.kind['hit rect'].copy()
         self.width = self.hit_rect.width
         self.hit_rect.center = self.pos
@@ -3761,6 +3778,22 @@ class Animal(pg.sprite.Sprite):
             self.approach_vector = vec(choice([1, 0]), choice([1, -1, 0]))
         if self.aggression == 'awp':
             self.approach_vector = vec(0, -1)
+
+    @property
+    def in_grass(self):
+        return self._in_grass
+    @in_grass.setter
+    def in_grass(self, value): # This hides small animals when they go into long grass by changing their images to a tiny shadow.
+        if value!=self._in_grass:
+            if self.hideable:
+                if value:
+                    self.old_run_image_list = self.run_image_list
+                    self.old_walk_image_list = self.walk_image_list
+                    self.walk_image_list = self.run_image_list = [self.game.invisible_image, self.game.invisible_image]
+                else:
+                    self.run_image_list = self.old_run_image_list
+                    self.walk_image_list = self.old_walk_image_list
+            self._in_grass = value
 
     def avoid_mobs(self):
         for mob in self.game.mobs_on_screen:
@@ -4369,6 +4402,13 @@ class Dropped_Item(pg.sprite.Sprite):
                 Animal(self.game, self.pos.x, self.pos.y, self.map, temp_item)
             self.kill()
 
+        # Dropping items in grass
+        hits = pg.sprite.spritecollide(self, self.game.long_grass, False)
+        if hits:
+            self.image = self.game.invisible_image
+            self.rect = self.hit_rect = self.image.get_rect()
+            self.rect.center = self.pos
+
     def update(self):
         pass
 
@@ -4467,7 +4507,7 @@ class Stationary_Animated(pg.sprite.Sprite): # Used for fires and other stationa
             self.frame = 0
 
 class Entryway(pg.sprite.Sprite):
-    def __init__(self, game, x, y, orientation = 'L', name = 'generic', locked = False, kind = 'wood'):
+    def __init__(self, game, x, y, orientation = 'L', kind = 'wood', name = 'generic', locked = False):
         self._layer = WALL_LAYER
         self.groups = game.all_sprites, game.entryways
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -4945,7 +4985,6 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.size = size
         self.name = name
         self.kind =  BREAKABLES[self.name]
-        #if 'large ' in self.name
         if 'tree' in self.name:
             if self.size == None:
                 self.size = choice(['sm', 'md', 'lg'])
@@ -4968,6 +5007,14 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.rect = self.image.get_rect()
         self.rect.center = self.center
         self.trunk = Obstacle(self.game, x, y, w, h)
+        if self.name in VEIN_LIST: # Makes it so all rocks spawn at a jumpable height.
+            hits = pg.sprite.spritecollide(self.trunk, self.game.elevations, False)
+            if hits:
+                self.trunk.kill()
+                self.trunk = Elevation(self.game, x, y, w, h, hits[0].elevation + 2)
+            else:
+                self.trunk.kill()
+                self.trunk = Elevation(self.game, x, y, w, h, 2)
         self.hit_rect = self.trunk.rect
         self.hit_rect.center = self.trunk.rect.center
         # Animation vars
@@ -5218,6 +5265,18 @@ class Water(pg.sprite.Sprite):
 class Shallows(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
         self.groups = game.shallows, game.obstacles, game.all_static_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.hit_rect = self.rect
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+
+class LongGrass(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h):
+        self.groups = game.long_grass, game.all_static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)

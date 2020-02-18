@@ -71,6 +71,9 @@ https://opengameart.org/content/road-tile-textures
 metal roofing texture:
 https://retrostylegames.com/portfolio/free-seamless-bronze-copper-metal-roof-texture/
 
+mountain tiles adapted from this adaptation:
+https://opengameart.org/content/2d-lost-garden-zelda-style-tiles-resized-to-32x32-with-additions
+
 other textures:
 http://texturelib.com/#!/category/?path=/Textures/roof
 

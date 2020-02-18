@@ -92,7 +92,7 @@ ITEMS['carrot'] = {'image': 98, 'health': 2, 'stamina': 2, 'weight': 0.1, 'food'
 ITEMS['california roll'] = {'image': 103, 'health': 10, 'stamina': 3, 'weight': 0.1, 'food': True, 'value': 35}
 ITEMS['salmon sushi'] = {'image': 104, 'health': 12, 'stamina': 4, 'weight': 0.1, 'food': True, 'value': 40}
 ITEMS['shrimp sushi'] = {'image': 105, 'health': 8, 'stamina': 6, 'weight': 0.1, 'food': True, 'value': 28}
-ITEMS['radioactive pizza'] = {'image': 151, 'health': 150, 'stamina': 150, 'weight': 0.1, 'food': True, 'value': 200}
+ITEMS['radioactive pizza'] = {'image': 151, 'health': 150, 'stamina': 150, 'weight': 0.1, 'food': True, 'value': 200, 'brightness': 100, 'light mask': 1}
 
 # Live animals
 ITEMS['live green moth'] = {'image': 41, 'weight': 0.1, 'value': 2}

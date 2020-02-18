@@ -214,30 +214,30 @@ class Game:
         logo_width = mpy_logo_image.get_width()
         logo_placement = ((self.screen_width - logo_width)/2, (self.screen_height - logo_width)/2)
         mpy_words_image = pg.image.load(path.join(img_folder, MPY_WORDS)).convert_alpha()
-        mpy_words_image = pg.transform.scale(mpy_words_image, (int(self.screen_height/4), int(self.screen_height/4)))
+        mpy_words_image = pg.transform.scale(mpy_words_image, (int(self.screen_height/2.8), int(self.screen_height/4)))
         words_height = mpy_words_image.get_height()
         words_placement = ((self.screen_width - logo_width)/2, (self.screen_height - logo_width)/2 + words_height + 20)
         for i in range(0, 256):
-            self.clock.tick(120)
+            #self.clock.tick(120)
             self.screen.fill(BLACK)
             mpy_logo_image.set_alpha(i)
             self.screen.blit(mpy_logo_image, logo_placement)
             pg.display.flip()
         for i in range(255, 0, -1):
-            self.clock.tick(120)
+            #self.clock.tick(120)
             self.screen.fill(BLACK)
             mpy_logo_image.set_alpha(i)
             self.screen.blit(mpy_logo_image, logo_placement)
             pg.display.flip()
         for i in range(0, 256):
-            self.clock.tick(120)
+            #self.clock.tick(120)
             self.screen.fill(BLACK)
             mpy_words_image.set_alpha(i)
             self.screen.blit(mpy_words_image, logo_placement)
             pg.display.flip()
         self.load_data()
         for i in range(255, 0, -1):
-            self.clock.tick(120)
+            #self.clock.tick(120)
             self.screen.fill(BLACK)
             mpy_words_image.set_alpha(i)
             self.screen.blit(mpy_words_image, logo_placement)
@@ -248,9 +248,8 @@ class Game:
         self.channel6 = pg.mixer.Channel(5) # vehicle sounds
         self.channel7 = pg.mixer.Channel(6) # explosions
 
-    def on_screen(self, sprite):
+    def on_screen(self, sprite, threshold = 50):
         rect = self.camera.apply(sprite)
-        threshold = 50
         if rect.right < -threshold or rect.bottom < -threshold or rect.left > self.screen_width + threshold or rect.top > self.screen_height + threshold:
             return False
         else:
@@ -338,6 +337,9 @@ class Game:
         companion_list = []
         for companion in self.companions:
             companion_list.append(companion.species)
+        vehicle_name = None
+        if self.player.in_vehicle:
+            vehicle_name = self.player.vehicle.species
 
         updated_equipment = [UPGRADED_WEAPONS, UPGRADED_HATS, UPGRADED_TOPS, UPGRADED_GLOVES, UPGRADED_BOTTOMS, UPGRADED_SHOES, UPGRADED_ITEMS]
         save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.player.colors, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict]
@@ -487,7 +489,8 @@ class Game:
         self.keyed_keyway_image = pg.image.load(path.join(img_folder, 'keyed_keyway.png')).convert_alpha()
         self.lock_pick_image = pg.image.load(path.join(img_folder, 'lock_pick.png')).convert_alpha()
         self.swim_shadow_image = pg.image.load(path.join(img_folder, 'swim_shadow.png')).convert_alpha()
-        self.rock_shadow_image = pg.image.load(path.join(img_folder, 'rock_shadow.png')).convert_alpha()
+        #self.rock_shadow_image = pg.image.load(path.join(img_folder, 'rock_shadow.png')).convert_alpha()
+        self.invisible_image = pg.image.load(path.join(img_folder, 'invisible.png')).convert_alpha()
         # creates a dictionary of animal images. This is not in the settings file like the others because of the order it needs to import info.
         ANIMAL_IMAGES = {}
         for animal in ANIMAL_ANIMATIONS:
@@ -857,6 +860,8 @@ class Game:
         self.water = pg.sprite.Group()
         self.water_on_screen = pg.sprite.Group()
         self.shallows = pg.sprite.Group()
+        self.long_grass = pg.sprite.Group()
+        self.long_grass_on_screen = pg.sprite.Group()
         self.shallows_on_screen = pg.sprite.Group()
         self.lava = pg.sprite.Group()
         self.lava_on_screen = pg.sprite.Group()
@@ -966,9 +971,9 @@ class Game:
                 self.portal_combo = ''
                 Portal(self, self.portal_location, coordinate, location)
     @property
-    def player_inside(self): #This is the method that is called whenever you access in_shallows
+    def player_inside(self): #This is the method that is called whenever you access
         return self._player_inside
-    @player_inside.setter #This is the method that is called whenever you set a value for in_shallows
+    @player_inside.setter #This is the method that is called whenever you set a value
     def player_inside(self, value):
         if value!=self._player_inside:
             self._player_inside = value
@@ -1402,6 +1407,9 @@ class Game:
                 if tile_object.name == 'shallows':
                     Shallows(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
+                if tile_object.name == 'long grass':
+                    LongGrass(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height)
                 if tile_object.name == 'lava':
                     Lava(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
@@ -1428,16 +1436,16 @@ class Game:
                         _, orientation  = tile_object.name.split('_')
                         entryway = Entryway(self, tile_object.x, tile_object.y, orientation)
                     elif numvars == 2:
-                        _, orientation, name  = tile_object.name.split('_')
-                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, name)
+                        _, orientation, kind  = tile_object.name.split('_')
+                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, kind)
                     elif numvars == 3:
-                        _, orientation, name, locked = tile_object.name.split('_')
+                        _, orientation, kind, name = tile_object.name.split('_')
                         locked = eval(locked)
-                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, name, locked)
+                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, kind, name)
                     elif numvars == 4:
-                        _, orientation, name, locked, kind = tile_object.name.split('_')
+                        _, orientation, kind, name, locked = tile_object.name.split('_')
                         locked = eval(locked)
-                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, name, locked, kind)
+                        entryway = Entryway(self, tile_object.x, tile_object.y, orientation, kind, name, locked)
                 if 'door' in tile_object.name:  # This block of code positions the player at the correct door when changing maps
                     door = Door(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height, tile_object.name)
@@ -1478,6 +1486,34 @@ class Game:
                             center = vec(location[0] * self.map.tile_size + self.map.tile_size/2, location[1] * self.map.tile_size + self.map.tile_size/2)
                             Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
 
+        # Creates elevation objects if layers have EL or CLIMB in their names.
+        for layer in self.map.tmxdata.visible_layers:
+            if 'EL' in layer.name:
+                EL = layer.name
+                EL = EL.replace('EL', '')
+                EL = int(EL)
+                if isinstance(layer, pytmx.TiledTileLayer):
+                    for x, y, gid, in layer:
+                        if gid != 0:
+                            elev = Elevation(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size, EL)
+                            hits = pg.sprite.spritecollide(elev, self.elevations, False) # Kills redundant elevations on top of others.
+                            for hit in hits:
+                                if hit != elev:
+                                    hit.kill()
+
+            elif 'CLIMB' in layer.name:
+                EL = layer.name
+                EL = EL.replace('CLIMB', '')
+                EL = int(EL)
+                if isinstance(layer, pytmx.TiledTileLayer):
+                    for x, y, gid, in layer:
+                        if gid != 0:
+                            elev = Elevation(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size, EL, True)
+                            hits = pg.sprite.spritecollide(elev, self.elevations, False) # Kills redundant elevations on top of others.
+                            for hit in hits:
+                                if hit != elev:
+                                    hit.kill()
+
         # Generates random drop items
         if self.map_type in ['mountain', 'forest', 'grassland', 'desert', 'beach']:
             for i in range(0, randrange(1, 15)):
@@ -1502,12 +1538,18 @@ class Game:
                         hits = pg.sprite.spritecollide(npc, self.walls, False)
                         if hits:
                             npc.kill()
+                        hits = pg.sprite.spritecollide(npc, self.elevations, False)
+                        if hits:
+                            npc.elevation = hits[0].elevation
                     else:
                         anim = Animal(self, centerx, centery, map, animal)
                         # checks for animals that spawn in walls and kills them.
                         hits = pg.sprite.spritecollide(anim, self.walls, False)
                         if hits:
                             anim.kill()
+                        hits = pg.sprite.spritecollide(anim, self.elevations, False)
+                        if hits:
+                            anim.elevation = hits[0].elevation
 
         # Generates random ores, trees and plants
         if len(self.breakable) < 1:
@@ -1583,6 +1625,10 @@ class Game:
             hit.trunk.kill()
             hit.kill()
         hits = pg.sprite.groupcollide(self.breakable, self.nospawn, False, False)
+        for hit in hits:
+            hit.trunk.kill()
+            hit.kill()
+        hits = pg.sprite.groupcollide(self.breakable, self.long_grass, False, False)
         for hit in hits:
             hit.trunk.kill()
             hit.kill()
@@ -1689,13 +1735,14 @@ class Game:
         self.walls_on_screen.empty()
         self.water_on_screen.empty()
         self.shallows_on_screen.empty()
+        self.long_grass_on_screen.empty()
         self.lava_on_screen.empty()
         self.elevations_on_screen.empty()
         self.climbs_on_screen.empty()
         self.beds_on_screen.empty()
         self.inside_on_screen.empty()
         for sprite in self.all_static_sprites:
-            if self.on_screen(sprite):
+            if self.on_screen(sprite, 400):
                 if sprite in self.obstacles:
                     self.obstacles_on_screen.add(sprite)
                     if sprite in self.walls:
@@ -1714,6 +1761,9 @@ class Game:
                         self.climbs_on_screen.add(sprite)
                 elif sprite in self.inside:
                     self.inside_on_screen.add(sprite)
+                elif sprite in self.long_grass:
+                    self.long_grass_on_screen.add(sprite)
+
 
         # dynamic sprites on screen
         self.vehicles_on_screen.empty()
@@ -1959,6 +2009,13 @@ class Game:
             else:
                 self.player.in_shallows = False
 
+            # player hits long grass
+            hits = pg.sprite.spritecollide(self.player, self.long_grass_on_screen, False)
+            if hits:
+                self.player.in_grass = True
+            else:
+                self.player.in_grass = False
+
             # player hits elevation change
             hits = pg.sprite.spritecollide(self.player, self.elevations_on_screen, False)
             if hits:
@@ -2087,6 +2144,7 @@ class Game:
         else:
             self.player.swimming = False
             self.player.in_shallows = False
+            self.player.in_grass = False
 
 
         # These hit checks apply whether the player is in a flying vehicle or not.
@@ -2150,7 +2208,7 @@ class Game:
                             animal.does_melee_damage(mob)
 
         # mob hit elevation object
-        hits = pg.sprite.groupcollide(self.mobs_on_screen, self.elevations, False, False)
+        hits = pg.sprite.groupcollide(self.mobs_on_screen, self.elevations_on_screen, False, False)
         for mob in hits:
             for elev in hits[mob]:
                 if elev.elevation - mob.elevation > 1:
@@ -2397,6 +2455,22 @@ class Game:
             else:
                 npc.in_shallows = False
 
+        # npc hit long grass
+        hits = pg.sprite.groupcollide(self.npcs_on_screen, self.long_grass_on_screen, False, False)
+        for npc in self.npcs_on_screen:
+            if npc in hits:
+                npc.in_grass = True
+            else:
+                npc.in_grass = False
+
+        # animal hit long grass
+        hits = pg.sprite.groupcollide(self.animals_on_screen, self.long_grass_on_screen, False, False)
+        for animal in self.animals_on_screen:
+            if animal in hits:
+                animal.in_grass = True
+            else:
+                animal.in_grass = False
+
         # mob hits player's moving vehicle
         #hits = pg.sprite.groupcollide(self.mobs_on_screen, self.occupied_vehicles, False, False, mob_hit_rect)
         #for mob in hits:
@@ -2491,6 +2565,8 @@ class Game:
                 pg.draw.rect(self.screen, RED, self.camera.apply_rect(vehicle.hit_rect3), 1)
             for mob in self.mobs_on_screen:
                 pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(mob.hit_rect), 1)
+            #for elev in self.elevations_on_screen:
+            #    pg.draw.rect(self.screen, BLUE, self.camera.apply_rect(elev.rect), 1)
 
 
         # Only draws roofs when outside of buildings
