@@ -1013,7 +1013,41 @@ class Game:
         #self.load_map(str(self.map_data_list[int(self.world_location.y)][int(self.world_location.x)]) + '.tmx')
 
     def in_surrounding_tiles(self, x, y, num, layer):
-        return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y - 1, layer), self.map.tmxdata.get_tile_gid(x, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x + 1, y - 1, layer)]
+        if (x < self.map.tiles_wide-1) and (y < self.map.tiles_high-1):
+            if 0 not in [x, y]:
+                return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y - 1, layer), self.map.tmxdata.get_tile_gid(x, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x + 1, y - 1, layer)]
+            elif x == 0 and y != 0:
+                return num in [self.map.tmxdata.get_tile_gid(x + 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer), self.map.tmxdata.get_tile_gid(x + 1, y - 1, layer)]
+            elif x != 0 and y == 0:
+                return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y + 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y + 1, layer)]
+            else:
+                return num in [self.map.tmxdata.get_tile_gid(x + 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y + 1, layer)]
+        elif (x == self.map.tiles_wide-1) and (y == self.map.tiles_high-1):
+            if 0 not in [x, y]:
+                return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x - 1, y - 1, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer)]
+            elif x == 0 and y != 0:
+                return num in [self.map.tmxdata.get_tile_gid(x, y - 1, layer)]
+            elif x != 0 and y == 0:
+                return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer)]
+        elif (x == self.map.tiles_wide-1) and (y != self.map.tiles_high-1):
+            if 0 not in [x, y]:
+                return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x - 1, y - 1, layer), self.map.tmxdata.get_tile_gid(x, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y + 1, layer)]
+            elif x == 0 and y != 0:
+                return num in [self.map.tmxdata.get_tile_gid(x, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer)]
+            elif x != 0 and y == 0:
+                return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x, y + 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y + 1, layer)]
+            else:
+                return num in [self.map.tmxdata.get_tile_gid(x, y + 1, layer)]
+        elif (x != self.map.tiles_wide-1) and (y == self.map.tiles_high-1):
+            if 0 not in [x, y]:
+                return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y, layer), self.map.tmxdata.get_tile_gid(x - 1, y - 1, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer),
+                               self.map.tmxdata.get_tile_gid(x + 1, y - 1, layer)]
+            elif x == 0 and y != 0:
+                return num in [self.map.tmxdata.get_tile_gid(x + 1, y, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer), self.map.tmxdata.get_tile_gid(x + 1, y - 1, layer)]
+            elif x != 0 and y == 0:
+                return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y, layer)]
+            else:
+                return num in [self.map.tmxdata.get_tile_gid(x + 1, y, layer)]
 
     def on_map(self, sprite):
         offset = 0
@@ -1266,34 +1300,50 @@ class Game:
                                 if hit != elev:
                                     hit.kill()
 
-            #elif 'CLIMB' in layer.name:
-            #    EL = layer.name
-            #    EL = EL.replace('CLIMB', '')
-            #    EL = int(EL)
-            #    if isinstance(layer, pytmx.TiledTileLayer):
-            #        for x, y, gid, in layer:
-            #            if gid != 0:
-            #                elev = Elevation(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size, EL, True)
-            #                hits = pg.sprite.spritecollide(elev, self.elevations, False)  # Kills redundant elevations on top of others.
-            #                for hit in hits:
-            #                    if hit != elev:
-            #                        hit.kill()
+        # Creates wall and ore block objects if layers have WALLS in their names.
+        exception_tile = 0
+        if self.map.tmxdata.get_tile_gid(0, 0, 0) != self.map.tmxdata.get_tile_gid(0, 1, 0): # Sees if there is a different tile in the upper left corner to use as a zero tile where no walls will spawn.
+            exception_tile = self.map.tmxdata.get_tile_gid(0, 0, 0)  # Tile type to ignore and treat as a zero.
+        if self.map.tmxdata.get_tile_gid(1, 0, 0) != self.map.tmxdata.get_tile_gid(0, 1, 0): # Sees if there is a different tile in the upper corner (2nd x pos) to use as an ore tile.
+            block_tile = self.map.tmxdata.get_tile_gid(1, 0, 0)
+        for i, layer in enumerate(self.map.tmxdata.visible_layers):
+            if 'WALLS' in layer.name:
+                if isinstance(layer, pytmx.TiledTileLayer):
+                    for x, y, gid, in layer:
+                        if gid != 0:
+                            if gid == block_tile: # Makes ore block objects where the block_tile type tile is.
+                                if not self.sprite_data.visited: # Only generates ores if you haven't been here before. Otherwise it generates the remaining ores from the map data object.
+                                    block_type = choice(choices(BLOCK_LIST, BLOCK_PROB, k=10))
+                                    center = vec(x * self.map.tile_size + self.map.tile_size / 2, y * self.map.tile_size + self.map.tile_size / 2)
+                                    Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
+                            elif self.in_surrounding_tiles(x, y, 0, i):#Checks to see if surrounding tiles are zeros and spawns a wall if they are.
+                                wall = Obstacle(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size)
+                                hits = pg.sprite.spritecollide(wall, self.walls, False)  # Kills redundant walls on top of others.
+                                for hit in hits:
+                                    if hit != wall:
+                                        hit.kill()
+                            elif (gid != exception_tile) and self.in_surrounding_tiles(x, y, exception_tile, i):#Checks to see if surrounding tiles are exceptions and spawns a wall if they are.
+                                wall = Obstacle(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size)
+                                hits = pg.sprite.spritecollide(wall, self.walls, False)  # Kills redundant walls on top of others.
+                                for hit in hits:
+                                    if hit != wall:
+                                        hit.kill()
 
-        # This section creates walls based off of which tile is used in the map rather than having to create wall objects
-        if self.map_type != None:
-            for type in UNDERWORLD:
-                if type in self.map_type:
-                    wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 0) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
-                    for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
-                        Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
-
-                    # This section generates ore blocks to time in all the spaces with the tile specified in the position (1, 0).
-                    if not self.sprite_data.visited:
-                        block_tile = self.map.tmxdata.get_tile_gid(1, 0, 0)
-                        for location in self.map.tmxdata.get_tile_locations_by_gid(block_tile):
-                            block_type = choice(choices(BLOCK_LIST, BLOCK_PROB, k = 10))
-                            center = vec(location[0] * self.map.tile_size + self.map.tile_size/2, location[1] * self.map.tile_size + self.map.tile_size/2)
-                            Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
+        # This section creates ores based off of which tile is used in the map rather than having to create ore objects
+        #if self.map_type != None:
+        #    for type in UNDERWORLD:
+        #        if type in self.map_type:
+        #            # This section generates ore blocks to time in all the spaces with the tile specified in the position (0, 0).
+        #            if not self.sprite_data.visited:
+        #                block_tile = self.map.tmxdata.get_tile_gid(1, 0, 0)
+        #                for location in self.map.tmxdata.get_tile_locations_by_gid(block_tile):
+        #                    block_type = choice(choices(BLOCK_LIST, BLOCK_PROB, k = 10))
+        #                    center = vec(location[0] * self.map.tile_size + self.map.tile_size/2, location[1] * self.map.tile_size + self.map.tile_size/2)
+        #                    block = Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
+        #                    hits = pg.sprite.spritecollide(block, self.walls, False)  # Kills walls blocks spawn on top of.
+        #                    for hit in hits:
+        #                        if hit != hit.trunk:
+        #                            hit.kill()
 
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name != None:

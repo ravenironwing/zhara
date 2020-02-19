@@ -29,8 +29,10 @@ class TiledMap:
         tm = pytmx.load_pygame(filename)
         ov = pytmx.load_pygame(filename)
         self.width = tm.width * tm.tilewidth
+        self.tiles_wide = tm.width
         self.tile_size = tm.tilewidth
         self.height = tm.height * tm.tileheight
+        self.tiles_high = tm.height
         self.tmxdata = tm
         #self.overlay_data = ov
         #self.image = self.make_map()
