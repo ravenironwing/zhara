@@ -12,6 +12,17 @@ from math import ceil
 
 vec = pg.math.Vector2
 
+def set_elevation(sprite):
+    # Sets elevation to the highest elevation you hit.
+    hit_level = sprite
+    hits = pg.sprite.spritecollide(sprite, sprite.game.elevations, False)
+    if hits:
+        for hit in hits:  # Uses only the highest elevation you hit.
+            if hit not in sprite.game.climbables_and_jumpables:
+                if hit.elevation > hit_level.elevation:
+                    hit_level = hit
+        sprite.elevation = hit_level.elevation
+
 def color_image(image, color):
     temp_image = image.copy()
     color_image = pg.Surface(temp_image.get_size()).convert_alpha()
@@ -48,7 +59,7 @@ def collide_with_walls(sprite, group, dir):
                 sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
             sprite.vel.x = 0
             sprite.hit_rect.centerx = sprite.pos.x
-        if dir == 'y':
+        elif dir == 'y':
             if hits[0].rect.centery > sprite.hit_rect.centery: # going down
                 sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
             if hits[0].rect.centery < sprite.hit_rect.centery: # going up
@@ -129,7 +140,7 @@ def collide_with_vehicles(sprite, dir):
                         sprite.pos.x = hits[0].hit_rect.right + sprite.hit_rect.width / 2
                     sprite.vel.x = 0
                     sprite.hit_rect.centerx = sprite.pos.x
-                if dir == 'y':
+                elif dir == 'y':
                     if hits[0].rect.centery > sprite.hit_rect.centery:
                         sprite.pos.y = hits[0].hit_rect.top - sprite.hit_rect.height / 2
                     if hits[0].rect.centery < sprite.hit_rect.centery:
@@ -146,7 +157,7 @@ def collide_with_vehicles(sprite, dir):
                         sprite.pos.x = hits[0].hit_rect2.right + sprite.hit_rect.width / 2
                     sprite.vel.x = 0
                     sprite.hit_rect.centerx = sprite.pos.x
-                if dir == 'y':
+                elif dir == 'y':
                     if hits[0].rect.centery > sprite.hit_rect.centery:
                         sprite.pos.y = hits[0].hit_rect2.top - sprite.hit_rect.height / 2
                     if hits[0].rect.centery < sprite.hit_rect.centery:
@@ -163,7 +174,7 @@ def collide_with_vehicles(sprite, dir):
                         sprite.pos.x = hits[0].hit_rect3.right + sprite.hit_rect.width / 2
                     sprite.vel.x = 0
                     sprite.hit_rect.centerx = sprite.pos.x
-                if dir == 'y':
+                elif dir == 'y':
                     if hits[0].rect.centery > sprite.hit_rect.centery:
                         sprite.pos.y = hits[0].hit_rect3.top - sprite.hit_rect.height / 2
                     if hits[0].rect.centery < sprite.hit_rect.centery:
@@ -176,10 +187,10 @@ def collide_with_elevations(sprite, dir):
     ywall = False
     hits = pg.sprite.spritecollide(sprite, sprite.game.elevations_on_screen, False, collide_hit_rect)
     if hits:
-        if len(hits) == 1:
-            hit_level = hits[0]
-        else:
-            hit_level = hits[1]
+        hit_level = hits[0]
+        for hit in hits: # Uses only the highest elevation you hit.
+            if hit.elevation > hit_level.elevation:
+                hit_level = hit
         if dir == 'x':
             if hit_level.elevation - sprite.elevation > 3:
                 xwall = True
@@ -202,7 +213,7 @@ def collide_with_elevations(sprite, dir):
                     sprite.pos.x = hit_level.rect.right + sprite.hit_rect.width / 2
                 sprite.vel.x = 0
                 sprite.hit_rect.centerx = sprite.pos.x
-        if dir == 'y':
+        elif dir == 'y':
             if hit_level.elevation - sprite.elevation > 3:
                 ywall = True
                 sprite.climbing = False
@@ -1295,6 +1306,7 @@ class Player(pg.sprite.Sprite):
             self.immaterial = False
         self.provoked = False
         self.aggression = 'player'
+        set_elevation(self)
 
     @property
     def swimming(self):
@@ -1314,11 +1326,9 @@ class Player(pg.sprite.Sprite):
     @climbing.setter
     def climbing(self, value):
         if value!=self._climbing:
-            if value == False:
-                self.falling = True
-            else:
+            if value:
                 self.last_climb = pg.time.get_ticks()
-            self.pre_jump()
+                self.pre_jump()
             toggle_equip(self, value)
             self._climbing = value
         else:
@@ -2038,6 +2048,7 @@ class Player(pg.sprite.Sprite):
             elif self.falling:
                 self.animation_playing = self.body.jump_anim
                 speed = 20
+                delay = 0
         else:
             delay = 60
         if self.swimming:
@@ -2726,6 +2737,7 @@ class Npc(pg.sprite.Sprite):
         self.rot = randrange(0, 360)
         self.frame = 0
         self.jumping = False
+        self.falling = False
         self.climbing = False
         self.swimming = False
         self.invisible = False
@@ -2766,6 +2778,7 @@ class Npc(pg.sprite.Sprite):
         self.melee_playing = False
         self.last_melee = 0
         self.last_melee_sound = 0
+        self.last_climb = 0
         # State vars
         self.needs_move = False
         self.last_weapon = None
@@ -2881,6 +2894,9 @@ class Npc(pg.sprite.Sprite):
             self.game.lights.add(self)
             self.light_mask = pg.transform.scale(self.game.light_mask_images[2], (self.brightness, self.brightness))
             self.light_mask_rect = self.light_mask.get_rect()
+
+        # Sets elevation to the highest elevation you hit.
+        set_elevation(self)
 
     def update_collide_list(self):
         self.collide_list = [self.game.walls_on_screen]
@@ -3013,6 +3029,7 @@ class Npc(pg.sprite.Sprite):
             self.acc += self.vel * -1
             self.vel += self.acc * self.game.dt
             self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+            collide(self)
             self.talk_rect.center = self.pos
 
     def update(self):
@@ -3084,6 +3101,12 @@ class Npc(pg.sprite.Sprite):
                         self.seek_mobs()
                         self.last_seek = ora
 
+                # Stops them from climbing after a certain time if they aren't on an object that requires you climb on it.
+                if self.climbing:
+                    if ora - self.last_climb > CLIMB_TIME:
+                        if not pg.sprite.spritecollide(self, self.game.climbs, False):
+                            self.climbing = False
+
                 target_dist = self.target.pos - self.pos
                 if True not in [self.melee_playing, self.animating_reload]: # Only moves character if not attacking or reloading
                     if not self.offensive and target_dist.length_squared() < 100 ** 2 and self.approach_vector != vec(-1, 0) and (self.target not in self.game.entryways):
@@ -3110,6 +3133,8 @@ class Npc(pg.sprite.Sprite):
                             self.body.animate(self.body.run_anim, temp_animate_speed)
                         elif self.climbing:
                             self.body.animate(self.body.climbing_anim, temp_animate_speed)
+                        elif self.jumping:
+                            self.jump()
                         else:
                             self.body.animate(self.body.walk_anim, temp_animate_speed)
 
@@ -3164,7 +3189,6 @@ class Npc(pg.sprite.Sprite):
                             self.accelerate()
                         elif target_dist.length() > 40: #Stops mobs from occupying the same space as you.
                             self.accelerate()
-                        collide(self)
 
                         if self.offensive:
                             if self.aggression not in ['fwd', 'fwp']:
@@ -3647,11 +3671,27 @@ class Npc(pg.sprite.Sprite):
         pass
 
     def pre_jump(self):
-        pass
+        if True not in [self.melee_playing, self.in_vehicle, self.jumping, self.swimming]:
+            self.jumping = True
+            self.body.frame = 0
+            self.jump()
 
     def jump(self):
-        pass
+        delay = 500
+        speed = 135
+        if self.falling:
+            speed = 20
+            delay = 0
+        self.animation_playing = self.body.jump_anim
 
+        now = pg.time.get_ticks()
+        if now - self.last_shot > delay:
+            if self.jumping:
+                self.body.animate(self.animation_playing, speed)
+                if self.body.frame > len(self.animation_playing[0]) - 1:
+                    self.jumping = False
+                    self.falling = False
+                    self.last_shot = pg.time.get_ticks()
 
 class Animal(pg.sprite.Sprite):
     def __init__(self, game, x, y, map, species, health = None):
@@ -3778,6 +3818,8 @@ class Animal(pg.sprite.Sprite):
             self.approach_vector = vec(choice([1, 0]), choice([1, -1, 0]))
         if self.aggression == 'awp':
             self.approach_vector = vec(0, -1)
+
+        set_elevation(self)
 
     @property
     def in_grass(self):
@@ -5234,9 +5276,11 @@ class NoSpawn(pg.sprite.Sprite):
         self.rect.y = y
 
 class Elevation(pg.sprite.Sprite):
-    def __init__(self, game, x, y, w, h, elev, climb = False):
+    def __init__(self, game, x, y, w, h, elev, climb = False, kind = None):
         if climb:
             self.groups = game.elevations, game.all_static_sprites, game.climbs
+        elif kind != None:
+            self.groups = game.elevations, game.all_static_sprites, game.climbables_and_jumpables
         else:
             self.groups = game.elevations, game.all_static_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -5249,6 +5293,12 @@ class Elevation(pg.sprite.Sprite):
         self.rect.y = y
         self.elevation = elev
         self.climb = climb
+        if kind == 'jumpable':
+            set_elevation(self)
+            self.elevation += 2
+        if kind == 'climbable':
+            set_elevation(self)
+            self.elevation += 3
 
 class Water(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
@@ -5335,7 +5385,6 @@ class Chest(pg.sprite.Sprite):
         self.y = y
         self.w = w
         self.h = h
-        self.elevation = elev
         self.rect.x = x
         self.rect.y = y
         self.temp_inventory = self.game.chests[self.name] # Creates a temporary reference to the chest contents dictionary.
@@ -5343,6 +5392,9 @@ class Chest(pg.sprite.Sprite):
         random_inventory_item(self, self.temp_inventory)
         CHESTS[self.name] = self.inventory
         self.locked = self.inventory['locked']
+        self.elevation = 0
+        set_elevation(self)
+        self.elevation += elev
 
 class Work_Station(pg.sprite.Sprite): # Used for work benches, tanning racks, grinders, forges, enchanting tables, etc.
     def __init__(self, game, x, y, w, h, kind):
@@ -5374,7 +5426,9 @@ class Bed(pg.sprite.Sprite): # Used to rest in
         self.y = y
         self.rect.x = x
         self.rect.y = y
-        self.elevation = elev
+        self.elevation = 0
+        set_elevation(self)
+        self.elevation += elev
 
 class Toilet(pg.sprite.Sprite): # Used to rest in
     def __init__(self, game, x, y, w, h, elev = 2):
@@ -5387,7 +5441,9 @@ class Toilet(pg.sprite.Sprite): # Used to rest in
         self.y = y
         self.rect.x = x
         self.rect.y = y
-        self.elevation = elev
+        self.elevation = 0
+        set_elevation(self)
+        self.elevation += elev
 
 class Detector(pg.sprite.Sprite): # Used to rest in
     def __init__(self, game, x, y, w, h, name):

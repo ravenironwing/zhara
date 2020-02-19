@@ -214,9 +214,10 @@ class Game:
         logo_width = mpy_logo_image.get_width()
         logo_placement = ((self.screen_width - logo_width)/2, (self.screen_height - logo_width)/2)
         mpy_words_image = pg.image.load(path.join(img_folder, MPY_WORDS)).convert_alpha()
-        mpy_words_image = pg.transform.scale(mpy_words_image, (int(self.screen_height/2.8), int(self.screen_height/4)))
+        mpy_words_image = pg.transform.scale(mpy_words_image, (int(self.screen_width/4), int(self.screen_height/8)))
         words_height = mpy_words_image.get_height()
-        words_placement = ((self.screen_width - logo_width)/2, (self.screen_height - logo_width)/2 + words_height + 20)
+        words_width = mpy_words_image.get_width()
+        words_placement = ((self.screen_width - words_width)/2, (self.screen_height - words_height)/2)
         for i in range(0, 256):
             #self.clock.tick(120)
             self.screen.fill(BLACK)
@@ -233,14 +234,14 @@ class Game:
             #self.clock.tick(120)
             self.screen.fill(BLACK)
             mpy_words_image.set_alpha(i)
-            self.screen.blit(mpy_words_image, logo_placement)
+            self.screen.blit(mpy_words_image, words_placement)
             pg.display.flip()
         self.load_data()
         for i in range(255, 0, -1):
             #self.clock.tick(120)
             self.screen.fill(BLACK)
             mpy_words_image.set_alpha(i)
-            self.screen.blit(mpy_words_image, logo_placement)
+            self.screen.blit(mpy_words_image, words_placement)
             pg.display.flip()
         self.channel3 = pg.mixer.Channel(2)
         self.channel4 = pg.mixer.Channel(3) # Fire, water fall
@@ -897,6 +898,7 @@ class Game:
         self.enemy_bullets = pg.sprite.Group()
         self.enemy_fireballs = pg.sprite.Group()
         self.work_stations = pg.sprite.Group()
+        self.climbables_and_jumpables = pg.sprite.Group()
         self.all_vehicles = pg.sprite.Group()
         self.companions = pg.sprite.Group()
         self.companion_bodies = pg.sprite.Group()
@@ -1009,6 +1011,9 @@ class Game:
 
         #world_mini_map = WorldMiniMap(self, self.map_data_list) # Only uncomment this to create a new overworld map if you edit the old one. Otherwise it will take literally forever to load every time.
         #self.load_map(str(self.map_data_list[int(self.world_location.y)][int(self.world_location.x)]) + '.tmx')
+
+    def in_surrounding_tiles(self, x, y, num, layer):
+        return num in [self.map.tmxdata.get_tile_gid(x - 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y, layer), self.map.tmxdata.get_tile_gid(x + 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y - 1, layer), self.map.tmxdata.get_tile_gid(x, y + 1, layer), self.map.tmxdata.get_tile_gid(x, y - 1, layer), self.map.tmxdata.get_tile_gid(x - 1, y + 1, layer), self.map.tmxdata.get_tile_gid(x + 1, y - 1, layer)]
 
     def on_map(self, sprite):
         offset = 0
@@ -1175,6 +1180,14 @@ class Game:
         del self.map
         gc.collect()  # Forces garbage collection. Without this the game will quickly run out of memory.
 
+    def layer_num_by_name(self, name):
+        for i, layer in enumerate(self.map.tmxdata.visible_layers):
+            if isinstance(layer, pytmx.TiledTileLayer):
+                if layer.name == 'name':
+                    return i
+                else:
+                    return None
+
     def load_map(self, temp_map):
         self.sprite_data = self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)]
         self.compass_rot = -math.atan2(49 - self.world_location.y, 89 - self.world_location.x)
@@ -1237,9 +1250,71 @@ class Game:
                 Animal(self, animal['location'].x, animal['location'].y, map, animal['name'], animal['health'])
             self.sprite_data.moved_animals = []
 
+        # Creates elevation objects if layers have EL in their names.
+        for i, layer in enumerate(self.map.tmxdata.visible_layers):
+            if 'EL' in layer.name:
+                EL = layer.name
+                EL = EL.replace('EL', '')
+                EL = int(EL)
+                if isinstance(layer, pytmx.TiledTileLayer):
+                    for x, y, gid, in layer:
+                        if gid != 0:
+                            cliff = self.in_surrounding_tiles(x, y, 0, i)
+                            elev = Elevation(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size, EL, cliff)
+                            hits = pg.sprite.spritecollide(elev, self.elevations, False)  # Kills redundant elevations on top of others.
+                            for hit in hits:
+                                if hit != elev:
+                                    hit.kill()
+
+            #elif 'CLIMB' in layer.name:
+            #    EL = layer.name
+            #    EL = EL.replace('CLIMB', '')
+            #    EL = int(EL)
+            #    if isinstance(layer, pytmx.TiledTileLayer):
+            #        for x, y, gid, in layer:
+            #            if gid != 0:
+            #                elev = Elevation(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size, EL, True)
+            #                hits = pg.sprite.spritecollide(elev, self.elevations, False)  # Kills redundant elevations on top of others.
+            #                for hit in hits:
+            #                    if hit != elev:
+            #                        hit.kill()
+
+        # This section creates walls based off of which tile is used in the map rather than having to create wall objects
+        if self.map_type != None:
+            for type in UNDERWORLD:
+                if type in self.map_type:
+                    wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 0) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
+                    for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
+                        Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
+
+                    # This section generates ore blocks to time in all the spaces with the tile specified in the position (1, 0).
+                    if not self.sprite_data.visited:
+                        block_tile = self.map.tmxdata.get_tile_gid(1, 0, 0)
+                        for location in self.map.tmxdata.get_tile_locations_by_gid(block_tile):
+                            block_type = choice(choices(BLOCK_LIST, BLOCK_PROB, k = 10))
+                            center = vec(location[0] * self.map.tile_size + self.map.tile_size/2, location[1] * self.map.tile_size + self.map.tile_size/2)
+                            Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
+
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name != None:
                 obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
+                # It's super important that all elevations spawn before the player and mobs.
+                if 'EL' in tile_object.name:
+                    try:
+                        _, elev, climb = tile_object.name.split('_')
+                        climb = eval(climb)
+                    except:
+                        _, elev = tile_object.name.split('_')
+                        climb = False
+                    elev = int(elev)
+                    Elevation(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height, elev, climb)
+                if tile_object.name == 'jumpable':
+                    elev = Elevation(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height, 0, False, 'jumpable')
+                if tile_object.name == 'climbable':
+                    Elevation(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height, 0, False, 'climbable')
                 if tile_object.name == 'player':
                     self.player.pos = vec(obj_center)
                     self.player.rect.center = self.player.pos
@@ -1385,22 +1460,6 @@ class Game:
                 if tile_object.name == 'nospawn':
                     NoSpawn(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
-                if 'EL' in tile_object.name:
-                    try:
-                        _, elev, climb = tile_object.name.split('_')
-                        climb = eval(climb)
-                    except:
-                        _, elev = tile_object.name.split('_')
-                        climb = False
-                    elev = int(elev)
-                    Elevation(self, tile_object.x, tile_object.y,
-                             tile_object.width, tile_object.height, elev, climb)
-                if tile_object.name == 'jumpable':
-                    Elevation(self, tile_object.x, tile_object.y,
-                             tile_object.width, tile_object.height, 2)
-                if tile_object.name == 'climbable':
-                    Elevation(self, tile_object.x, tile_object.y,
-                             tile_object.width, tile_object.height, 3)
                 if tile_object.name == 'water':
                     Water(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
@@ -1470,50 +1529,6 @@ class Game:
                 except:
                     pass
 
-        # This section creates walls based off of which tile is used in the map rather than having to create wall objects
-        if self.map_type != None:
-            for type in UNDERWORLD:
-                if type in self.map_type:
-                    wall_tile = self.map.tmxdata.get_tile_gid(0, 0, 0) # Uses whatever tile is in the upper left corner of the second layer as the wall tile.
-                    for location in self.map.tmxdata.get_tile_locations_by_gid(wall_tile):
-                        Obstacle(self, location[0] * self.map.tile_size, location[1] * self.map.tile_size, self.map.tile_size, self.map.tile_size)
-
-                    # This section generates ore blocks to time in all the spaces with the tile specified in the position (1, 0).
-                    if not self.sprite_data.visited:
-                        block_tile = self.map.tmxdata.get_tile_gid(1, 0, 0)
-                        for location in self.map.tmxdata.get_tile_locations_by_gid(block_tile):
-                            block_type = choice(choices(BLOCK_LIST, BLOCK_PROB, k = 10))
-                            center = vec(location[0] * self.map.tile_size + self.map.tile_size/2, location[1] * self.map.tile_size + self.map.tile_size/2)
-                            Breakable(self, center, self.map.tile_size, self.map.tile_size, block_type, map)
-
-        # Creates elevation objects if layers have EL or CLIMB in their names.
-        for layer in self.map.tmxdata.visible_layers:
-            if 'EL' in layer.name:
-                EL = layer.name
-                EL = EL.replace('EL', '')
-                EL = int(EL)
-                if isinstance(layer, pytmx.TiledTileLayer):
-                    for x, y, gid, in layer:
-                        if gid != 0:
-                            elev = Elevation(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size, EL)
-                            hits = pg.sprite.spritecollide(elev, self.elevations, False) # Kills redundant elevations on top of others.
-                            for hit in hits:
-                                if hit != elev:
-                                    hit.kill()
-
-            elif 'CLIMB' in layer.name:
-                EL = layer.name
-                EL = EL.replace('CLIMB', '')
-                EL = int(EL)
-                if isinstance(layer, pytmx.TiledTileLayer):
-                    for x, y, gid, in layer:
-                        if gid != 0:
-                            elev = Elevation(self, x * self.map.tile_size, y * self.map.tile_size, self.map.tile_size, self.map.tile_size, EL, True)
-                            hits = pg.sprite.spritecollide(elev, self.elevations, False) # Kills redundant elevations on top of others.
-                            for hit in hits:
-                                if hit != elev:
-                                    hit.kill()
-
         # Generates random drop items
         if self.map_type in ['mountain', 'forest', 'grassland', 'desert', 'beach']:
             for i in range(0, randrange(1, 15)):
@@ -1538,18 +1553,13 @@ class Game:
                         hits = pg.sprite.spritecollide(npc, self.walls, False)
                         if hits:
                             npc.kill()
-                        hits = pg.sprite.spritecollide(npc, self.elevations, False)
-                        if hits:
-                            npc.elevation = hits[0].elevation
+
                     else:
                         anim = Animal(self, centerx, centery, map, animal)
                         # checks for animals that spawn in walls and kills them.
                         hits = pg.sprite.spritecollide(anim, self.walls, False)
                         if hits:
                             anim.kill()
-                        hits = pg.sprite.spritecollide(anim, self.elevations, False)
-                        if hits:
-                            anim.elevation = hits[0].elevation
 
         # Generates random ores, trees and plants
         if len(self.breakable) < 1:
@@ -2209,18 +2219,31 @@ class Game:
 
         # mob hit elevation object
         hits = pg.sprite.groupcollide(self.mobs_on_screen, self.elevations_on_screen, False, False)
-        for mob in hits:
-            for elev in hits[mob]:
-                if elev.elevation - mob.elevation > 1:
-                    if mob in self.companions:
-                        mob.climbing = True
-                    elif mob in self.npcs_on_screen:
-                        chance = randrange(0, 600)
-                        if chance == 1:
+        for mob in self.mobs_on_screen:
+            if mob in hits:
+                for elev in hits[mob]: # Makes it so NPCs can climb and jump.
+                    if elev.elevation - mob.elevation > 2:
+                        if mob in self.companions:
                             mob.climbing = True
+                            mob.last_climg = pg.time.get_ticks()
+                        elif mob in self.npcs_on_screen:
+                            chance = randrange(0, 600)
+                            if chance == 1:
+                                mob.climbing = True
+                    elif elev.elevation - mob.elevation > 1:
+                        if mob in self.companions:
+                            mob.jumping = True
+                            mob.last_climg = pg.time.get_ticks()
+                        elif mob in self.npcs_on_screen:
+                            chance = randrange(0, 300)
+                            if chance == 1:
+                                mob.jumping = True
             else:
                 mob.climbing = False
                 if not mob.jumping:
+                    if mob.elevation > 1:
+                        mob.falling = True
+                        mob.pre_jump()
                     mob.elevation = 0
 
         # vehicle hit breakable
