@@ -2277,17 +2277,17 @@ class Game:
                         if 'aetherial' not in body.mother.equipped[body.mother.weapon_hand]:
                             continue
                 if mob.in_player_vehicle:
-                    pass
+                    continue
                 elif body.mother == mob:
-                    pass
+                    continue
                 elif mob in self.flying_vehicles:
-                    pass
+                    continue
                 elif mob.in_vehicle:
-                    pass
+                    continue
                 elif body.mother.in_vehicle: # Makes it so you can't attack your own vehicle
                     if mob == body.mother.vehicle:
-                        pass
-                elif body.mother.melee_playing:
+                        continue
+                if body.mother.melee_playing:
                     if body.mother == self.player:
                         if mob not in self.companions:
                             mob.offensive = True

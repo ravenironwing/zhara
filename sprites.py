@@ -1448,7 +1448,7 @@ class Player(pg.sprite.Sprite):
         vector = vec
         angle = fix_angle(vector.angle_to(self.direction))
         if self.in_vehicle:
-            rot_speed = self.vehicle.rot_speed
+            rot_speed = self.vehicle.rot_speed/3
             if self.vehicle.turret == None:
                 self.set_rot_speed(rot_speed, vector, angle)
         else:
@@ -3783,7 +3783,7 @@ class Animal(pg.sprite.Sprite):
         self.immaterial = False
         self.eating_corpse = 0
         self.rotate_direction = randrange(-1, 1)
-        self.rot_speed = 5 * (self.walk_speed / self.width)
+        self.rot_speed = self.orig_rot_speed = 6 * self.walk_speed / self.width
         self.frame = 0 #used to keep track of what frame the animation is on.
         self.running = False
         self.jumping = False
@@ -3963,6 +3963,7 @@ class Animal(pg.sprite.Sprite):
             self.unmount()
 
     def mount(self, driver):
+        self.rot_speed = 60 * self.walk_speed / self.width
         if driver.possessing != None:
             if driver.possessing.race == 'mech_suit':
                 return
@@ -3986,6 +3987,7 @@ class Animal(pg.sprite.Sprite):
         self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you mount them.
 
     def unmount(self):
+        self.rot_speed = self.orig_rot_speed
         self.game.group.change_layer(self, self.original_layer)
         self.occupied = False
         self.knockback = self.kind['knockback']
@@ -4098,7 +4100,6 @@ class Animal(pg.sprite.Sprite):
                         self.last_move = now
                         if random() < 0.25:
                             self.rotate_direction = choice([-1, 0, 1])
-                        self.rot_speed = 6 * self.walk_speed / self.width
                         self.rot += (self.rot_speed * self.rotate_direction) % 360
                     if self.frame > len(self.walk_image_list) - 1:
                         self.frame = 0
