@@ -188,6 +188,27 @@ DOOR_STYLES['bronze'] = {'image': 3, 'hp': 2000}
 # 1234-Goblin Island, 4132: Demon's Lair, 3421-Dewcastle Graveyard, 2143-Norwald the Miewdra Village, 1342-Mechanima Village, 1243-Lacertolia, 2413-Zombieland, 4321-Elf Town, 3124-South Pole
 PORTAL_CODES = {'1234': [107, 34, 32, 26], '4132': [53, 75, 31, 5], '3421': [27, 40, 5, 33], '2143': [89, 49, 32, 32], '1342': [126, 22, 32, 32], '1243': [146, 43, 32, 32], '2413': [65, 20, 32, 32],  '4321': [38, 27, 32, 42], '3124': [85, 96, 32, 32]}
 
+
+# Sets up randomizable map files by type:
+MOUNTAIN_MAPS = []
+FOREST_MAPS = []
+GRASSLAND_MAPS = []
+TUNDRA_MAPS = []
+DESERT_MAPS = []
+for file in os.listdir(map_folder):
+    name = file.replace('.tmx', '')
+    if file.startswith("MOUNTAIN"):
+        MOUNTAIN_MAPS.append(name)
+    elif file.startswith("FOREST"):
+        FOREST_MAPS.append(name)
+    elif file.startswith("GRASSLAND"):
+        GRASSLAND_MAPS.append(name)
+    elif file.startswith("TUNDRA"):
+        TUNDRA_MAPS.append(name)
+    elif file.startswith("DESERT"):
+        DESERT_MAPS.append(name)
+RANDOM_MAP_TILES = {'53': 'MOUNTAIN_MAPS', '27': 'FOREST_MAPS', '11': 'GRASSLAND_MAPS'}
+
 # Player body image settings
 gender_list = ['male', 'female']
 HUMANOID_IMAGES = {}

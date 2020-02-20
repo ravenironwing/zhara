@@ -3832,6 +3832,7 @@ class Animal(pg.sprite.Sprite):
                     self.old_run_image_list = self.run_image_list
                     self.old_walk_image_list = self.walk_image_list
                     self.walk_image_list = self.run_image_list = [self.game.invisible_image, self.game.invisible_image]
+                    self.frame = 0
                 else:
                     self.run_image_list = self.old_run_image_list
                     self.walk_image_list = self.old_walk_image_list

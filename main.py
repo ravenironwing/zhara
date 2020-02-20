@@ -989,7 +989,6 @@ class Game:
         map_data = file.readlines()
         self.overworld_map = map
         self.map_data_list = []
-
         for row in map_data:
             if '<' not in row: # Ignores all tags in tmx file
                 row = row.replace(',\n', '') #gets rid of commas at the the end
@@ -997,6 +996,11 @@ class Game:
                 row = row.replace('\n', '') #gets rid of new lines
                 row = row.split(',')
                 self.map_data_list.append(row)
+        for y, row in enumerate(self.map_data_list): # Randomizes select map elements based on settings.py
+            for x, cell in enumerate(row):
+                if cell in RANDOM_MAP_TILES:
+                    map_list = eval(RANDOM_MAP_TILES[cell])
+                    self.map_data_list[y][x] = choice(map_list)
         self.world_width = len(self.map_data_list[0])
         self.world_height = len(self.map_data_list)
 
@@ -2058,7 +2062,10 @@ class Game:
             # player hits water
             hits = pg.sprite.spritecollide(self.player, self.water_on_screen, False)
             if hits:
-                self.player.swimming = True
+                if not pg.sprite.spritecollide(self.player, self.long_grass_on_screen, False):
+                    self.player.swimming = True
+                else:
+                    self.player.swimming = False
             else:
                 self.player.swimming = False
 
@@ -2499,7 +2506,10 @@ class Game:
         for npc in self.npcs_on_screen:
             if npc in hits:
                 if not npc.in_player_vehicle:
-                    npc.swimming = True
+                    if not pg.sprite.spritecollide(npc, self.long_grass_on_screen, False):
+                        self.player.swimming = True
+                    else:
+                        npc.swimming = False
             else:
                 npc.swimming = False
 
