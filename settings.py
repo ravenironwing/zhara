@@ -156,6 +156,13 @@ START_WORLD = 'worldmap.tmx'
 
 UPGRADE_FACTOR = 1.2 # This number determines how much item value increases when upgrading armor and weapons. The higher the number the lower the value.
 
+# Day/Night
+DAY_LENGTH = 15 * 60 * 1000
+NIGHT_LENGTH = 9 * 60 * 1000
+DAY_PERIOD = DAY_LENGTH + NIGHT_LENGTH
+NIGHTFALL_SPEED = 100 # The higher the slower. In ms.
+GAME_HOUR = DAY_PERIOD/24
+
 # Player settings
 PLAYER_HEALTH = 100
 PLAYER_STAMINA = 100
@@ -395,6 +402,8 @@ MOB_HIT_RECT = pg.Rect(0, 0, 60, 60)
 MOB_HEALTH = 100
 MOB_DAMAGE = 10
 MOB_KNOCKBACK = 20
+MOB_HEALTH_BAR_LENGTH = 80
+MOB_HEALTH_SHOW_TIME = 1000
 AVOID_RADIUS = 50
 DETECT_RADIUS = 400
 
@@ -429,11 +438,6 @@ for x in WEAPONS:
         if 'brightness' in WEAPONS[x]:
             NON_GUN_LIGHTS.append(x)
 
-# Day/Night
-DAY_LENGTH = 14 * 60 * 1000
-NIGHT_LENGTH = 8 * 60 * 1000
-NIGHTFALL_SPEED = 100 # The higher the slower. In ms.
-
 # Layers
 WALL_LAYER = 7
 ITEMS_LAYER = 8
@@ -456,29 +460,29 @@ CAVE_MUSIC = 'The Road Ahead.ogg'
 FOREST_MUSIC = 'Light from the Shadows.ogg'
 GRASSLAND_MUSIC = 'The Forgotten Age.ogg'
 TOWN_MUSIC = 'Last Haven.ogg'
-ZOMBIELAND_MUSIC = 'DarkWinds.OGG'
+ZOMBIELAND_MUSIC = 'DarkWinds.ogg'
 TUNDRA_MUSIC = 'Tales and Tidings.ogg'
 MOUNTAIN_MUSIC = 'Cloudforest_Awakening.ogg'
 DESERT_MUSIC = 'Eternal Renewal.ogg'
 
 # Sounds
-LOCK_PICKING_SOUNDS = ['pick_lock1.wav', 'pick_lock2.wav', 'pick_lock3.wav', 'pick_lock4.wav']
-MALE_PLAYER_HIT_SOUNDS = ['pain/8.wav', 'pain/9.wav', 'pain/10.wav', 'pain/11.wav', 'pain/12.wav', 'pain/13.wav']
-FEMALE_PLAYER_HIT_SOUNDS = ['pain/f8.wav', 'pain/f9.wav', 'pain/f10.wav', 'pain/f11.wav', 'pain/f12.wav', 'pain/f13.wav']
-FEMALE_PLAYER_VOICE = {'out of ammo': ['exasperation.wav', 'out_ammo1.wav', 'out_ammo2.wav', 'out_ammo3.wav', 'no_bullets.wav', 'need_bullets.wav', 'need_bullets2.wav'], 'empty clip': ['empty1.wav', 'empty2.wav','empty3.wav','empty4.wav','need_bullets3.wav', 'man.wav', 'need_reload.wav']}
-MALE_PLAYER_VOICE = {'out of ammo': ['out_ammo1.wav', 'out_ammo2.wav', 'out_ammo3.wav', ], 'empty clip': ['empty1.wav']}
-ZOMBIE_MOAN_SOUNDS = ['brains2.wav', 'brains3.wav', 'zombie-roar-1.wav', 'zombie-roar-2.wav',
-                      'zombie-roar-3.wav', 'zombie-roar-5.wav', 'zombie-roar-6.wav', 'zombie-roar-7.wav']
-ZOMBIE_HIT_SOUNDS = ['splat-15.wav']
-WRAITH_SOUNDS = ['wraith1.wav', 'wraith2.wav', 'wraith3.wav', 'wraith4.wav']
-EFFECTS_SOUNDS = {'door close': 'door_close.wav', 'door open': 'door_open.wav', 'charge': 'charge.wav', 'bow reload': 'bow reload.wav', 'level_start': 'Day_1_v2_mod.ogg', 'click': 'click.wav', 'fanfare': 'fanfare.wav', 'rustle': 'rustle.wav', 'pickaxe': 'pickaxe.wav', 'rocks': 'rocks.wav', 'rock_hit': 'rock_hit.wav', 'fart': 'fart.wav', 'pee': 'pee.wav', 'toilet': 'toilet.wav',
-                  'health_up': 'health_pack.wav', 'casting healing': 'casting_healing.wav', 'page turn': 'page_turn.wav',
-                  'gun_pickup': 'gun_pickup.wav', 'jump': 'jump.wav', 'tank': 'tank.wav', 'tank engine': 'tank_engine.wav','splash': 'splash.wav', 'grass': 'grass.wav', 'swim': 'swim.wav', 'shallows': 'shallows.wav', 'climb': 'climb.wav', 'unlock': 'unlock.wav', 'lock click': 'lock_click.wav', 'fire blast': 'fire_blast.wav', 'knock':
-                  'knock.wav', 'metal hit': 'metal_hit.wav', 'anvil': 'anvil.wav', 'scrape': 'scrape.wav', 'grindstone': 'grindstone.wav', 'hammering': 'hammering.wav', 'snore': 'snore.wav', 'cashregister': 'cashregister.wav', 'alchemy': 'alchemy.wav', 'enchant': 'enchant.wav', 'fire crackle': 'fire_crackling.wav'}
+LOCK_PICKING_SOUNDS = ['pick_lock1.ogg', 'pick_lock2.ogg', 'pick_lock3.ogg', 'pick_lock4.ogg']
+MALE_PLAYER_HIT_SOUNDS = ['pain/8.ogg', 'pain/9.ogg', 'pain/10.ogg', 'pain/11.ogg', 'pain/12.ogg', 'pain/13.ogg']
+FEMALE_PLAYER_HIT_SOUNDS = ['pain/f8.ogg', 'pain/f9.ogg', 'pain/f10.ogg', 'pain/f11.ogg', 'pain/f12.ogg', 'pain/f13.ogg']
+FEMALE_PLAYER_VOICE = {'out of ammo': ['exasperation.ogg', 'out_ammo1.ogg', 'out_ammo2.ogg', 'out_ammo3.ogg', 'no_bullets.ogg', 'need_bullets.ogg', 'need_bullets2.ogg'], 'empty clip': ['empty1.ogg', 'empty2.ogg','empty3.ogg','empty4.ogg','need_bullets3.ogg', 'man.ogg', 'need_reload.ogg']}
+MALE_PLAYER_VOICE = {'out of ammo': ['out_ammo1.ogg', 'out_ammo2.ogg', 'out_ammo3.ogg', ], 'empty clip': ['empty1.ogg']}
+ZOMBIE_MOAN_SOUNDS = ['brains2.ogg', 'brains3.ogg', 'zombie-roar-1.ogg', 'zombie-roar-2.ogg',
+                      'zombie-roar-3.ogg', 'zombie-roar-5.ogg', 'zombie-roar-6.ogg', 'zombie-roar-7.ogg']
+ZOMBIE_HIT_SOUNDS = ['splat-15.ogg']
+WRAITH_SOUNDS = ['wraith1.ogg', 'wraith2.ogg', 'wraith3.ogg', 'wraith4.ogg']
+EFFECTS_SOUNDS = {'eat': 'eat.ogg', 'door close': 'door_close.ogg', 'door open': 'door_open.ogg', 'charge': 'charge.ogg', 'bow reload': 'bow reload.ogg', 'level_start': 'Day_1_v2_mod.ogg', 'click': 'click.ogg', 'fanfare': 'fanfare.ogg', 'rustle': 'rustle.ogg', 'pickaxe': 'pickaxe.ogg', 'rocks': 'rocks.ogg', 'rock_hit': 'rock_hit.ogg', 'fart': 'fart.ogg', 'pee': 'pee.ogg', 'toilet': 'toilet.ogg',
+                  'health_up': 'health_pack.ogg', 'casting healing': 'casting_healing.ogg', 'page turn': 'page_turn.ogg',
+                  'gun_pickup': 'gun_pickup.ogg', 'jump': 'jump.ogg', 'tank': 'tank.ogg', 'tank engine': 'tank_engine.ogg','splash': 'splash.ogg', 'grass': 'grass.ogg', 'swim': 'swim.ogg', 'shallows': 'shallows.ogg', 'climb': 'climb.ogg', 'unlock': 'unlock.ogg', 'lock click': 'lock_click.ogg', 'fire blast': 'fire_blast.ogg', 'knock':
+                  'knock.ogg', 'metal hit': 'metal_hit.ogg', 'anvil': 'anvil.ogg', 'scrape': 'scrape.ogg', 'grindstone': 'grindstone.ogg', 'hammering': 'hammering.ogg', 'snore': 'snore.ogg', 'cashregister': 'cashregister.ogg', 'alchemy': 'alchemy.ogg', 'enchant': 'enchant.ogg', 'fire crackle': 'fire_crackling.ogg'}
 
 PUNCH_SOUNDS = []
 for i in range(0, 10):
-    PUNCH_SOUNDS.append('punch'+ str(i+1) + '.wav')
+    PUNCH_SOUNDS.append('punch'+ str(i+1) + '.ogg')
 
 # Body mods/characteristics are stored in the players inventory like items. This just makes it way easier to customize them and give them attributes
 GENDER = {}
@@ -490,35 +494,35 @@ GENDER['other'] = {'armor': 1,
                               'image': 2}
 RACE = {}
 RACE['osidine'] = {'armor': 1, 'image': 0, 'start map': (27, 39), 'start pos': (23, 41),
-                   'start_stats': {'health': 100, 'max health': 100, 'stamina': 100, 'max stamina': 100, 'magica': 100, 'max magica': 100, 'weight': 0, 'max weight': 100, 'strength': 2, 'agility': 1.5, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-                   'description': 'The Osidines are descendants of the ancients who fought along side the dragons of Zhara for the liberation of Shobera during the great war. They specialize in the construction of armor and melee weapons.'}
+                   'start_stats': {'health': 100, 'max health': 100, 'stamina': 100, 'max stamina': 100, 'magica': 100, 'max magica': 100, 'hunger': 100, 'max hunger': 100, 'weight': 0, 'max weight': 100, 'strength': 2, 'agility': 1.5, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                   'description': 'The Osidines are descendants of the ancients who fought along side the dragons of Zhara for the liberation of Arroshay during the great war. They specialize in the construction of armor and melee weapons.'}
 RACE['shaktele'] = {'armor': 1, 'image': 9, 'start map': (64, 17), 'start pos': (32, 52),
-                    'start_stats': {'health': 100, 'max health': 100, 'stamina': 100, 'max stamina': 100, 'magica': 100, 'max magica': 100, 'weight': 0, 'max weight': 100, 'strength': 2.2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                    'start_stats': {'health': 100, 'max health': 100, 'stamina': 100, 'max stamina': 100, 'magica': 100, 'max magica': 100, 'hunger': 100, 'max hunger': 100, 'weight': 0, 'max weight': 100, 'strength': 2.2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
                     'description': 'The Shaktele are a technologically advanced race that live in a modernized post-apocalyptic land created by biological warfare gone wrong. They specialize in the usage and construction of firearms and advanced weaponry.'}
 RACE['elf'] = {'armor': 1, 'image': 2, 'start map': (36, 31), 'start pos': (29, 34),
-               'start_stats': {'health': 90, 'max health': 90, 'stamina': 120, 'max stamina': 120, 'magica': 120, 'max magica': 120, 'weight': 0, 'max weight': 75, 'strength': 1, 'agility': 2, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0.2, 'magica regen': 0.2, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-                'description': 'The elvles of Shobera live in harmony with the forces of nature. Animals are less fearful of elves and usually only attack them if provoked.'}
+               'start_stats': {'health': 90, 'max health': 90, 'stamina': 120, 'max stamina': 120, 'magica': 120, 'max magica': 120, 'hunger': 120, 'max hunger': 120, 'weight': 0, 'max weight': 75, 'strength': 1, 'agility': 2, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0.2, 'magica regen': 0.2, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                'description': 'The elves of Arroshay live in harmony with the forces of nature. Animals are less fearful of elves and usually only attack them if provoked.'}
 RACE['immortui'] = {'armor': 1, 'image': 1, 'start map': (27, 40), 'start pos': (30, 34),
-                    'start_stats': {'health': 200, 'max health': 200, 'stamina': 60, 'max stamina': 60, 'magica': 100, 'max magica': 100, 'weight': 0, 'max weight': 90, 'strength': 1, 'agility': 0.5, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                    'start_stats': {'health': 200, 'max health': 200, 'stamina': 60, 'max stamina': 60, 'magica': 100, 'max magica': 100, 'hunger': 110, 'max hunger': 110, 'weight': 0, 'max weight': 90, 'strength': 1, 'agility': 0.5, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
                     'description': 'The Immortui are the undead either raised from the grave by dark magic or created in biological warfare gone wrong. They are slow but hard to kill and have the advantage of not attracting the attention of other Immortui.'}
 RACE['lacertolian'] = {'armor': 20, 'image': 3, 'start map': (145, 44), 'start pos': (32, 26),
-                       'start_stats': {'health': 120, 'max health': 120, 'stamina': 110, 'max stamina': 110, 'magica': 90, 'max magica': 90, 'weight': 0, 'max weight': 125, 'strength': 2.5, 'agility': 2, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0.5, 'stamina regen': 2, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-                        'description': 'The Lacertolians are a peaceful people who are expert mariners. They have naturally armored skin and are immune to venom.'}
+                       'start_stats': {'health': 120, 'max health': 120, 'stamina': 110, 'max stamina': 110, 'magica': 90, 'max magica': 90, 'hunger': 200, 'max hunger': 200, 'weight': 0, 'max weight': 125, 'strength': 2.5, 'agility': 2, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0.5, 'stamina regen': 2, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                        'description': 'The Lacertolians are a peaceful people who are expert mariners. They can go for long periods without eating, have naturally armored skin and are immune to venom.'}
 RACE['miewdra'] = {'armor': 4, 'image': 4, 'start map': (89, 48), 'start pos': (15, 43),
-                   'start_stats': {'health': 95, 'max health': 95, 'stamina': 150, 'max stamina': 150, 'magica': 105, 'max magica': 105, 'weight': 0, 'max weight': 90, 'strength': 1, 'agility': 2.5, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 1, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-                    'description': 'The Miewdra live near Shobera\'s north pole. They are resistant to cold, have high stamina, and can run quickly.'}
+                   'start_stats': {'health': 95, 'max health': 95, 'stamina': 150, 'max stamina': 150, 'magica': 105, 'max magica': 105, 'hunger': 100, 'max hunger': 100, 'weight': 0, 'max weight': 90, 'strength': 1, 'agility': 2.5, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 1, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                    'description': 'The Miewdra live near Arroshay\'s north pole. They are resistant to cold, have high stamina, and can run quickly.'}
 RACE['mechanima'] = {'armor': 35, 'image': 5, 'start map': (126, 21), 'start pos': (45, 44),
-                     'start_stats': {'health': 110, 'max health': 110, 'stamina': 100, 'max stamina': 100, 'magica': 70, 'max magica': 70, 'weight': 0, 'max weight': 200, 'strength': 3.5, 'agility': 1.2, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0.2, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-                    'description': 'The Mechanima are the remnants of an advanced race who were driven into extinction who were able to preserve their souls in robot bodies. They are strong, naturally armored, immune to poison, and recharged by energy attacks.'}
+                     'start_stats': {'health': 110, 'max health': 110, 'stamina': 100, 'max stamina': 100, 'magica': 70, 'max magica': 70, 'hunger': 1, 'max hunger': 1, 'weight': 0, 'max weight': 200, 'strength': 3.5, 'agility': 1.2, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0.2, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                    'description': 'The Mechanima are the remnants of an advanced race who were driven into extinction who were able to preserve their souls in robot bodies. They are strong, naturally armored, immune to poison, and recharged by energy attacks. They do not need to eat, but can.'}
 RACE['blackwraith'] = {'armor': 0, 'image': 8, 'start map': (53, 75), 'start pos': (17, 10),
-                       'start_stats': {'health': 300, 'max health': 300, 'stamina': 150, 'max stamina': 150, 'magica': 150, 'max magica': 150, 'weight': 0, 'max weight': 50, 'strength': 0.2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-                        'description': 'Black wraiths are disembodied practitioners of dark magic. They are immune to unenchanted melee weapons, bullets, and can walk through walls when not carrying any weight.'}
+                       'start_stats': {'health': 300, 'max health': 300, 'stamina': 150, 'max stamina': 150, 'magica': 150, 'max magica': 150, 'hunger': 1, 'max hunger': 1, 'weight': 0, 'max weight': 50, 'strength': 0.2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                        'description': 'Black wraiths are disembodied practitioners of dark magic. They are immune to unenchanted melee weapons, bullets, cannot eat, and can walk through walls when not carrying any weight.'}
 RACE['whitewraith'] = {'armor': 0, 'image': 7, 'start map': (59, 64), 'start pos': (40, 38),
-                       'start_stats': {'health': 200, 'max health': 200, 'stamina': 160, 'max stamina': 160, 'magica': 220, 'max magica': 220, 'weight': 0, 'max weight': 50, 'strength': 0.1, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2.5, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-                        'description': 'White wraiths are disembodied practitioners of white magic. They are immune to unenchanted melee weapons, bullets, and can walk through walls when not carrying any weight.'}
+                       'start_stats': {'health': 200, 'max health': 200, 'stamina': 160, 'max stamina': 160, 'magica': 220, 'max magica': 220, 'hunger': 1, 'max hunger': 1, 'weight': 0, 'max weight': 50, 'strength': 0.1, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 2, 'stamina regen': 0, 'magica regen': 2.5, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                        'description': 'White wraiths are disembodied practitioners of white magic. They are immune to unenchanted melee weapons, bullets, cannot eat, and can walk through walls when not carrying any weight.'}
 RACE['skeleton'] = {'armor': 12, 'image': 6, 'start map': (27, 40), 'start pos': (32, 30),
-                    'start_stats': {'health': 50, 'max health': 50, 'stamina': 50, 'max stamina': 50, 'magica': 300, 'max magica': 300, 'weight': 0, 'max weight': 60, 'strength': 2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 4, 'stamina regen': 4, 'magica regen': 4, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
-                    'description': 'Skeletons are undead beings who are reanimated by magic. Immune to poison and magic attacks'}
+                    'start_stats': {'health': 50, 'max health': 50, 'stamina': 50, 'max stamina': 50, 'magica': 300, 'max magica': 300, 'hunger': 1, 'max hunger': 1, 'weight': 0, 'max weight': 60, 'strength': 2, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 4, 'stamina regen': 4, 'magica regen': 4, 'looting': 0, 'casting': 0, 'lock picking': 0, 'smithing': 0},
+                    'description': 'Skeletons are undead beings who are reanimated by magic. They cannot eat, and are immune to poison and magic attacks'}
 RACE['osidinedragon'] = {'armor': 20, 'image': 0}
 RACE['shakteledragon'] = {'armor': 20, 'image': 9}
 RACE['elfdragon'] = {'armor': 20, 'image': 2}

@@ -82,14 +82,13 @@ def trace_mem():
         print(stat)
 
 # HUD functions
-def draw_player_stats(surf, x, y, pct, color = GREEN):
+def draw_player_stats(surf, x, y, pct, color = GREEN, bar_length = 100):
     if pct < 0:
         pct = 0
-    BAR_LENGTH = 100
-    BAR_HEIGHT = 20
-    fill = pct * BAR_LENGTH
-    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+    bar_height = 20
+    fill = pct * bar_length
+    outline_rect = pg.Rect(x, y, bar_length, bar_height)
+    fill_rect = pg.Rect(x, y, fill, bar_height)
     if pct > 0.6:
         col = color
     elif pct > 0.3:
@@ -951,6 +950,10 @@ class Game:
         self.last_dialogue = 0
         self.hud_health = 0
         self.hud_stamina = 0
+        self.hud_mobhp = 0
+        self.show_mobhp = False
+        self.last_mobhp_update = 0
+        self.hud_hunger = 1
         self.hud_ammo1 = 0
         self.hud_ammo2 = 0
         self.e_down = False
@@ -1195,12 +1198,8 @@ class Game:
                 if sprite in [self.player.possessing, self.player.possessing.body]:
                     continue
             if self.player.in_vehicle:
-                if self.player.vehicle.turret != None:
-                    if sprite in [self.player.vehicle, self.player.vehicle.turret]:
-                        continue
-                else:
-                    if sprite in [self.player.vehicle]:
-                        continue
+                if sprite in [self.player.vehicle]:
+                    continue
             if sprite in self.companions:
                 continue
             elif sprite in self.companion_bodies:
@@ -1208,6 +1207,10 @@ class Game:
             elif sprite in [self.player, self.player.human_body, self.player.dragon_body, self.player.body]:
                 continue
             else:
+                sprite.kill()
+                del sprite
+        for sprite in self.turrets:
+            if not sprite.mother.alive():
                 sprite.kill()
                 del sprite
 
@@ -1494,7 +1497,12 @@ class Game:
                     LightSource(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
                 if 'lightsource' in tile_object.name:
-                    _, kind, rot = tile_object.name.split('_')
+                    numvars = tile_object.name.count('_')
+                    if numvars == 2:
+                        _, kind, rot = tile_object.name.split('_')
+                    elif numvars == 1:
+                        _, kind = tile_object.name.split('_')
+                        rot = 0
                     kind = int(kind)
                     if rot == 'R':
                         rot = 0
@@ -1791,6 +1799,8 @@ class Game:
         elif now - self.day_start_time > DAY_LENGTH:
             self.nightfall = True
             self.night_transition()
+        if now - self.last_mobhp_update > MOB_HEALTH_SHOW_TIME: # Turns off mob hp bar if when you aren't attacking the mob.
+            self.show_mobhp = False
 
         # updates all sprites that are on screen and puts on screen sprites into groups for hit checks.
         self.message_text = False
@@ -2460,8 +2470,14 @@ class Game:
                                     if mob.aggression in ['awd', 'sap', 'fup']:
                                         mob.offensive = True
                                         mob.provoked = True
-                                mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
-                                bullet.death(mob)
+                                        mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
+                                    self.hud_mobhp = mob.health / mob.max_health
+                                    self.show_mobhp = True
+                                    self.last_mobhp_update = pg.time.get_ticks()
+                                    bullet.death(mob)
+                                else:
+                                    mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
+                                    bullet.death(mob)
                             else:
                                 if not mob.immaterial or bullet.energy or (self.player.stats['weight'] != 0):
                                     if not mob.immaterial or bullet.energy:
@@ -2507,7 +2523,7 @@ class Game:
             if npc in hits:
                 if not npc.in_player_vehicle:
                     if not pg.sprite.spritecollide(npc, self.long_grass_on_screen, False):
-                        self.player.swimming = True
+                        npc.swimming = True
                     else:
                         npc.swimming = False
             else:
@@ -2689,6 +2705,8 @@ class Game:
                 self.hud_health_num = self.player.stats['health']
             self.hud_stamina = self.player.stats['stamina'] / self.player.stats['max stamina']
             self.hud_magica = self.player.stats['magica'] / self.player.stats['max magica']
+            if self.player.hungers:
+                self.hud_hunger = self.player.stats['hunger'] / self.player.stats['max hunger']
             if self.player.ammo_cap1 + self.player.mag1 != 0:
                 self.hud_ammo1 = "Right Ammo: " + str(self.player.mag1) + '/' + str(self.player.ammo_cap1)
             else:
@@ -2697,11 +2715,15 @@ class Game:
                 self.hud_ammo2 = "Left Ammo: " + str(self.player.mag2) + '/' + str(self.player.ammo_cap2)
             else:
                 self.hud_ammo2 = ""
-
             self.last_hud_update = now
         draw_player_stats(self.screen, 10, 10, self.hud_health)
         draw_player_stats(self.screen, 10, 40, self.hud_stamina, BLUE)
         draw_player_stats(self.screen, 10, 70, self.hud_magica, CYAN)
+        if self.show_mobhp:
+            draw_player_stats(self.screen, int(self.screen_width/2 - 150), self.screen_height - 70, self.hud_mobhp, BLUE, 300)
+        if self.player.hungers:
+            draw_player_stats(self.screen, 10, 100, self.hud_hunger, BROWN)
+            self.draw_text("HGR {:.0f}".format(self.player.stats['hunger']), self.hud_font, 20, WHITE, 120, 100, align="topleft")
         if not self.hud_ammo1 == "":
             self.draw_text(self.hud_ammo1, self.hud_font, 20, WHITE, 50, self.screen_height - 100, align="topleft")
         if not self.hud_ammo2 == "":
@@ -2711,16 +2733,11 @@ class Game:
             self.screen.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.title_font, 105, RED, self.screen_width / 2, self.screen_height / 2, align="center")
         if self.message_text == True:
-            self.draw_text(self.message, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2,
-                           align="center")
-        self.draw_text("FPS {:.0f}".format(self.clock.get_fps()), self.hud_font, 20, WHITE,
-                       25, 100, align="topleft")
-        self.draw_text("HP {:.0f}".format(self.hud_health_num), self.hud_font, 20, WHITE,
-                       120, 10, align="topleft")
-        self.draw_text("ST {:.0f}".format(self.player.stats['stamina']), self.hud_font, 20, WHITE,
-                       120, 40, align="topleft")
-        self.draw_text("MP {:.0f}".format(self.player.stats['magica']), self.hud_font, 20, WHITE,
-                       120, 70, align="topleft")
+            self.draw_text(self.message, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100, align="center")
+        self.draw_text("FPS {:.0f}".format(self.clock.get_fps()), self.hud_font, 20, WHITE, self.screen_width/2, 10, align="topleft")
+        self.draw_text("HP {:.0f}".format(self.hud_health_num), self.hud_font, 20, WHITE, 120, 10, align="topleft")
+        self.draw_text("ST {:.0f}".format(self.player.stats['stamina']), self.hud_font, 20, WHITE, 120, 40, align="topleft")
+        self.draw_text("MP {:.0f}".format(self.player.stats['magica']), self.hud_font, 20, WHITE, 120, 70, align="topleft")
 
         pg.display.flip()
         if self.in_inventory_menu:

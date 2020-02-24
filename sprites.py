@@ -850,8 +850,7 @@ class Character(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.npc_bodies
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game.group.add(self)
-        self.surface_width = 250
-        self.surface_height = 250
+        self.surface_width = self.surface_height = 250
         self.body_surface = pg.Surface((self.surface_width, self.surface_height)).convert()
         self.body_surface.fill(TRANSPARENT)
         self.image = self.body_surface
@@ -1228,6 +1227,7 @@ class Player(pg.sprite.Sprite):
         self.last_move = 0
         self.last_damage = 0
         self.last_magica_drain = 0
+        self.last_hunger = 0
         self.last_fireball = 0
         self.melee_playing = False
         self.dual_melee = False
@@ -1258,7 +1258,7 @@ class Player(pg.sprite.Sprite):
         self.moving_melee = False
         self.living = True
         # player stats. You gain skill according to the activities the player does.
-        self.stats = {'health': 100, 'max health': 100, 'stamina': 100, 'max stamina': 100, 'magica': 100, 'max magica': 100, 'weight': 0, 'max weight': 100, 'strength': 1, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'level': 0}
+        self.stats = {'health': 100, 'max health': 100, 'stamina': 100, 'max stamina': 100, 'magica': 100, 'max magica': 100, 'hunger': 100, 'max hunger': 100, 'weight': 0, 'max weight': 100, 'strength': 1, 'agility': 1, 'armor': 0, 'kills': 0, 'marksmanship hits': 0, 'marksmanship shots fired': 0, 'marksmanship accuracy': 0, 'melee': 0, 'hits taken': 0, 'exercise': 0, 'healing': 0, 'stamina regen': 0, 'magica regen': 0, 'looting': 0, 'casting': 0, 'lock picking': 0, 'level': 0}
         self.fire_damage = self.start_fire_damage = 20
         self.after_effect = None
         # Used for equipment perks
@@ -1300,10 +1300,11 @@ class Player(pg.sprite.Sprite):
         self.dragon_body.remove(self.game.all_sprites)
         self.body = self.human_body
         self.animation_playing = self.body.stand_anim
-        if 'wraith' in self.race:
-            self.immaterial = True
-        else:
-            self.immaterial = False
+        # Redefined in character menu
+        self.hungers = True
+        self.immaterial = False
+        self.magical_being = False
+        # Needed for congruency with other Npc sprites, but only used to avoid errors.
         self.provoked = False
         self.aggression = 'player'
         set_elevation(self)
@@ -1334,31 +1335,22 @@ class Player(pg.sprite.Sprite):
         else:
             pass
 
-    #@property
-    #def in_shallows(self): #This is the method that is called whenever you access in_shallows
-    #    return self._in_shallows
-    #@in_shallows.setter #This is the method that is called whenever you set a value for in_shallows
-    #def in_shallows(self, value):
-    #    if value!=self._in_shallows:
-    #        self._in_shallows = value
-    #    else:
-    #        pass
-
     def get_keys(self):
         self.rot_speed = 0
         self.acc = vec(0, 0) # Makes it so the player doesn't accelerate when no key is pressed.
 
         # Controlls shooting/automatic shooting
+        mouse_buttons_down = pg.mouse.get_pressed()
         if self.equipped[self.weapon_hand] != None:
             if WEAPONS[self.equipped[self.weapon_hand]]['bullet_count'] > 0:
                 if WEAPONS[self.equipped[self.weapon_hand]]['auto']:
-                    if pg.mouse.get_pressed() == (0, 0, 1) or pg.mouse.get_pressed() == (0, 1, 1):
+                    if mouse_buttons_down == (0, 0, 1) or mouse_buttons_down == (0, 1, 1):
                         self.weapon_hand = 'weapons'
                         self.shoot()
-                    if pg.mouse.get_pressed() == pg.mouse.get_pressed() == (1, 0, 0) or pg.mouse.get_pressed() == (1, 1, 0):
+                    if mouse_buttons_down == mouse_buttons_down == (1, 0, 0) or mouse_buttons_down == (1, 1, 0):
                         self.weapon_hand = 'weapons2'
                         self.shoot()
-                if pg.mouse.get_pressed() == (1, 0, 1) or pg.mouse.get_pressed() == (1, 1, 1):
+                if mouse_buttons_down == (1, 0, 1) or mouse_buttons_down == (1, 1, 1):
                     self.dual_shoot(True)
 
         keys = pg.key.get_pressed()
@@ -1367,15 +1359,15 @@ class Player(pg.sprite.Sprite):
 
         # WASD keys for forward/rev and rotation
         if self.in_vehicle == False:
-            if keys[pg.K_z] and (keys[pg.K_w] or pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0)):
+            if keys[pg.K_z] and (keys[pg.K_w] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
                 self.accelerate(0.8, "diagonal left")
-            elif keys[pg.K_c] and (keys[pg.K_w] or pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0)):
+            elif keys[pg.K_c] and (keys[pg.K_w] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
                 self.accelerate(0.8, "diagonal right")
             elif keys[pg.K_z]:
                 self.accelerate(0.8, "left")
             elif keys[pg.K_c]:
                 self.accelerate(0.8, "right")
-            elif keys[pg.K_w] or (pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0)):
+            elif keys[pg.K_w] or (mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
                 self.accelerate()
             elif keys[pg.K_s]:
                 self.accelerate(0.5, "rev")
@@ -1388,7 +1380,7 @@ class Player(pg.sprite.Sprite):
                 self.rot_speed = self.vehicle.rot_speed
             if keys[pg.K_d]:
                 self.rot_speed = -self.vehicle.rot_speed
-            if keys[pg.K_w] or (pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0)):
+            if keys[pg.K_w] or (mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
                 self.accelerate()
                 self.vehicle.forward = True
             else:
@@ -1421,23 +1413,23 @@ class Player(pg.sprite.Sprite):
             self.acceleration = PLAYER_ACC
 
         #Arrow keys auto rotate and move the player in the right/left, up/down directions
-        if keys[pg.K_UP] and keys[pg.K_RIGHT]:
-            self.rotate_and_move(vec(1, -1))
-        elif keys[pg.K_DOWN] and keys[pg.K_LEFT]:
-            self.rotate_and_move(vec(-1, 1))
-        elif keys[pg.K_UP] and keys[pg.K_LEFT]:
-            self.rotate_and_move(vec(-1, -1))
-        elif keys[pg.K_DOWN] and keys[pg.K_RIGHT]:
-            self.rotate_and_move(vec(1, 1))
-        else:
-            if keys[pg.K_LEFT]:
-                self.rotate_and_move(vec(-1, 0))
-            if keys[pg.K_RIGHT]:
-                self.rotate_and_move(vec(1, 0))
-            if keys[pg.K_UP]:
-                self.rotate_and_move(vec(0, -1))
-            if keys[pg.K_DOWN]:
-                self.rotate_and_move(vec(0, 1))
+        #if keys[pg.K_UP] and keys[pg.K_RIGHT]:
+        #    self.rotate_and_move(vec(1, -1))
+        #elif keys[pg.K_DOWN] and keys[pg.K_LEFT]:
+        #    self.rotate_and_move(vec(-1, 1))
+        #elif keys[pg.K_UP] and keys[pg.K_LEFT]:
+        #    self.rotate_and_move(vec(-1, -1))
+        #elif keys[pg.K_DOWN] and keys[pg.K_RIGHT]:
+        #    self.rotate_and_move(vec(1, 1))
+        #else:
+        #    if keys[pg.K_LEFT]:
+        #        self.rotate_and_move(vec(-1, 0))
+        #    if keys[pg.K_RIGHT]:
+        #        self.rotate_and_move(vec(1, 0))
+        #    if keys[pg.K_UP]:
+        #        self.rotate_and_move(vec(0, -1))
+        #    if keys[pg.K_DOWN]:
+        #        self.rotate_and_move(vec(0, 1))
 
         #Mouse aiming
         mouse_movement = vec(pg.mouse.get_rel()).length()
@@ -1461,19 +1453,19 @@ class Player(pg.sprite.Sprite):
         else:
             self.rot_speed = rot_speed * 10 * abs(angle) / 180
 
-    def rotate_and_move(self, vec):
-        if self.in_vehicle:
-            rot_speed = self.vehicle.rot_speed
-        else:
-            rot_speed = PLAYER_ROT_SPEED
-        vector = vec
-        angle = fix_angle(vector.angle_to(self.direction))
-        if abs(angle) < 1:
-            self.accelerate()
-        elif angle < 0:
-            self.rot_speed = -rot_speed * 10 * abs(angle) / 180
-        else:
-            self.rot_speed = rot_speed * 10 * abs(angle) / 180
+    #def rotate_and_move(self, vec):
+    #    if self.in_vehicle:
+    #        rot_speed = self.vehicle.rot_speed
+    #    else:
+    #        rot_speed = PLAYER_ROT_SPEED
+    #    vector = vec
+    #    angle = fix_angle(vector.angle_to(self.direction))
+    #    if abs(angle) < 1:
+    #        self.accelerate()
+    #    elif angle < 0:
+    #        self.rot_speed = -rot_speed * 10 * abs(angle) / 180
+    #    else:
+    #        self.rot_speed = rot_speed * 10 * abs(angle) / 180
 
     def accelerate(self, power = 1, direction = "forward"):
         perp = 0
@@ -1529,9 +1521,7 @@ class Player(pg.sprite.Sprite):
                     self.last_move = now
                     self.game.effects_sounds['swim'].play()
                     if not self.in_vehicle:
-                        self.add_stamina(-1)   # This part makes it so you get hurt and drown if you run out of stamina in the water
-                        if self.stats['stamina'] < 4:
-                            self.add_health(-1)
+                        self.add_stamina(-1)
             elif self.in_shallows:
                 if now - self.last_move > self.game.effects_sounds['shallows'].get_length() * 1000:
                     self.last_move = now
@@ -1568,6 +1558,107 @@ class Player(pg.sprite.Sprite):
                 speed = self.acceleration
                 perp = -self.acceleration
             self.acc = vec(speed * power, perp * power).rotate(-self.rot)
+
+    def update(self):
+        # This parts synchs the body sprite with the player's soul.
+        self.body.rot = self.rot
+        self.body.image = pg.transform.rotate(self.body.body_surface, self.rot)
+        self.body.rect = self.body.image.get_rect()
+        self.body.rect.center = self.rect.center
+
+        if self.melee_playing:
+            self.melee()
+        if self.jumping:
+            self.jump()
+        if self.is_reloading:
+            self.reload()
+
+        now = pg.time.get_ticks()
+        # Stops you from climbing after a certain time if you aren't on an object that requires you climb on it.
+        if self.climbing:
+            if now - self.last_climb > CLIMB_TIME:
+                if not pg.sprite.spritecollide(self, self.game.climbs, False):
+                    self.climbing = False
+        # makes you more hungry if you are a race that eats
+        if self.hungers:
+            if now - self.last_hunger > GAME_HOUR:
+                self.add_hunger(-5)
+                self.last_hunger = now
+        # drains magica if you are a dragon
+        if self.dragon:
+            if now - self.last_magica_drain > 2000:
+                self.stats['magica'] -= 5
+                if self.stats['magica'] < 0:
+                    self.stats['magica'] = 0
+                    self.transform()
+                self.last_magica_drain = now
+        # recharges magica when not a dragon
+        else:
+            time_delay = 3000
+            time_reduction_factor = time_delay / (time_delay + self.stats['magica regen'])
+            regen_delay = time_delay * time_reduction_factor + time_delay / 6
+            if now - self.last_magica_drain > regen_delay:
+                self.add_magica(4 + self.stats['magica regen']/50)
+                self.last_magica_drain = pg.time.get_ticks()
+        #racharge stamina and health
+        if not (self.swimming or self.climbing):
+            if self.stats['stamina'] < self.stats['max stamina']:
+                time_delay = 3000
+                time_reduction_factor = time_delay / (time_delay + self.stats['stamina regen'])
+                regen_delay = time_delay * time_reduction_factor + time_delay/6
+                if now - self.last_stam_regen > regen_delay:
+                    keys = pg.key.get_pressed()
+                    if not (keys[pg.K_v] or self.is_attacking()):
+                        if not (keys[pg.K_LSHIFT] and self.is_moving()):
+                            self.add_stamina((6 + self.stats['stamina regen']/50) * self.game.hud_hunger) # Stamina regenerates based off of your hunger level
+                            if (self.stats['hunger'] > 75) or not self.hungers:  # You only heal when you're not too hungry.
+                                self.add_health(self.stats['healing'] / 150)
+                            self.last_stam_regen = pg.time.get_ticks()
+        # Upgrades stats
+        if now - self.last_stat_update > self.stat_update_delay:
+            self.level_stats()
+            self.last_stat_update = now
+
+        # Mouse aiming vectors
+        mouse_loc = vec(pg.mouse.get_pos())
+        self.mouse_pos = vec(mouse_loc.x -self.game.camera.x, mouse_loc.y - self.game.camera.y)
+        self.mouse_direction = vec(self.mouse_pos.x - self.pos.x, self.mouse_pos.y - self.pos.y) #gets the direciton from the character to mouse cursor.
+        # Process key events and move character
+        self.get_keys()
+        self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+        self.direction = vec(1, 0).rotate(-self.rot)
+        self.rect.center = self.pos
+        self.acc += self.vel * self.friction
+        self.vel += self.acc
+        self.pos += (self.vel +0.5 * self.acc) * self.game.dt
+        if not self.in_vehicle:
+            if ('wraith' not in self.race) or self.stats['weight'] !=0:
+                self.hit_rect.centerx = self.pos.x
+                collide_with_walls(self, self.game.walls_on_screen, 'x')
+                collide_with_elevations(self, 'x')
+                collide_with_vehicles(self, 'x')
+                self.hit_rect.centery = self.pos.y
+                collide_with_walls(self, self.game.walls_on_screen, 'y')
+                collide_with_elevations(self, 'y')
+                collide_with_vehicles(self, 'y')
+                self.rect.center = self.hit_rect.center
+        if self.light_on:
+            if self in self.game.lights:
+                if self.race == 'mechanima':
+                    self.light_mask_rect.center = self.rect.center
+                elif self.lamp_hand == 'weapons':
+                    self.light_mask_rect.center = self.body.melee_rect.center
+                else:
+                    self.light_mask_rect.center = self.body.melee2_rect.center
+                if self.mask_kind in DIRECTIONAL_LIGHTS:
+                    new_image = self.game.flashlight_masks[int(self.rot/3)] # Uses preloaded rotated images to save on CPU usage.
+                    old_center = self.light_mask_rect.center
+                    self.light_mask = new_image
+                    self.light_mask_rect = self.light_mask.get_rect()
+                    self.light_mask_rect.center = old_center
+        else:
+            self.light_mask_rect.center = (-2000, -2000) # Moves light off screen when off
+        self.check_map_pos()
 
     def transform(self):
         self.invisible = False
@@ -2128,6 +2219,9 @@ class Player(pg.sprite.Sprite):
                     mob.vel = vec(0, 0)
                     choice(self.game.punch_sounds).play()
                     mob.gets_hit(damage, 2, self.rot)
+                    self.game.hud_mobhp = mob.health / mob.max_health
+                    self.game.last_mobhp_update = pg.time.get_ticks()
+                    self.game.show_mobhp = True
                 else:
                     weapon_damage = WEAPONS[self.equipped[self.weapon_hand]]['melee damage']
                     damage = self.possessing.damage + weapon_damage
@@ -2135,6 +2229,9 @@ class Player(pg.sprite.Sprite):
                     knockback = self.possessing.knockback / 2 + WEAPONS[self.equipped[self.weapon_hand]]['knockback']
                     self.play_weapon_hit_sound()
                     mob.gets_hit(damage, knockback, self.rot)
+                    self.game.hud_mobhp = mob.health / mob.max_health
+                    self.game.last_mobhp_update = pg.time.get_ticks()
+                    self.game.show_mobhp = True
                 self.stats['melee'] += 0.1
                 self.last_damage = now
                 mob.target = self.possessing
@@ -2151,6 +2248,9 @@ class Player(pg.sprite.Sprite):
                     mob.vel = vec(0, 0)
                     choice(self.game.punch_sounds).play()
                     mob.gets_hit(damage, 2, self.rot)
+                    self.game.hud_mobhp = mob.health / mob.max_health
+                    self.game.last_mobhp_update = pg.time.get_ticks()
+                    self.game.show_mobhp = True
                 else:
                     weapon_damage = WEAPONS[self.equipped[self.weapon_hand]]['melee damage']
                     damage = damage_reduction * (self.stats['strength'] + weapon_damage) + weapon_damage/4
@@ -2158,6 +2258,9 @@ class Player(pg.sprite.Sprite):
                     knockback = WEAPONS[self.equipped[self.weapon_hand]]['knockback']
                     self.play_weapon_hit_sound()
                     mob.gets_hit(damage, knockback, self.rot)
+                    self.game.hud_mobhp = mob.health / mob.max_health
+                    self.game.last_mobhp_update = pg.time.get_ticks()
+                    self.game.show_mobhp = True
                 #choice(mob.hit_sounds).play()
                 self.stats['melee'] += 0.1
                 self.last_damage = now
@@ -2301,15 +2404,37 @@ class Player(pg.sprite.Sprite):
                 self.ammo[ITEMS[self.equipped['items']]['type']] += ITEMS[self.equipped['items']]['ammo']
                 self.pre_reload()
                 remove = True
-            if 'magica' in ITEMS[self.equipped['items']]:
-                self.add_magica(ITEMS[self.equipped['items']]['magica'] + (self.stats['magica regen'] / 20))
-                remove = True
-            if 'health' in ITEMS[self.equipped['items']]:
-                self.add_health(ITEMS[self.equipped['items']]['health'] + (self.stats['healing'] / 20))
-                remove = True
-            if 'stamina' in ITEMS[self.equipped['items']]:
-                self.add_stamina(ITEMS[self.equipped['items']]['stamina'] + (self.stats['stamina regen'] / 20))
-                remove = True
+            if 'food' in ITEMS[self.equipped['items']]:
+                if self.hungers or 'mechanima' in self.race:  # Makes it so only races that can eat can eat.
+                    if self.stats['hunger'] < 100: # You can only eat when you are hungry
+                        if 'health' in ITEMS[self.equipped['items']]:
+                            self.add_health(ITEMS[self.equipped['items']]['health'] + (self.stats['healing'] / 20))
+                            remove = True
+                        if 'stamina' in ITEMS[self.equipped['items']]:
+                            self.add_stamina(ITEMS[self.equipped['items']]['stamina'] + (self.stats['stamina regen'] / 20))
+                            remove = True
+                        if 'magica' in ITEMS[self.equipped['items']]:
+                            self.add_magica(ITEMS[self.equipped['items']]['magica'] + (self.stats['magica regen'] / 20))
+                            remove = True
+                        if 'hunger' in ITEMS[self.equipped['items']]:
+                            self.add_hunger(ITEMS[self.equipped['items']]['hunger'])
+                            remove = True
+                        self.game.effects_sounds['eat'].play()
+                    else:
+                        return "You are too full to eat that."
+            else:
+                if 'health' in ITEMS[self.equipped['items']]:
+                    self.add_health(ITEMS[self.equipped['items']]['health'] + (self.stats['healing'] / 20))
+                    remove = True
+                if 'stamina' in ITEMS[self.equipped['items']]:
+                    self.add_stamina(ITEMS[self.equipped['items']]['stamina'] + (self.stats['stamina regen'] / 20))
+                    remove = True
+                if 'magica' in ITEMS[self.equipped['items']]:
+                    self.add_magica(ITEMS[self.equipped['items']]['magica'] + (self.stats['magica regen'] / 20))
+                    remove = True
+                if 'hunger' in ITEMS[self.equipped['items']]:
+                    self.add_hunger(ITEMS[self.equipped['items']]['hunger'])
+                    remove = True
             if 'change race' in ITEMS[self.equipped['items']]:
                 self.equipped['race'] = ITEMS[self.equipped['items']]['change race']
                 self.human_body.update_animations()
@@ -2353,6 +2478,7 @@ class Player(pg.sprite.Sprite):
             if self.equipped['items'] not in self.inventory['items']: # This lets you keep equipping items of the same kind. This way you can use multiple heath potions in a row for example.
                 self.equipped['items'] = None
             self.game.player.calculate_weight()
+            return False # Used to verify the item was used. False means it used the item.
 
     def change_used_item(self, item_type, item):
         # Renames used items to add hp to the end of their names.
@@ -2403,109 +2529,11 @@ class Player(pg.sprite.Sprite):
 
     def is_moving(self):
         keys = pg.key.get_pressed()
-        return (keys[pg.K_w] or pg.mouse.get_pressed() == (0, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1) or pg.mouse.get_pressed() == (1, 1, 0) or keys[pg.K_RIGHT] or keys[pg.K_LEFT] or keys[pg.K_UP] or keys[pg.K_DOWN])
+        mouse_buttons_down = pg.mouse.get_pressed()
+        return (keys[pg.K_w] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0) or keys[pg.K_RIGHT] or keys[pg.K_LEFT] or keys[pg.K_UP] or keys[pg.K_DOWN])
     def is_attacking(selfself):
-        keys = pg.key.get_pressed()
-        return (pg.mouse.get_pressed() == (1, 0, 0) or pg.mouse.get_pressed() == (0, 0, 1) or pg.mouse.get_pressed() == (1, 1, 0) or pg.mouse.get_pressed() == (0, 1, 1))
-
-    def update(self):
-        # This parts sincs the body sprite with the player's soul.
-        self.body.rot = self.rot
-        self.body.image = pg.transform.rotate(self.body.body_surface, self.rot)
-        self.body.rect = self.body.image.get_rect()
-        self.body.rect.center = self.rect.center
-
-        if self.melee_playing:
-            self.melee()
-        if self.jumping:
-            self.jump()
-        if self.is_reloading:
-            self.reload()
-
-        now = pg.time.get_ticks()
-        # Stops you from climbing after a certain time if you aren't on an object that requires you climb on it.
-        if self.climbing:
-            if now - self.last_climb > CLIMB_TIME:
-                if not pg.sprite.spritecollide(self, self.game.climbs, False):
-                    self.climbing = False
-        # drains magica if you are a dragon
-        if self.dragon:
-            if now - self.last_magica_drain > 2000:
-                self.stats['magica'] -= 5
-                if self.stats['magica'] < 0:
-                    self.stats['magica'] = 0
-                    self.transform()
-                self.last_magica_drain = now
-        # recharges magica when not a dragon
-        else:
-            time_delay = 3000
-            time_reduction_factor = time_delay / (time_delay + self.stats['magica regen'])
-            regen_delay = time_delay * time_reduction_factor + time_delay / 6
-            if now - self.last_magica_drain > regen_delay:
-                self.add_magica(4 + self.stats['magica regen']/50)
-                self.last_magica_drain = pg.time.get_ticks()
-        #racharge stamina and health
-        if not (self.swimming or self.climbing):
-            if self.stats['stamina'] < self.stats['max stamina']:
-                time_delay = 3000
-                time_reduction_factor = time_delay / (time_delay + self.stats['stamina regen'])
-                regen_delay = time_delay * time_reduction_factor + time_delay/6
-                if now - self.last_stam_regen > regen_delay:
-                    keys = pg.key.get_pressed()
-                    if not (keys[pg.K_v] or self.is_attacking()):
-                        if not (keys[pg.K_LSHIFT] and self.is_moving()):
-                            self.add_stamina(6 + self.stats['stamina regen']/50)
-                            self.add_health(self.stats['healing'] / 150)
-                            self.last_stam_regen = pg.time.get_ticks()
-            else: # You heal if your stamina is full
-                if now - self.last_stam_regen > 3000:
-                    self.add_health(self.stats['healing'] / 80) # You heal based on your skill if your stamina if full
-                    self.last_stam_regen = pg.time.get_ticks()
-        # Upgrades stats
-        if now - self.last_stat_update > self.stat_update_delay:
-            self.level_stats()
-            self.last_stat_update = now
-
-        # Mouse aiming vectors
-        mouse_loc = vec(pg.mouse.get_pos())
-        self.mouse_pos = vec(mouse_loc.x -self.game.camera.x, mouse_loc.y - self.game.camera.y)
-        self.mouse_direction = vec(self.mouse_pos.x - self.pos.x, self.mouse_pos.y - self.pos.y) #gets the direciton from the character to mouse cursor.
-        # Process key events and move character
-        self.get_keys()
-        self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
-        self.direction = vec(1, 0).rotate(-self.rot)
-        self.rect.center = self.pos
-        self.acc += self.vel * self.friction
-        self.vel += self.acc
-        self.pos += (self.vel +0.5 * self.acc) * self.game.dt
-        if not self.in_vehicle:
-            if ('wraith' not in self.race) or self.stats['weight'] !=0:
-                self.hit_rect.centerx = self.pos.x
-                collide_with_walls(self, self.game.walls_on_screen, 'x')
-                collide_with_elevations(self, 'x')
-                collide_with_vehicles(self, 'x')
-                self.hit_rect.centery = self.pos.y
-                collide_with_walls(self, self.game.walls_on_screen, 'y')
-                collide_with_elevations(self, 'y')
-                collide_with_vehicles(self, 'y')
-                self.rect.center = self.hit_rect.center
-        if self.light_on:
-            if self in self.game.lights:
-                if self.race == 'mechanima':
-                    self.light_mask_rect.center = self.rect.center
-                elif self.lamp_hand == 'weapons':
-                    self.light_mask_rect.center = self.body.melee_rect.center
-                else:
-                    self.light_mask_rect.center = self.body.melee2_rect.center
-                if self.mask_kind in DIRECTIONAL_LIGHTS:
-                    new_image = self.game.flashlight_masks[int(self.rot/3)] # Uses preloaded rotated images to save on CPU usage.
-                    old_center = self.light_mask_rect.center
-                    self.light_mask = new_image
-                    self.light_mask_rect = self.light_mask.get_rect()
-                    self.light_mask_rect.center = old_center
-        else:
-            self.light_mask_rect.center = (-2000, -2000) # Moves light off screen when off
-        self.check_map_pos()
+        mouse_buttons_down = pg.mouse.get_pressed()
+        return (mouse_buttons_down == (1, 0, 0) or mouse_buttons_down == (0, 0, 1) or mouse_buttons_down == (1, 1, 0) or mouse_buttons_down == (0, 1, 1))
 
     def check_map_pos(self):
         if self.pos.x < 0:
@@ -2549,7 +2577,6 @@ class Player(pg.sprite.Sprite):
             self.stats['healing'] += 1
         self.stats['health'] += amount
         if self.stats['health'] > self.stats['max health']:
-            self.add_stamina(self.stats['health'] - self.stats['max health']) #Adds extra health as stamina
             self.stats['health'] = self.stats['max health']
         if self.stats['health'] < 0:
             self.game.playing = False
@@ -2564,7 +2591,10 @@ class Player(pg.sprite.Sprite):
         self.stats['stamina'] += amount
         if self.stats['stamina'] > self.stats['max stamina']:
             self.stats['stamina'] = self.stats['max stamina']
-        if self.stats['stamina'] < 0:
+        elif (self.stats['stamina'] < 11) and (self.stats['hunger'] > 50):
+            self.add_hunger(-1) # Makes you more hungry if you use your stamina.
+        elif self.stats['stamina'] < 0:
+            self.add_health(self.stats['stamina']) # Subtracts from your health if your stamina is too low.
             self.stats['stamina'] = 0
 
     def add_magica(self, amount):
@@ -2572,9 +2602,19 @@ class Player(pg.sprite.Sprite):
             self.stats['magica regen'] += 1
         self.stats['magica'] += amount
         if self.stats['magica'] > self.stats['max magica']:
+            if self.magical_being:
+                self.add_health(self.stats['magica regen'] / 80)  # You heal based on your skill if your magic is full if you are a magical being
             self.stats['magica'] = self.stats['max magica']
-        if self.stats['magica'] < 0:
+        elif self.stats['magica'] < 0:
             self.stats['magica'] = 0
+
+    def add_hunger(self, amount):
+        self.stats['hunger'] += amount
+        if self.stats['hunger'] > self.stats['max hunger']:
+            self.stats['hunger'] = self.stats['max hunger']
+        elif self.stats['hunger'] < 0:
+            self.add_stamina(self.stats['hunger']) # Subtracts from your stamina if your hunger is too much.
+            self.stats['hunger'] = 0
 
     def calculate_weight(self):
         # Calculates the weight the player is carrying
@@ -3559,7 +3599,6 @@ class Npc(pg.sprite.Sprite):
             self.melee_playing = True
             self.body.frame = 0
             self.melee()
-
     def melee(self): # Used for the melee animations
         # Default values if no weapons
         self.melee_rate = 200 #default timing between melee attacks if no agility. Reduces with higher agility
@@ -3615,8 +3654,6 @@ class Npc(pg.sprite.Sprite):
             self.animating_reload = False
             self.last_reload = now
 
-
-
     def shoot(self):
         self.melee_playing = False
         if self.weapon_hand == 'weapons2':
@@ -3668,7 +3705,14 @@ class Npc(pg.sprite.Sprite):
         snd.play()
 
     def draw_health(self):
-        pass
+        if self.health > self.max_health * 0.6:
+            col = GREEN
+        elif self.health > self.max_health * 0.3:
+            col = YELLOW
+        else:
+            col = RED
+        width = int(MOB_HEALTH_BAR_LENGTH * self.health / self.max_health)
+        return width
 
     def pre_jump(self):
         if True not in [self.melee_playing, self.in_vehicle, self.jumping, self.swimming]:
@@ -5352,7 +5396,7 @@ class Lava(pg.sprite.Sprite):
         self.damage = 10
         mask_width = int(w * 9/5) + 256
         mask_height = int(h * 9/5) + 256
-        self.light_mask = pg.transform.scale(self.game.square_light_mask_images[4], (mask_width, mask_height))
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[4], (mask_width, mask_height))
         self.light_mask_rect = self.light_mask.get_rect()
         self.light_mask_rect.center = self.rect.center
 
@@ -5499,8 +5543,8 @@ class Random_Target(pg.sprite.Sprite): # Used for fires and other stationary ani
         self.groups = game.all_static_sprites, game.random_targets
         pg.sprite.Sprite.__init__(self, self.groups)
         if x == 0:
-            x = randrange(self.game.screen_width, self.game.map.width - self.game.screen_width)
-            y = randrange(self.game.screen_width, self.game.map.height - self.game.screen_width)
+            x = randrange(200, self.game.map.width - 200)
+            y = randrange(200, self.game.map.height - 200)
         self.rect = pg.Rect(x, y, 10, 10)
         self.pos = vec(x, y)
         self.vel = vec(0, 0)

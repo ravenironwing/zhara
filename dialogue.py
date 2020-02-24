@@ -49,3 +49,4 @@ BILL_DLG = ["Hello, I once was a young scientist, but I had my brain implanted i
 BILL_DLG2 = ["Wow! A fish! Thanks!"]
 JEFF_DLG = ["Hello! Im Jeff, could you steal me a chicken? I don't know how, but if you do I will give you a slice of pizza. YN"]
 JEFF_DLG2 = ["I love chickens!"]
+CINDY_DLG = ["Hi there. Can I get you a drink or something to eat?"]

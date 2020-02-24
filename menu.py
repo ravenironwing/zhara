@@ -88,6 +88,7 @@ class Menu():  # used as the parent class for other menus.
         self.action_keys = [pg.K_b, pg.K_x, pg.K_y]
         self.spacing = 20  # Spacing between headings
         self.heading_list = ['Heading1', 'Heading2']  # This is the list of headings
+        self.warning_message = False
 
     def generate_headings(self):
         previous_rect_right = 0
@@ -127,6 +128,7 @@ class Menu():  # used as the parent class for other menus.
                         self.place_item()
                         self.clear_item_info()
             if event.type == pg.MOUSEBUTTONDOWN:  # Clears off pictures and stats from previously clicked item when new item is clicked.
+                self.warning_message = False
                 self.mouse_click = pg.mouse.get_pressed()
                 pos = pg.mouse.get_pos()
                 if [s for s in self.menu_sprites if s.rect.collidepoint(pos)]:
@@ -205,6 +207,8 @@ class Menu():  # used as the parent class for other menus.
         self.draw_text(str(self.game.player.inventory['gold']) + " gold in inventory.", default_font, 25, WHITE, 20, self.game.screen_height - 120, "topleft")
         self.draw_text("Armor Rating: " + str(self.game.player.stats['armor']) + "   Carry Weight: " + str(self.game.player.stats['weight']) + "  Max Carry Weight: " + str(self.game.player.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
         self.draw_text("Right Click: Equip/Unequip   Left Click: Equip second weapon/View Item    B: use Items    X: drop selected item    E: Exit Menu   ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        if self.warning_message != "":
+            self.draw_text(self.warning_message, default_font, 30, YELLOW, self.game.screen_width/2, self.game.screen_height/2, "topleft")
         pg.display.flip()
 
     def update(self):
@@ -432,6 +436,12 @@ class Character_Design_Menu(Menu):
             self.character.body.update_animations()
         self.character.pre_reload()
         self.character.stats = RACE[self.character.race]['start_stats'] # Gives player different stats based on selected race.
+        if self.character.stats['max hunger'] == 1:
+            self.character.hungers = False
+        if 'wraith' in self.character.equipped['race'] :
+            self.character.immaterial = True
+        if self.character.immaterial or 'skeleton' in self.character.equipped['race']:
+            self.character.magical_being = True
         if self.character.race == 'mechanima':
             self.character.brightness = 400
             self.game.lights.add(self.character)
@@ -509,7 +519,7 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                     self.read_book()
             self.character.equipped['items'] = self.selected_item.text
             if self.character == self.game.player:
-                self.character.use_item()
+                self.warning_message = self.character.use_item()
             self.selected_item = None
             self.list_items()
 
@@ -896,6 +906,8 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         if self.character == self.game.player:
             self.draw_text("Armor Rating: " + str(self.character.stats['armor']) + "   Carry Weight: " + str(self.character.stats['weight']) + "  Max Carry Weight: " + str(self.character.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
         self.draw_text("Right Click: Equip/Unequip   Left Click: Equip second weapon/View Item   B: use Items   X: drop selected item  Y: place item  E: Exit Menu   ESC: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        if self.warning_message:
+            self.draw_text(self.warning_message, default_font, 60, YELLOW, self.game.screen_width/2, self.game.screen_height/2, "center")
         pg.display.flip()
 
 

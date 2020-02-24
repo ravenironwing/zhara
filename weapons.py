@@ -9,10 +9,10 @@ SHOCK_BULLETS = ['2', '7', '8', '9']
 EXPLOSIVE_BULLETS = ['4', '5', '8', '10', '0']
 
 # Weapon settings
-WEAPON_SOUNDS = {'pistol': ['pistol.wav'], 'laser': ['laser.wav'], 'grenades': ['shotgun.wav'], 'pickaxe': ['mace_swipe.wav'], 'axe': ['mace_swipe.wav'],
-                 'shotgun': ['shotgun.wav'], 'rifle': ['assault rifle.wav'], 'turret': ['turret.wav'], 'sword': ['sword_swipe.wav'], 'mace': ['mace_swipe.wav'], 'dagger': ['sword_swipe.wav'], 'shield': ['mace_swipe.wav'], 'bow': ['arrow.wav']}
-WEAPON_HIT_SOUNDS = {'pistol': ['gun_hit1.wav'], 'laser': ['gun_hit1.wav'], 'grenades': ['shotgun.wav'], 'pickaxe': ['pickaxe.wav'], 'axe': ['axe.wav'],
-                 'shotgun': ['gun_hit1.wav'], 'rifle': ['gun_hit1.wav'], 'turret': ['turret_hit1.wav'], 'sword': ['sword_hit1.wav'], 'mace': ['mace_hit1.wav', 'mace_hit2.wav'], 'dagger': ['sword_hit1.wav'], 'shield': ['punch1.wav', 'punch2.wav'], 'bow': ['punch1.wav', 'punch2.wav']}
+WEAPON_SOUNDS = {'pistol': ['pistol.ogg'], 'laser': ['laser.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['mace_swipe.ogg'], 'axe': ['mace_swipe.ogg'],
+                 'shotgun': ['shotgun.ogg'], 'rifle': ['assault rifle.ogg'], 'turret': ['turret.ogg'], 'sword': ['sword_swipe.ogg'], 'mace': ['mace_swipe.ogg'], 'dagger': ['sword_swipe.ogg'], 'shield': ['mace_swipe.ogg'], 'bow': ['arrow.ogg']}
+WEAPON_HIT_SOUNDS = {'pistol': ['gun_hit1.ogg'], 'laser': ['gun_hit1.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['pickaxe.ogg'], 'axe': ['axe.ogg'],
+                 'shotgun': ['gun_hit1.ogg'], 'rifle': ['gun_hit1.ogg'], 'turret': ['turret_hit1.ogg'], 'sword': ['sword_hit1.ogg'], 'mace': ['mace_hit1.ogg', 'mace_hit2.ogg'], 'dagger': ['sword_hit1.ogg'], 'shield': ['punch1.ogg', 'punch2.ogg'], 'bow': ['punch1.ogg', 'punch2.ogg']}
 
 WEAPONS = {}
 WEAPONS['harmless bullet source'] = {'type': 'turret',
@@ -856,6 +856,28 @@ WEAPONS['bronze mace'] = {'type': 'mace','gun': False, 'value': 200,
                       'melee animation': 'SWIPE',
                       'grip': 'CP_SWORD_GRIP',
                       'image': 12,
+                      'offset': vec(0, 0),
+                      'armor': 0,
+                      'materials': {'bronze ingot': 3}, 'upgrade': {'bronze ingot': 1, 'leather strips': 1},
+                      'weight': 5}
+WEAPONS['crowbar'] = {'type': 'mace','gun': False, 'value': 15,
+                      'bullet_speed': 0,
+                      'bullet_lifetime': 0,
+                      'magazine size': 0,
+                      'reload speed': 1,
+                      'rate': 300,
+                      'auto': False,
+                      'kickback': 0,
+                      'knockback': 20,
+                      'spread': 0,
+                      'damage': 0,
+                      'melee damage': 7,
+                      'bullet_size': 'sm1',
+                      'bullet_count': 0,
+                      'walk': 'WALK',
+                      'melee animation': 'SWIPE',
+                      'grip': 'CP_SWORD_GRIP',
+                      'image': 46,
                       'offset': vec(0, 0),
                       'armor': 0,
                       'materials': {'bronze ingot': 3}, 'upgrade': {'bronze ingot': 1, 'leather strips': 1},

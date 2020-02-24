@@ -24,18 +24,18 @@ class Npc_Info_Designer(Tk):
         Checkbutton(self, text="obstacles", variable=self.obstaclesvar).grid(row=4, column=0, sticky=W)
         self.wallvar = IntVar()
         Checkbutton(self, text="walls", variable=self.wallvar).grid(row=4, column=1, sticky=W)
-        self.jumpvar = IntVar()
-        Checkbutton(self, text="jumpables", variable=self.jumpvar).grid(row=4, column=2, sticky=W)
-        self.climbvar = IntVar()
-        Checkbutton(self, text="climbables", variable=self.climbvar).grid(row=4, column=3, sticky=W)
+        #self.jumpvar = IntVar()
+        #Checkbutton(self, text="jumpables", variable=self.jumpvar).grid(row=4, column=2, sticky=W)
+        #self.climbvar = IntVar()
+        #Checkbutton(self, text="climbables", variable=self.climbvar).grid(row=4, column=3, sticky=W)
         self.vehiclevar = IntVar()
-        Checkbutton(self, text="vehicles", variable=self.vehiclevar).grid(row=4, column=4, sticky=W)
+        Checkbutton(self, text="vehicles", variable=self.vehiclevar).grid(row=4, column=2, sticky=W)
         self.lavavar = IntVar()
-        Checkbutton(self, text="lava", variable=self.lavavar).grid(row=4, column=5, sticky=W)
+        Checkbutton(self, text="lava", variable=self.lavavar).grid(row=4, column=3, sticky=W)
         self.watervar = IntVar()
-        Checkbutton(self, text="water", variable=self.watervar).grid(row=4, column=6, sticky=W)
+        Checkbutton(self, text="water", variable=self.watervar).grid(row=4, column=4, sticky=W)
         self.shallowsvar = IntVar()
-        Checkbutton(self, text="shallows", variable=self.shallowsvar).grid(row=4, column=7, sticky=W)
+        Checkbutton(self, text="shallows", variable=self.shallowsvar).grid(row=4, column=5, sticky=W)
 
         Label(self, text="Attributes:", font="none 12 bold").grid(row=5, column=0, sticky=W)
         self.protectvar = IntVar()
@@ -194,10 +194,6 @@ class Npc_Info_Designer(Tk):
             collide_list.append('obstacles')
         if self.wallvar.get():
             collide_list.append('walls')
-        if self.jumpvar.get():
-            collide_list.append('jumpables')
-        if self.climbvar.get():
-            collide_list.append('climbables')
         if self.vehiclevar.get():
             collide_list.append('vehicles')
         if self.lavavar.get():

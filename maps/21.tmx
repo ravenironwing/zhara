@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="1037">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="1038">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="100" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="2560"/>
  </tileset>
@@ -1594,7 +1594,6 @@
   <object id="960" name="green tree" x="2641.5" y="256.333" width="45" height="42"/>
   <object id="962" name="snake" x="1606" y="4886"/>
   <object id="964" name="entryway_R" x="2490.33" y="4884.67" width="10.6667" height="86.6667"/>
-  <object id="965" name="snake" x="3334" y="5352"/>
   <object id="968" name="entryway_D_bronze_Kevin's house_True" x="1813" y="3387" width="88" height="10"/>
   <object id="969" name="entryway_D" x="2707" y="3387" width="88" height="10"/>
   <object id="970" name="entryway_R" x="4923" y="5141" width="10" height="86"/>
@@ -1616,5 +1615,6 @@
   <object id="993" name="light" x="2636" y="6378.67" width="349.333" height="172"/>
   <object id="994" name="light" x="2653.33" y="5852" width="156" height="162.667"/>
   <object id="999" name="wall" x="7938.67" y="2025.33" width="126.667" height="658.667"/>
+  <object id="1037" name="light" x="5380" y="6661.33" width="122.667" height="120"/>
  </objectgroup>
 </map>
