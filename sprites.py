@@ -957,46 +957,27 @@ class Character(pg.sprite.Sprite):
                     temp_rect = image.get_rect()
                     body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
 
-                if i == 0: #Adds Right Shoe
-                    if self.mother.equipped['shoes'] != None:
-                        image = pg.transform.rotate(self.game.shoe_images[SHOES[self.mother.equipped['shoes']]['image']], part[2])
+                if i in [0, 1, 2, 3, 4, 7]: #Adds Right Shoe
+                    if self.mother.equipped[EQUIP_DRAW_LIST[i]] != None:
+                        dict = eval(EQUIP_DRAW_LIST[i].upper())
+                        imgpath = eval('self.game.' + EQUIP_IMG_LIST[i] + '_images')
+                        temp_img = imgpath[dict[self.mother.equipped[EQUIP_DRAW_LIST[i]]]['image']]
+                        if 'color' in dict[self.mother.equipped[EQUIP_DRAW_LIST[i]]]:
+                            temp_img = color_image(temp_img, dict[self.mother.equipped[EQUIP_DRAW_LIST[i]]]['color'])
+                        image = pg.transform.rotate(temp_img, part[2])
                         temp_rect = image.get_rect()
                         body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
-                if i == 1: #Adds Left Shoe
-                    if self.mother.equipped['shoes'] != None:
-                        image = pg.transform.rotate(pg.transform.flip(self.game.shoe_images[SHOES[self.mother.equipped['shoes']]['image']], False, True), part[2])
-                        temp_rect = image.get_rect()
-                        body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
-                if i == 2: #Adds pants/skirt
-                    if self.mother.equipped['bottoms'] != None:
-                        image = pg.transform.rotate(self.game.bottom_images[BOTTOMS[self.mother.equipped['bottoms']]['image']], part[2])
-                        temp_rect = image.get_rect()
-                        body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
-                if i == 3: #Adds Right Glove
-                    if self.mother.equipped['gloves'] != None:
-                        image = pg.transform.rotate(self.game.glove_images[GLOVES[self.mother.equipped['gloves']]['image']], part[2])
-                        temp_rect = image.get_rect()
-                        body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
-                if i == 4: #Adds Left Glove
-                    if self.mother.equipped['gloves'] != None:
-                        image = pg.transform.rotate(pg.transform.flip(self.game.glove_images[GLOVES[self.mother.equipped['gloves']]['image']], False, True), part[2])
-                        temp_rect = image.get_rect()
-                        body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
-                if i == 7: #Adds shirt/top
-                    torso_pos = part  # used to place the wings on at the correct location/angle
-                    if self.mother.equipped['tops'] != None:
-                        image = pg.transform.rotate(self.game.top_images[TOPS[self.mother.equipped['tops']]['image']], part[2])
-                        temp_rect = image.get_rect()
-                        body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
+                    if i == 7: #Adds shirt/top
+                        torso_pos = part  # used to place the wings on at the correct location/angle
 
-                if i == 9:
+                elif i == 9:
                     weapon_pos = vec(part[0], part[1])
                     weapon_angle = part[2]
                     if self.mother.equipped['weapons'] != None:
                         image = pg.transform.rotate(self.game.weapon_images[WEAPONS[self.mother.equipped['weapons']]['image']], part[2])
                         temp_rect = image.get_rect()
                         body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
-                if i == 10:
+                elif i == 10:
                     weapon2_pos = vec(part[0], part[1])
                     weapon2_angle = part[2]
                     if self.mother.equipped['weapons2'] != None:
@@ -1011,11 +992,14 @@ class Character(pg.sprite.Sprite):
                             temp_rect = image.get_rect()
                             body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part_placement[8][0]), rect.centery - (temp_rect.centery - part_placement[8][1])))
                         if self.mother.equipped['hats'] != None:
-                            image = pg.transform.rotate(self.game.hat_images[HATS[self.mother.equipped['hats']]['image']], part_placement[8][2])
+                            temp_img = self.game.hat_images[HATS[self.mother.equipped['hats']]['image']]
+                            if 'color' in HATS[self.mother.equipped['hats']]:
+                                temp_img = color_image(temp_img, HATS[self.mother.equipped['hats']]['color'])
+                            image = pg.transform.rotate(temp_img, part_placement[8][2])
                             temp_rect = image.get_rect()
                             body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part_placement[8][0]), rect.centery - (temp_rect.centery - part_placement[8][1])))
                 # Places wings
-                if 'dragon' in self.race and i == 11:
+                elif 'dragon' in self.race and i == 11:
                     wing1_pos = vec(WING1_OFFSET).rotate(-torso_pos[2])
                     wing2_pos = vec(WING2_OFFSET).rotate(-torso_pos[2])
                     temp_img = self.game.humanoid_images[body_part_images_list][6]
@@ -4458,7 +4442,12 @@ class Dropped_Item(pg.sprite.Sprite):
             image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + '["' + item + '"]["image"]]'
         if self.rot == None:
             self.rot = randrange(0, 360)
-        self.image = pg.transform.rotate(eval(image_path), self.rot)
+
+        itemdict = eval(self.item_type.upper())
+        temp_img = eval(image_path)
+        if 'color' in itemdict[self.name]:
+            temp_img = color_image(temp_img, itemdict[self.name]['color'])
+        self.image = pg.transform.rotate(temp_img, self.rot)
         self.rect = self.hit_rect = self.image.get_rect()
         if self.random_spread:
             self.pos = self.pos + (randrange(-50, 50), randrange(-50, 50))

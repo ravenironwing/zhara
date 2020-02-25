@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="1038">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="68" nextobjectid="1052">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="100" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="2560"/>
  </tileset>
@@ -1616,5 +1616,16 @@
   <object id="994" name="light" x="2653.33" y="5852" width="156" height="162.667"/>
   <object id="999" name="wall" x="7938.67" y="2025.33" width="126.667" height="658.667"/>
   <object id="1037" name="light" x="5380" y="6661.33" width="122.667" height="120"/>
+  <object id="1041" name="steel plate armor" x="2381.33" y="4462.67" width="61.3333" height="46.6667"/>
+  <object id="1042" name="iron plate armor" x="2476" y="4463.33" width="61.3333" height="46.6667"/>
+  <object id="1043" name="bronze plate armor" x="2562.67" y="4466" width="61.3333" height="46.6667"/>
+  <object id="1044" name="brass plate armor" x="2640" y="4463.33" width="61.3333" height="46.6667"/>
+  <object id="1045" name="copper plate armor" x="2705.33" y="4463.33" width="61.3333" height="46.6667"/>
+  <object id="1046" name="aluminum plate armor" x="2786.67" y="4466" width="61.3333" height="46.6667"/>
+  <object id="1047" name="gold plate armor" x="2868" y="4466" width="61.3333" height="46.6667"/>
+  <object id="1048" name="silver plate armor" x="2961.33" y="4459.33" width="61.3333" height="46.6667"/>
+  <object id="1049" name="tin plate armor" x="2438.67" y="4547.33" width="61.3333" height="46.6667"/>
+  <object id="1050" name="lead plate armor" x="2548" y="4547.33" width="61.3333" height="46.6667"/>
+  <object id="1051" name="wood plate armor" x="2685.33" y="4550" width="61.3333" height="46.6667"/>
  </objectgroup>
 </map>

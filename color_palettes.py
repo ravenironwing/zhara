@@ -1,6 +1,53 @@
 PALETE_IMAGES = {'osidine': 1, 'shaktele': 1, 'elf': 1, 'immortui': 3, 'miewdra': 0, 'skeleton': 1, 'mechanima': 2, 'lacertolian': 2, 'blackwraith': 5, 'whitewraith': 4}
 HAIR_PALETE_IMAGES = {'osidine': 0, 'shaktele': 0, 'elf': 0, 'immortui': 0, 'miewdra': 0, 'skeleton': 0, 'mechanima': 2, 'lacertolian': 0, 'blackwraith': 0, 'whitewraith': 0}
 
+CLOTHING_COLORS = {
+    'red': (245, 96, 66),
+    'sky blue': (138, 232, 255),
+    'blue': (66, 114, 245),
+    'dark blue': (14, 64, 87),
+    'violet': (127, 0, 255),
+    'yellow': (245, 224, 66),
+    'fuchsia': (255, 0, 255),
+    'pink': (250, 105, 216),
+    'black': (60, 60, 60),
+    'white': (255, 255, 255),
+    'green': (92, 191, 78),
+    'dark green': (21, 66, 24),
+    'grey':  (128, 128, 128),
+    'brown': (168, 120, 52),
+    'dark brown': (94, 58, 21),
+    'tan': (217, 171, 124),
+    'gold': (255, 233, 87),
+    'dark orange': (156, 79, 0),
+    'orange': (245, 156, 66)}
+
+ARMOR_COLORS = {
+    'iron': (104, 105, 105),
+    'steel': (205, 207, 208),
+    'brass': (71, 65, 26),
+    'bronze': (80, 50, 20),
+    'gold': (197, 179, 88),
+    'aluminum': (177, 178, 180),
+    'tin': (211, 212, 213),
+    'copper': (72, 45, 20),
+    'lead': (68, 79, 83),
+    'silver': (170, 168, 173),
+    'ebony': (40, 44, 52)
+}
+
+MATERIALS = {}
+MATERIALS['steel'] = {'color': (225, 227, 228), 'hardness': 1, 'weight': 1, 'value': 1.2}
+MATERIALS['iron'] = {'color': (104, 105, 105), 'hardness': 0.9, 'weight': 1.2, 'value': 1}
+MATERIALS['bronze'] = {'color': (168, 163, 59), 'hardness': 0.7, 'weight': 1.5, 'value': 0.9}
+MATERIALS['brass'] = {'color': (197, 179, 88), 'hardness': 0.6, 'weight': 1.5, 'value': 0.8}
+MATERIALS['aluminum'] = {'color': (197, 198, 200), 'hardness': 0.5, 'weight': 0.4, 'value': 0.4}
+MATERIALS['copper'] = {'color': (142, 115, 90), 'hardness': 0.3, 'weight': 1.7, 'value': 0.5}
+MATERIALS['silver'] = {'color': (180, 178, 183), 'hardness': 0.2, 'weight': 2.1, 'value': 2}
+MATERIALS['gold'] = {'color': (255, 233, 87), 'hardness': 0.1, 'weight': 4, 'value': 4}
+MATERIALS['tin'] = {'color': (211, 212, 213), 'hardness': 0.1, 'weight': 1, 'value': 0.7}
+MATERIALS['lead'] = {'color': (78, 89, 93), 'hardness': 0.1, 'weight': 2.4, 'value': 0.1}
+
 COLOR_PALETTE = MIEWDRA_SKIN_TONES = [
 (249, 255, 241),
 (251, 250, 220),

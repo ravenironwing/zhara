@@ -1,5 +1,5 @@
 import pygame as pg
-from sprites import Dropped_Item, toggle_equip, remove_nones, change_clothing
+from sprites import Dropped_Item, toggle_equip, remove_nones, change_clothing, color_image
 from random import uniform, choice, randint, random, randrange
 from settings import *
 from npcs import *
@@ -456,8 +456,11 @@ class Npc_Design_Menu(Character_Design_Menu):
     def display_item_info(self, item):
         if self.item_type != 'race':
             image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
+            itemdict = eval(self.item_type.upper())
             item_image = eval(image_path)
-            picture = Picture(self.game, self, item_image, int(self.game.screen_width * (3/4)), 150)
+            if 'color' in itemdict[item.text]:
+                item_image = color_image(item_image, itemdict[item.text]['color'])
+            Picture(self.game, self, item_image, int(self.game.screen_width * (3 / 4)), 150)
 
     def update_external_variables(self):
         inv_menu = Inventory_Menu(self.game, self.character)
@@ -794,8 +797,11 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
             image_path = "self.game." + self.item_type[:-1] + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
         else:
             image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
+        itemdict = eval(self.item_type.upper())
         item_image = eval(image_path)
-        picture = Picture(self.game, self, item_image, int(self.game.screen_width * (3/4)), 150)
+        if 'color' in itemdict[item.text]:
+            item_image = color_image(item_image, itemdict[item.text]['color'])
+        Picture(self.game, self, item_image, int(self.game.screen_width * (3/4)), 150)
 
         for key in item_dictionary:
             if key == item.text:
@@ -2092,8 +2098,11 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             image_path = "self.game." + self.item_type[:-1] + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
         else:
             image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
+        itemdict = eval(self.item_type.upper())
         item_image = eval(image_path)
-        picture = Picture(self.game, self, item_image, int(self.game.screen_width * (3 / 4)), 150)
+        if 'color' in itemdict[item.text]:
+            item_image = color_image(item_image, itemdict[item.text]['color'])
+        Picture(self.game, self, item_image, int(self.game.screen_width * (3 / 4)), 150)
 
         for key in item_dictionary:
             if key == item.text:
@@ -2687,8 +2696,11 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
             image_path = "self.game." + self.item_type[:-1] + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
         else:
             image_path = "self.game." + self.item_type + "_images[" + self.item_type.upper() + "['" + item.text + "']['image']]"
+        itemdict = eval(self.item_type.upper())
         item_image = eval(image_path)
-        picture = Picture(self.game, self, item_image, int(self.game.screen_width * (3/4)), 150)
+        if 'color' in itemdict[item.text]:
+            item_image = color_image(item_image, itemdict[item.text]['color'])
+        Picture(self.game, self, item_image, int(self.game.screen_width * (3 / 4)), 150)
 
         for key in item_dictionary:
             if key == item.text:

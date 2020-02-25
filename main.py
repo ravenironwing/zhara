@@ -202,8 +202,8 @@ class Game:
         self.screen_height = int(HEIGHT * self.window_ratio)
         self.flags = pg.NOFRAME
         #self.screen = pg.display.set_mode((self.screen_width, HEIGHT), pg.FULLSCREEN)
-        self.icon_image = pg.image.load(path.join(img_folder, ICON_IMG))
-        pg.display.set_icon(self.icon_image)
+        icon_image = pg.image.load(path.join(img_folder, ICON_IMG))
+        pg.display.set_icon(icon_image)
         self.screen = pg.display.set_mode((self.screen_width, self.screen_height), self.flags)
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
@@ -472,7 +472,6 @@ class Game:
         self.dim_screen.fill((SHADOW))
         self.body_surface = pg.Surface((64, 64)).convert()
         self.body_surface.set_colorkey(BLACK)
-        self.title_image = pg.image.load(path.join(img_folder, TITLE_IMAGE)).convert()
         self.open_book_image = pg.image.load(path.join(img_folder, 'open_book.png')).convert()
         self.open_book_image = pg.transform.scale(self.open_book_image, (self.screen_width, self.screen_height - 30))
         self.open_letter_image = pg.image.load(path.join(img_folder, 'open_letter.png')).convert()
@@ -749,7 +748,8 @@ class Game:
     def new(self):
         pg.mixer.music.load(path.join(music_folder, TITLE_MUSIC))
         pg.mixer.music.play(loops=-1)
-        self.title_image = pg.transform.scale(self.title_image, (self.screen_width, self.screen_height))
+        title_image = pg.image.load(path.join(img_folder, TITLE_IMAGE)).convert()
+        title_image = pg.transform.scale(title_image, (self.screen_width, self.screen_height))
         self.continued_game = False
         self.in_load_menu = False
         self.in_npc_menu = False
@@ -758,8 +758,8 @@ class Game:
         while waiting:
             self.clock.tick(FPS)
             self.screen.fill(BLACK)
-            self.title_image.set_alpha(i) 
-            self.screen.blit(self.title_image, (0, 0))
+            title_image.set_alpha(i)
+            self.screen.blit(title_image, (0, 0))
             if i > 240:
                 self.draw_text('Press any key to begin or C to continue', self.script_font, 30, WHITE, self.screen_width / 2, self.screen_height - 120,
                                align="center")
