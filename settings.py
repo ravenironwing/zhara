@@ -178,6 +178,7 @@ PLAYER_FRIC = -.12
 PLAYER_ROT_SPEED = 200
 PLAYER_TUR = 'turret.png'
 PLAYER_TANK = 'tank.png'
+TALK_RADIUS = 85
 TANK_IN_WATER = 'tank_underwater.png'
 SUNKEN_TANK = 'sunken_tank.png'
 PLAYER_IMG = 'player1.png'
@@ -197,6 +198,7 @@ DOOR_STYLES['bronze'] = {'image': 3, 'hp': 2000}
 # 1234-Goblin Island, 4132: Demon's Lair, 3421-Dewcastle Graveyard, 2143-Norwald the Miewdra Village, 1342-Mechanima Village, 1243-Lacertolia, 2413-Zombieland, 4321-Elf Town, 3124-South Pole
 PORTAL_CODES = {'1234': [107, 34, 32, 26], '4132': [53, 75, 31, 5], '3421': [27, 40, 5, 33], '2143': [89, 49, 32, 32], '1342': [126, 22, 32, 32], '1243': [146, 43, 32, 32], '2413': [65, 20, 32, 32],  '4321': [38, 27, 32, 42], '3124': [85, 96, 32, 32]}
 
+AIPATHS = ['UD', 'RL']
 
 # Sets up randomizable map files by type:
 MOUNTAIN_MAPS = []
@@ -400,6 +402,7 @@ XLARGE_HIT_RECT = pg.Rect(0, 0, 200, 200)
 
 # Mob settings
 MOB_SPEEDS = [150, 100, 75, 125]
+MOB_ROT_SPEED = 200
 MOB_HIT_RECT = pg.Rect(0, 0, 60, 60)
 MOB_HEALTH = 100
 MOB_DAMAGE = 10

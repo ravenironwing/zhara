@@ -535,7 +535,6 @@ class Vehicle(pg.sprite.Sprite):
         self.mountable = self.data['mountable']
         self.veh_acc = self.data['acceleration']
         self.rot_speed = self.data['rot speed']
-        self.aggression = "vehicle"
         self.forward_sound_playing = False
         if 'run sound' in self.data.keys():
             self.run_sound = self.data['run sound']
@@ -594,6 +593,8 @@ class Vehicle(pg.sprite.Sprite):
         self.immaterial = False
         self.invisible = False
         self.protected = False
+        self.offensive = False
+        self.aggression = "vehicle"
         self._forward = False
         self.elevation = 0
         self.in_vehicle = self.in_player_vehicle = False
@@ -957,7 +958,7 @@ class Character(pg.sprite.Sprite):
                     temp_rect = image.get_rect()
                     body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
 
-                if i in [0, 1, 2, 3, 4, 7]: #Adds Right Shoe
+                if i in [0, 1, 2, 3, 4, 7]: #Adds all clothing except weapons and hats.
                     if self.mother.equipped[EQUIP_DRAW_LIST[i]] != None:
                         dict = eval(EQUIP_DRAW_LIST[i].upper())
                         imgpath = eval('self.game.' + EQUIP_IMG_LIST[i] + '_images')
@@ -974,14 +975,20 @@ class Character(pg.sprite.Sprite):
                     weapon_pos = vec(part[0], part[1])
                     weapon_angle = part[2]
                     if self.mother.equipped['weapons'] != None:
-                        image = pg.transform.rotate(self.game.weapon_images[WEAPONS[self.mother.equipped['weapons']]['image']], part[2])
+                        temp_img = self.game.weapon_images[WEAPONS[self.mother.equipped['weapons']]['image']]
+                        if 'color' in WEAPONS[self.mother.equipped['weapons']]:
+                            temp_img = color_image(temp_img, WEAPONS[self.mother.equipped['weapons']]['color'])
+                        image = pg.transform.rotate(temp_img, part[2])
                         temp_rect = image.get_rect()
                         body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
                 elif i == 10:
                     weapon2_pos = vec(part[0], part[1])
                     weapon2_angle = part[2]
                     if self.mother.equipped['weapons2'] != None:
-                        image = pg.transform.rotate(self.game.weapon_images[WEAPONS[self.mother.equipped['weapons2']]['image']], part[2])
+                        temp_img = self.game.weapon_images[WEAPONS[self.mother.equipped['weapons2']]['image']]
+                        if 'color' in WEAPONS[self.mother.equipped['weapons2']]:
+                            temp_img = color_image(temp_img, WEAPONS[self.mother.equipped['weapons2']]['color'])
+                        image = pg.transform.rotate(temp_img, part[2])
                         temp_rect = image.get_rect()
                         body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
                     if 'dragon' not in self.race:
@@ -1290,6 +1297,7 @@ class Player(pg.sprite.Sprite):
         self.magical_being = False
         # Needed for congruency with other Npc sprites, but only used to avoid errors.
         self.provoked = False
+        self.offensive = False
         self.aggression = 'player'
         set_elevation(self)
 
@@ -1584,7 +1592,7 @@ class Player(pg.sprite.Sprite):
             if now - self.last_magica_drain > regen_delay:
                 self.add_magica(4 + self.stats['magica regen']/50)
                 self.last_magica_drain = pg.time.get_ticks()
-        #racharge stamina and health
+        #recharge stamina and health
         if not (self.swimming or self.climbing):
             if self.stats['stamina'] < self.stats['max stamina']:
                 time_delay = 3000
@@ -2464,7 +2472,7 @@ class Player(pg.sprite.Sprite):
             self.game.player.calculate_weight()
             return False # Used to verify the item was used. False means it used the item.
 
-    def change_used_item(self, item_type, item):
+    def change_used_item(self, item_type, item, return_new_name = False):
         # Renames used items to add hp to the end of their names.
         item_dic = eval(item_type.upper())
         if 'hp' in item_dic[item]:
@@ -2483,6 +2491,8 @@ class Player(pg.sprite.Sprite):
                     self.current_weapon2 = self.equipped['weapons2']
                     self.human_body.update_animations()  # Updates animations so you don't have broken weapons in your hand.
                     self.dragon_body.update_animations()
+                if return_new_name:
+                    return False, None
                 return False # Used to tell that the item is broken.
             if 'HP' in item:
                 temp_name, _ = item.split(' HP')
@@ -2494,6 +2504,8 @@ class Player(pg.sprite.Sprite):
             item_dic[new_item_name] = used_item
             self.inventory[item_type].remove(item)  # removes non-used item
             self.inventory[item_type].append(new_item_name)  # adds used item to inventory
+            if return_new_name:
+                return True, new_item_name
             # Unequips old item and equips used one if you were equipping it.
             if item_type == 'weapons':
                 if self.equipped[self.weapon_hand] == item:
@@ -2757,8 +2769,15 @@ class Npc(pg.sprite.Sprite):
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
+        self.direction = vec(1, 0)
+        self.target_dist = vec(0, 0)
         self.rect.center = self.pos
         self.rot = randrange(0, 360)
+        self.rot_speed = MOB_ROT_SPEED
+        self._aipath = None
+        if kind != 'generic':
+            self.temp_target = Target(self.game)
+            self.goal_target = Target(self.game)
         self.frame = 0
         self.jumping = False
         self.falling = False
@@ -2922,6 +2941,36 @@ class Npc(pg.sprite.Sprite):
         # Sets elevation to the highest elevation you hit.
         set_elevation(self)
 
+    @property
+    def aipath(self):
+        return self._aipath
+
+    @aipath.setter
+    def aipath(self, value):
+        if value != self._aipath:
+            self._aipath = value
+            if value:
+                self.set_aipath_target()
+        else:
+            pass
+
+    def set_aipath_target(self):
+        if self.target != self.temp_target:
+            self.target = self.temp_target
+            if self.aipath.kind == 'UD':
+                if choice([0, 1]):
+                    y = self.aipath.rect.top
+                else:
+                    y = self.aipath.rect.bottom
+                x = self.aipath.rect.centerx
+            elif self.aipath.kind == 'RL':
+                if choice([0, 1]):
+                    x = self.aipath.rect.left
+                else:
+                    x = self.aipath.rect.right
+                y = self.aipath.rect.centery
+            self.temp_target.set_position(x, y)
+
     def update_collide_list(self):
         self.collide_list = [self.game.walls_on_screen]
 
@@ -2956,7 +3005,7 @@ class Npc(pg.sprite.Sprite):
                 if 0 < dist.length() < self.avoid_radius:
                     self.acc += dist.normalize()
 
-    def seek_random_target(self):
+    def equip_lamp(self):
         if self.race not in ['mechanima', 'mech_suit']:
             if self.game.night:
                 if self not in self.game.lights:
@@ -2965,23 +3014,18 @@ class Npc(pg.sprite.Sprite):
             elif self in self.game.lights:
                 if randrange(0, 2) == 1:
                     lamp_check(self)
-        self.target = choice(list(self.game.random_targets))
-        self.detect_radius = self.game.map.height / 2
-        temp_dist = self.target.pos - self.pos
-        temp_dist = temp_dist.length()
-        if temp_dist > self.detect_radius:
-            self.target = choice(list(self.game.random_targets))
+
+    def seek_random_target(self):
+        self.target = self.goal_target = choice(list(self.game.random_targets))
         if randrange(0, 5) == 1: # Makes it so NPCs randomly target nearby doors.
             last_dist = 3000
             for entry in self.game.entryways_on_screen:
                 dist = self.pos - entry.pos
                 dist = dist.length()
                 if last_dist > dist:  # Finds closest door
-                    self.target = entry
+                    self.target = self.goal_target = entry
                     self.approach_vector = vec(1, 0)
                     last_dist = dist
-        if temp_dist < 200:
-            self.target = choice(list(self.game.random_targets))
 
     def seek_mobs(self):
         last_dist = 100000
@@ -3031,10 +3075,19 @@ class Npc(pg.sprite.Sprite):
                             non_targets += 1
                     else:
                         non_targets += 1
-        # Seeks a random target if there are no target mobs in range.
-        if non_targets == len(self.game.moving_targets_on_screen) - 1:
-            self.seek_random_target()
 
+        if self.aggression in ['fwp', 'sap', 'awp']:  # Makes it so non aggressive mobs target the player when you are close.
+            dist = self.pos - self.game.player.pos
+            dist = dist.length()
+            if dist < TALK_RADIUS:
+                self.target = self.game.player
+            #else:
+            #    self.seek_random_target()
+
+        # Seeks a random target if there are no target mobs in range.
+        elif non_targets == len(self.game.moving_targets_on_screen) - 1:
+            if not self.aipath:
+                self.seek_random_target()
 
     def is_moving(self):
         # This checks to see if the NPC has moved since the last check.
@@ -3050,14 +3103,85 @@ class Npc(pg.sprite.Sprite):
         if self.in_player_vehicle:
             pass
         else:
+            self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+            self.direction = vec(1, 0).rotate(-self.rot)
             self.acc += self.vel * -1
-            self.vel += self.acc * self.game.dt
-            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+            self.vel += self.acc
+            self.pos += (self.vel + 0.5 * self.acc) * self.game.dt
             collide(self)
-            self.talk_rect.center = self.pos
+            self.rect.center = self.talk_rect.center = self.pos
+
+    def animate(self):
+        # Animates Character's Walking
+        if self.speed == 0:
+            temp_animate_speed = 500
+        else:
+            if self.running:
+                temp_animate_speed = 20000 / self.run_speed
+            else:
+                temp_animate_speed = 20000 / self.speed
+        if self.swimming:
+            self.body.animate(self.body.swim_anim, temp_animate_speed)
+        elif self.in_shallows:
+            self.body.animate(self.body.shallows_anim, temp_animate_speed)
+        elif self.in_grass:
+            self.body.animate(self.body.shallows_anim, temp_animate_speed)
+        elif self.running:
+            self.body.animate(self.body.run_anim, temp_animate_speed)
+        elif self.climbing:
+            self.body.animate(self.body.climbing_anim, temp_animate_speed)
+        elif self.jumping:
+            self.jump()
+        else:
+            self.body.animate(self.body.walk_anim, temp_animate_speed)
+
+    def rotate_to(self, vec):
+        vector = vec
+        angle = fix_angle(vector.angle_to(self.direction))
+        if self.in_vehicle:
+            rot_speed = self.vehicle.rot_speed/3
+            if self.vehicle.turret == None:
+                self.set_rot_speed(rot_speed, vector, angle)
+        else:
+            rot_speed = MOB_ROT_SPEED
+            self.set_rot_speed(rot_speed, vector, angle)
+
+    def set_rot_speed(self, rot_speed, vector, angle):
+        if angle < 0:
+            self.rot_speed = -rot_speed * 10 * abs(angle) / 180
+        else:
+            self.rot_speed = rot_speed * 10 * abs(angle) / 180
+
+    def check_walls(self):
+        proj_vec = self.direction
+        proj_vec.scale_to_length(MOB_HIT_RECT.width * 3/2 - 10) # makes a vector that projects out in front of NPC the max detect distance for a wall with no walls in between.
+        self.temp_target.set_position(proj_vec.x, proj_vec.y)
+        hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
+        if hits:
+            angle = choice([90, -90]) # Checks to either right or left if there is a wall in front.
+            proj_vec.rotate(angle)
+            self.temp_target.set_position(proj_vec.x, proj_vec.y)
+            hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
+            if hits:
+                angle = -angle # Checks to the other direction if it finds a second wall.
+                proj_vec.rotate(angle * 2)
+                self.temp_target.set_position(proj_vec.x, proj_vec.y)
+                hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
+                if hits:
+                    proj_vec.rotate(angle) # Checks behinds it for a wall.
+                    self.temp_target.set_position(proj_vec.x, proj_vec.y)
+                    hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
+                    if not hits:
+                        self.target = self.temp_target
+                else:
+                    self.targe = self.temp_target
+            else:
+                self.target = self.temp_target
+        else:
+            self.target = self.goal_target  # Heads to the goal_target if there's nothing in the way.
 
     def update(self):
-        # This parts sincs the body sprite with the NPC's soul.
+        # This parts synchs the body sprite with the NPC's soul.
         self.body.rot = self.rot
         self.body.image = pg.transform.rotate(self.body.body_surface, self.rot)
         self.body.rect = self.body.image.get_rect()
@@ -3072,6 +3196,7 @@ class Npc(pg.sprite.Sprite):
                     self.depossess()
                     self.death()
             else:
+                self.acc = vec(0, 0)
                 if not self.needs_move:
                     if self.target != self.game.player:
                         if not self.target.living:  # Makes it so NPC switches target after it kills one.
@@ -3102,17 +3227,17 @@ class Npc(pg.sprite.Sprite):
                     self.reload()
 
                 ora = pg.time.get_ticks() # Makes it so the NPCs don't stay in one place too long.
-                if not self.offensive:
-                    if not self.needs_move:
-                        if ora - self.last_move_check > randrange(1000, 2000):
-                            if not self.is_moving():
-                                self.seek_random_target()
-                                self.needs_move = True
-                            self.last_move_check = ora
-                    else:
-                        if ora - self.last_move_check > randrange(3000, 6000):
-                            self.needs_move = False
-                            self.last_move_check = ora
+                #if not self.offensive:
+                #    if not self.needs_move:
+                #        if ora - self.last_move_check > randrange(1000, 2000):
+                #            if not self.is_moving():
+                #                self.seek_random_target()
+                #                self.needs_move = True
+                #            self.last_move_check = ora
+                #    else:
+                #        if ora - self.last_move_check > randrange(3000, 6000):
+                #            self.needs_move = False
+                #            self.last_move_check = ora
 
                 if ora - self.last_hit > 3000: # Used to set the time NPCs flee for after being attacked.
                     if self.running:
@@ -3131,137 +3256,117 @@ class Npc(pg.sprite.Sprite):
                         if not pg.sprite.spritecollide(self, self.game.climbs, False):
                             self.climbing = False
 
-                target_dist = self.target.pos - self.pos
-                if True not in [self.melee_playing, self.animating_reload]: # Only moves character if not attacking or reloading
-                    if not self.offensive and target_dist.length_squared() < 100 ** 2 and self.approach_vector != vec(-1, 0) and (self.target not in self.game.entryways):
-                        self.vel = vec(0, 0)
-                        self.rot = target_dist.angle_to(vec(1, 0))
 
-                    elif target_dist.length_squared() < self.detect_radius**2:
-                        # Animates Character's Walking
-                        if self.speed == 0:
-                            temp_animate_speed = 500
-                        else:
-                            if self.running:
-                                temp_animate_speed = 20000 / self.run_speed
-                            else:
-                                temp_animate_speed = 20000 / self.speed
+                self.target_dist = self.target.pos - self.pos
+                self.goal_target_dist = self.goal_target.pos - self.pos
+                self.temp_target_dist = self.temp_target.pos - self.pos
+                target_dist_lsquared = self.target_dist.length_squared()
+                # What the NPC does when it's moving.
+                if random() < 0.002: # This makes different sounds for each type of npc
+                    if self.equipped['race'] == 'immortui':
+                        choice(self.game.zombie_moan_sounds).play()
+                    if 'wraith' in self.equipped['race']:
+                        choice(self.game.wraith_sounds).play()
 
-                        if self.swimming:
-                            self.body.animate(self.body.swim_anim, temp_animate_speed)
-                        elif self.in_shallows:
-                            self.body.animate(self.body.shallows_anim, temp_animate_speed)
-                        elif self.in_grass:
-                            self.body.animate(self.body.shallows_anim, temp_animate_speed)
-                        elif self.running:
-                            self.body.animate(self.body.run_anim, temp_animate_speed)
-                        elif self.climbing:
-                            self.body.animate(self.body.climbing_anim, temp_animate_speed)
-                        elif self.jumping:
-                            self.jump()
-                        else:
-                            self.body.animate(self.body.walk_anim, temp_animate_speed)
+                # This part makes the NPC avoid walls
+                #now = pg.time.get_ticks()
+                #if not self.immaterial:
+                #    hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False)
+                #    if hits:
+                #        if hits[0] not in self.game.door_walls:
+                #            self.hit_wall = True
+                #            if now - self.last_wall_hit > 1000:
+                #                self.last_wall_hit = now
+                #                self.seek_random_target()
+                #    elif now - self.last_wall_hit > randrange(3000, 5000):
+                #        self.last_wall_hit = now
+                #        self.hit_wall = False
 
-                        if random() < 0.002: # This makes different sounds for each type of npc
-                            if self.equipped['race'] == 'immortui':
-                                choice(self.game.zombie_moan_sounds).play()
-                            if 'wraith' in self.equipped['race']:
-                                choice(self.game.wraith_sounds).play()
 
-                        # This part makes the NPC avoid walls
-                        now = pg.time.get_ticks()
-                        if not self.immaterial:
-                            hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False)
-                            if hits:
-                                if hits[0] not in self.game.door_walls:
-                                    self.hit_wall = True
-                                    if now - self.last_wall_hit > 1000:
-                                        self.last_wall_hit = now
-                                        self.rot = (self.rot + (randrange(90, 180) * choice([-1, 1]))) % 360
-                            elif now - self.last_wall_hit > randrange(3000, 5000):
-                                self.last_wall_hit = now
-                                self.hit_wall = False
-                        if not self.hit_wall:
-                            self.rot = target_dist.angle_to(self.approach_vector)
-
-                        self.rect.center = self.pos
-                        if self in self.game.lights:
-                            if self.race in ['mechanima', 'mech_suit']:
-                                self.light_mask_rect.center = self.rect.center
-                            elif self.lamp_hand == 'weapons':
-                                self.light_mask_rect.center = self.body.melee_rect.center
-                            else:
-                                self.light_mask_rect.center = self.body.melee2_rect.center
-                            if self.mask_kind in DIRECTIONAL_LIGHTS:
-                                new_image = self.game.flashlight_masks[int(self.rot/3)]
-                                old_center = self.light_mask_rect.center
-                                self.light_mask = new_image
-                                self.light_mask_rect = self.light_mask.get_rect()
-                                self.light_mask_rect.center = old_center
-
-                        self.acc = vec(1, 0).rotate(-self.rot)
-                        self.avoid_mobs()
-                        try: #prevents scaling a vector of 0 length
-                            if self.running:
-                                speed = self.run_speed
-                            else:
-                                speed = self.speed
-                            self.acc.scale_to_length(speed)
-                        except:
-                            self.acc = vec(0, 0)
-                        if self.target == self.game.player:
-                            self.accelerate()
-                        elif target_dist.length() > 40: #Stops mobs from occupying the same space as you.
-                            self.accelerate()
-
-                        if self.offensive:
-                            if self.aggression not in ['fwd', 'fwp']:
-                                if target_dist.length_squared() < self.melee_range**2:
-                                    self.approach_vector = vec(1, 0)
+                # The AI that controlls NPC attacking.
+                if True not in [self.melee_playing, self.animating_reload]:
+                    if self.offensive:
+                        if self.aggression not in ['fwd', 'fwp']:
+                            if target_dist_lsquared < self.melee_range**2:
+                                self.approach_vector = vec(1, 0)
+                                now = pg.time.get_ticks()
+                                if now - self.last_melee > randrange(1000, 3000):
+                                    self.last_melee = now
+                                    self.pre_melee()
+                            elif True not in [self.reloading, self.hit_wall, self.swimming]:
+                                if self.gun:
+                                    if target_dist_lsquared < self.weapon_range ** 2:
+                                        if self.bow:
+                                            if self.arrow != None:
+                                                self.shoot()
+                                                self.arrow.kill()
+                                                self.arrow = None
+                                            else:
+                                                self.reloading = True
+                                                self.animating_reload = True
+                                        else:
+                                            self.shoot()
+                                        if self.bullets_shot >= self.mag_size:
+                                            self.bullets_shot = 0
+                                            self.reloading = True
+                                            self.animating_reload = True
+                                else:
+                                    if target_dist_lsquared < self.detect_radius ** 2:
+                                        magic_chance = randrange(0, 100)
+                                        if magic_chance == 1:
+                                            self.cast_spell()
+                            if self.game.player.in_vehicle:
+                                if target_dist_lsquared < 3*self.melee_range**2:
                                     now = pg.time.get_ticks()
                                     if now - self.last_melee > randrange(1000, 3000):
                                         self.last_melee = now
                                         self.pre_melee()
-                                elif True not in [self.reloading, self.hit_wall, self.swimming]:
-                                    if self.gun:
-                                        if target_dist.length_squared() < self.weapon_range ** 2:
-                                            if self.bow:
-                                                if self.arrow != None:
-                                                    self.shoot()
-                                                    self.arrow.kill()
-                                                    self.arrow = None
-                                                else:
-                                                    self.reloading = True
-                                                    self.animating_reload = True
-                                            else:
-                                                self.shoot()
-                                            if self.bullets_shot >= self.mag_size:
-                                                self.bullets_shot = 0
-                                                self.reloading = True
-                                                self.animating_reload = True
-                                    else:
-                                        if target_dist.length_squared() < self.detect_radius ** 2:
-                                            magic_chance = randrange(0, 100)
-                                            if magic_chance == 1:
-                                                self.cast_spell()
-                                if self.game.player.in_vehicle:
-                                    if target_dist.length_squared() < 3*self.melee_range**2:
-                                        now = pg.time.get_ticks()
-                                        if now - self.last_melee > randrange(1000, 3000):
-                                            self.last_melee = now
-                                            self.pre_melee()
-                            elif not self.running: # Non agressive but provoked NPCs
-                                if target_dist.length_squared() < self.melee_range**2:
-                                    self.approach_vector = vec(1, 0)
-                                    now = pg.time.get_ticks()
-                                    if self.last_melee != 0:
-                                        if now - self.last_melee > 20000: # Makes it so the villagers stop attacking you if you've left them alone for 20 seconds.
-                                            self.offensive = False
-                                            self.last_melee = 0
-                                    if self.offensive:
-                                        if now - self.last_melee > 3000:
-                                            self.last_melee = now
-                                            self.pre_melee()
+                        elif not self.running: # Non agressive but provoked NPCs
+                            if target_dist_lsquared < self.melee_range**2:
+                                self.approach_vector = vec(1, 0)
+                                now = pg.time.get_ticks()
+                                if self.last_melee != 0:
+                                    if now - self.last_melee > 20000: # Makes it so the villagers stop attacking you if you've left them alone for 20 seconds.
+                                        self.offensive = False
+                                        self.last_melee = 0
+                                if self.offensive:
+                                    if now - self.last_melee > 3000:
+                                        self.last_melee = now
+                                        self.pre_melee()
+
+                speed = self.speed
+                if self.running:
+                    speed = self.run_speed
+                self.acc = vec(speed, 0).rotate(-self.rot)
+                self.avoid_mobs()
+                target_angle = self.target_dist.angle_to(self.approach_vector)
+                if (target_dist_lsquared < self.melee_range**2) and (self.target in self.game.moving_targets_on_screen) and self.offensive: # NPC stops in combat range if offensive
+                    pass
+                elif (target_dist_lsquared < TALK_RADIUS**2) and (self.target in self.game.moving_targets_on_screen) and (not self.target.offensive): # NPC stops in talking range if not offensive.
+                    pass
+                elif target_dist_lsquared > 4:
+                    self.animate()
+                    self.rotate_to(vec(1, 0).rotate(target_angle))
+                    self.accelerate()
+                else:
+                    #self.check_walls()
+                    self.seek_random_target()
+
+                # Used for lights NPCs are carrying.
+                if self in self.game.lights:
+                    if self.race in ['mechanima', 'mech_suit']:
+                        self.light_mask_rect.center = self.rect.center
+                    elif self.lamp_hand == 'weapons':
+                        self.light_mask_rect.center = self.body.melee_rect.center
+                    else:
+                        self.light_mask_rect.center = self.body.melee2_rect.center
+                    if self.mask_kind in DIRECTIONAL_LIGHTS:
+                        new_image = self.game.flashlight_masks[int(self.rot / 3)]
+                        old_center = self.light_mask_rect.center
+                        self.light_mask = new_image
+                        self.light_mask_rect = self.light_mask.get_rect()
+                        self.light_mask_rect.center = old_center
+
                 if self.health <= 0:
                     self.death()
 
@@ -3825,9 +3930,9 @@ class Animal(pg.sprite.Sprite):
         self.turret = None
         self.driver = None
         if 'a' in self.aggression:
-            self.aggressive = True
+            self.aggressive = self.offensive = True
         else:
-            self.aggressive = False
+            self.aggressive = self.offensive = False
         self.provoked = False
 
         #Changes animals behavior to be more friendly towards elves.
@@ -5031,7 +5136,7 @@ class Portal(pg.sprite.Sprite):
 
     def animate(self, images):
         self.frame += 1
-        self.rot = (self.rot + 1)  % 360
+        self.rot = (self.rot + 150 * self.game.dt) % 360
         if self.frame > len(images) - 1:
             self.frame = 0
 
@@ -5525,17 +5630,18 @@ class Detector(pg.sprite.Sprite): # Used to rest in
             self.game.people['catrina']['dialogue'] = 'CATRINA_DLG2'
 
 # This class generates random points for NPCs and animals to walk towards
-class Random_Target(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
+class Target(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
     def __init__(self, game, x = 0, y = 0):
         self._layer = WALL_LAYER
         self.game = game
         self.groups = game.all_static_sprites, game.random_targets
+        self.rect_size = 60
         pg.sprite.Sprite.__init__(self, self.groups)
         if x == 0:
             x = randrange(200, self.game.map.width - 200)
             y = randrange(200, self.game.map.height - 200)
-        self.rect = pg.Rect(x, y, 10, 10)
-        self.pos = vec(x, y)
+        self.rect = self.hit_rect = pg.Rect(x, y, self.rect_size, self.rect_size)
+        self.pos = vec(self.rect.centerx, self.rect.centery)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.living = True
@@ -5543,4 +5649,22 @@ class Random_Target(pg.sprite.Sprite): # Used for fires and other stationary ani
     def new_position(self, npc_loc):
         x = randrange(self.game.screen_width, self.game.map.width - self.game.screen_width)
         y = randrange(self.game.screen_width, self.game.map.height - self.game.screen_width)
-        self.pos = vec(x, y)
+        self.rect = self.hit_rect = pg.Rect(x, y, self.rect_size, self.rect_size)
+        self.pos = vec(self.rect.centerx, self.rect.centery)
+
+    def set_position(self, x, y):
+        self.rect = self.hit_rect = pg.Rect(x - 30, y - 30, self.rect_size, self.rect_size)
+        self.pos = vec(self.rect.centerx, self.rect.centery)
+
+class AIPath(pg.sprite.Sprite):
+    def __init__(self, game, x, y, w, h, kind):
+        self.groups = game.aipaths, game.all_static_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.rect = pg.Rect(x, y, w, h)
+        self.hit_rect = self.rect
+        self.x = x
+        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+        self.kind = kind

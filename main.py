@@ -872,6 +872,7 @@ class Game:
         self.vehicles = pg.sprite.Group()
         self.vehicles_on_screen = pg.sprite.Group()
 
+        self.aipaths = pg.sprite.Group()
         self.lights = pg.sprite.Group()
         self.firepots = pg.sprite.Group()
         self.arrows = pg.sprite.Group()
@@ -1260,7 +1261,7 @@ class Game:
         self.camera = Camera(self, self.map.width, self.map.height)
 
         for i in range(0, 10): # Creates random targets for Npcs
-            Random_Target(self)
+            Target(self)
 
         if self.sprite_data.visited: # Loads stored map data for sprites if you have visited before.
             companion_names = []
@@ -1355,6 +1356,9 @@ class Game:
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name != None:
                 obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
+                # These are paths for the AIs to follow.
+                if tile_object.name in AIPATHS:
+                    AIPath(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.name)
                 # It's super important that all elevations spawn before the player and mobs.
                 if 'EL' in tile_object.name:
                     try:
@@ -1364,8 +1368,7 @@ class Game:
                         _, elev = tile_object.name.split('_')
                         climb = False
                     elev = int(elev)
-                    Elevation(self, tile_object.x, tile_object.y,
-                             tile_object.width, tile_object.height, elev, climb)
+                    Elevation(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, elev, climb)
                 if tile_object.name == 'jumpable':
                     elev = Elevation(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height, 0, False, 'jumpable')
@@ -2052,6 +2055,7 @@ class Game:
                                 self.message_text = True
                                 self.message = "E to talk"
                                 if self.e_down:
+                                    hits[0].target = self.player
                                     self.message_text = False
                                     self.dialogue_menu = Dialogue_Menu(self, hits[0])
                                     self.e_down = False
@@ -2290,21 +2294,35 @@ class Game:
             if mob in hits:
                 for elev in hits[mob]: # Makes it so NPCs can climb and jump.
                     if elev.elevation - mob.elevation > 2:
-                        if mob in self.companions:
+                        if (not mob.flying) and (mob in self.animals_on_screen):
+                            mob.hit_wall = True
+                            mob.last_wall_hit = pg.time.get_ticks()
+                            mob.seek_random_target()
+                        elif (mob in self.companions) or mob.target == self.player:
                             mob.climbing = True
-                            mob.last_climg = pg.time.get_ticks()
+                            mob.last_climb = pg.time.get_ticks()
                         elif mob in self.npcs_on_screen:
                             chance = randrange(0, 600)
                             if chance == 1:
                                 mob.climbing = True
+                            else:
+                                mob.hit_wall = True
+                                mob.last_wall_hit = pg.time.get_ticks()
+                                mob.seek_random_target()
                     elif elev.elevation - mob.elevation > 1:
-                        if mob in self.companions:
+                        if (not mob.flying) and (mob in self.animals_on_screen):
+                            mob.hit_wall = True
+                        elif (mob in self.companions) or mob.target == self.player:
                             mob.jumping = True
-                            mob.last_climg = pg.time.get_ticks()
+                            mob.last_climb = pg.time.get_ticks()
                         elif mob in self.npcs_on_screen:
-                            chance = randrange(0, 300)
+                            chance = randrange(0, 200)
                             if chance == 1:
                                 mob.jumping = True
+                            else:
+                                mob.hit_wall = True
+                                mob.last_wall_hit = pg.time.get_ticks()
+                                mob.seek_random_target()
             else:
                 mob.climbing = False
                 if not mob.jumping:
@@ -2562,6 +2580,14 @@ class Game:
             else:
                 npc.in_grass = False
 
+        # npc hit AI path
+        hits = pg.sprite.groupcollide(self.npcs_on_screen, self.aipaths, False, False)
+        for npc in self.npcs_on_screen:
+            if npc in hits:
+                npc.aipath = hits[npc][-1]  #Uses last hit in list.
+            else:
+                npc.aipath = None
+
         # animal hit long grass
         hits = pg.sprite.groupcollide(self.animals_on_screen, self.long_grass_on_screen, False, False)
         for animal in self.animals_on_screen:
@@ -2664,6 +2690,8 @@ class Game:
                 pg.draw.rect(self.screen, RED, self.camera.apply_rect(vehicle.hit_rect3), 1)
             for mob in self.mobs_on_screen:
                 pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(mob.hit_rect), 1)
+            for target in self.random_targets:
+                pg.draw.rect(self.screen, BLUE, self.camera.apply_rect(target.rect), 1)
             #for elev in self.elevations_on_screen:
             #    pg.draw.rect(self.screen, BLUE, self.camera.apply_rect(elev.rect), 1)
 

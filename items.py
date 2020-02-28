@@ -27,7 +27,7 @@ ITEMS['ale'] = {'alchemy': True, 'stamina': 40, 'health': -10, 'image': 146, 'we
 ITEMS['ale of the gods'] = {'alchemy': True, 'stamina': 40, 'health': 15, 'image': 146, 'weight': 0.7, 'materials': {'hops':1, 'barley':1, 'living water':1, 'empty mug':1}, 'value': 20}
 
 # Tools
-ITEMS['lock pick'] = {'image': 11, 'weight': 0.2, 'value': 120}
+ITEMS['lock pick'] = {'image': 11, 'hp': 50, 'weight': 0.2, 'forgeable': True, 'materials': {'steel rod': 1}, 'value': 120}
 
 # Forgeable
 ITEMS['flint and steel'] = {'image': 150, 'hp': 20, 'weight': 1, 'materials': {'steel ingot': 1, 'flint stone':1}, 'forgeable': True, 'value': 75}
@@ -156,6 +156,7 @@ ITEMS['springs'] = {'image': 85, 'weight': 0.1, 'materials': {'steel wire': 1}, 
 ITEMS['steel wire'] = {'image': 86, 'weight': 0.5, 'materials': {'steel ingot': 1}, 'forgeable': True, 'value': 46}
 ITEMS['machine screws'] = {'image': 87, 'weight': 0.2, 'materials': {'aluminum rod': 1}, 'forgeable': True, 'value': 55}
 ITEMS['aluminum rod'] = {'image': 88, 'weight': 0.3, 'materials': {'aluminum ingot': 1}, 'forgeable': True, 'value': 40}
+ITEMS['steel rod'] = {'image': 88, 'weight': 0.3, 'materials': {'steel ingot': 1}, 'forgeable': True, 'value': 40}
 ITEMS['brass tubing'] = {'image': 89, 'weight': 0.3, 'materials': {'brass ingot': 1}, 'forgeable': True, 'value': 30}
 ITEMS['gun powder'] = {'alchemy': True, 'image': 72, 'weight': 1, 'materials': {'sulphur': 1, 'charcoal': 1, 'potassium nitrate crystals': 1, 'sheep horn': 1, 'leather strips': 1}, 'value': 100}
 ITEMS['sheep horn'] = {'image': 32, 'weight': 1, 'value': 10}

@@ -705,11 +705,7 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                     self.character.last_weapon = self.character.equipped['weapons']  # Used to keep track of bullets fired from unequipped weapons
                     self.character.equipped[self.item_type] = item.text
             else:
-                if self.character.equipped['gender'] == 'female' and 'M' in item.text: # This changes male tops and bottoms to fit female bodies (so the boobs and butts don't stick out)
-                    temp_item = item.text.replace('M', 'F')
-                    self.character.equipped[self.item_type] = temp_item
-                else:
-                    self.character.equipped[self.item_type] = item.text
+                self.character.equipped[self.item_type] = item.text
         self.check_dual()
 
     def left_equip(self, item):
@@ -955,6 +951,10 @@ class Loot_Menu(Inventory_Menu):
                     for item_type in range(0, 8):
                         for item in self.container.inventory[ITEM_TYPE_LIST[item_type]]:
                             if item != None:
+                                if self.game.player.equipped['gender'] == 'male':  # Makes it so looted clothes fit you based on gender.
+                                    item = item.replace(' F', ' M')
+                                else:
+                                    item = item.replace(' M', ' F')
                                 self.game.player.inventory[ITEM_TYPE_LIST[item_type]].append(item)
                                 self.game.player.stats['looting'] += 1
                     self.game.player.calculate_weight()
@@ -1033,6 +1033,10 @@ class Loot_Menu(Inventory_Menu):
                         if self.mouse_click == (0, 0, 1):
                             counter = Counter(self.container.inventory[self.item_type])
                             for x in range(0, counter[item.text]):
+                                if self.game.player.equipped['gender'] == 'male':  # Makes it so looted clothes fit you based on gender.
+                                    item.text = item.text.replace(' F', ' M')
+                                else:
+                                    item.text = item.text.replace(' M', ' F')
                                 self.game.player.stats['looting'] += 1
                                 self.game.player.inventory[self.item_type].append(item.text)
                                 self.game.player.calculate_weight()
@@ -1157,7 +1161,7 @@ class Lock_Menu():
             self.keyway = Lock_Keyway(self.game, self, True)
             self.keyway.turn = True
             self.label_menu = Text(self, "It looks like you have the right key.", default_font, 30, WHITE, 30, 10, "topleft")
-        elif 'lock pick' in self.game.player.inventory['items']:
+        elif [s for s in self.game.player.inventory['items'] if 'lock pick' in s]: # sees if you have a lock pick of any type in your inventory.
             self.keyway = Lock_Keyway(self.game, self)
             self.pick = Lock_Pick(self.game, self)
             self.label_menu = Text(self, "Pick Lock: Use W/S to move lock pick and SPACE to try to open the lock.", default_font, 30, WHITE, 30, 10, "topleft")
@@ -1247,6 +1251,10 @@ class Lock_Pick(pg.sprite.Sprite):
         self.hp = 25
         self.toggle = 5
         self.y_offset = 0
+        for item in self.game.player.inventory['items']: # Uses the first lockpick in the list.
+            if 'lock pick' in item:
+                self.selected_pick = item
+                break
 
     def get_keys(self):
         self.rot_speed = 0
@@ -1273,18 +1281,35 @@ class Lock_Pick(pg.sprite.Sprite):
     def pick(self):
         self.pos.x += self.toggle
         self.y_offset += self.toggle
-        if abs(self.rot - self.combo) <= self.difficulty:
-            self.mother.keyway.turn = True
-        else:
-            self.hp -= 1
+        if self.selected_pick == None:
+            self.hp = -1
             self.mother.keyway.rot += self.toggle
+            self.mother.broken = True
             choice(self.game.lock_picking_sounds).play()
-            if self.hp < 0:
-                self.game.player.inventory['items'].remove('lock pick')
-                self.mother.broken = True
+            self.mother.keyway.kill()
+            self.kill()
+        working, self.selected_pick = self.game.player.change_used_item('items', self.selected_pick, True) # Makes it so the lock pick wears out.
+        if working:
+            if abs(self.rot - self.combo) <= self.difficulty:
+                self.mother.keyway.turn = True
+            else:
+                self.hp -= 1
+                self.mother.keyway.rot += self.toggle
                 choice(self.game.lock_picking_sounds).play()
-                self.mother.keyway.kill()
-                self.kill()
+                if self.hp < 0:
+                    self.game.player.inventory['items'].remove(self.selected_pick)
+                    self.mother.broken = True
+                    choice(self.game.lock_picking_sounds).play()
+                    self.mother.keyway.kill()
+                    self.kill()
+        else:
+            self.hp = -1
+            self.mother.keyway.rot += self.toggle
+            self.mother.broken = True
+            choice(self.game.lock_picking_sounds).play()
+            self.mother.keyway.kill()
+            self.kill()
+
 
     def update(self):
         if self.mother.keyway.open:
@@ -1869,7 +1894,6 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
         if 'dragon' in chosen_item: # Only lets dragons craft dragon things
             if 'dragon' not in self.game.player.equipped['race']:
                 return False
-
         if self.kind == 'enchanter':
             self.materials_list = ENCHANTMENTS[chosen_item][makeorupgrade]
         else:
@@ -1932,13 +1956,18 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
 
     def list_items(self):
         self.clear_menu()
-
         if self.kind == 'forge':
             row = 0
             item_dict = eval(self.item_type.upper())
             for item in item_dict:
                 if item != None:
                     if 'LV' not in item:    # no upgraded items show in forge
+                        if ' M' in item:
+                            if self.game.player.equipped['gender'] not in ['male']:
+                                continue
+                        elif ' F' in item:
+                            if self.game.player.equipped['gender'] not in ['female', 'other']:
+                                continue
                         if 'materials' in item_dict[item]:
                             if self.check_materials(item):
                                 if self.item_type == 'items':
@@ -2683,6 +2712,12 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
 
         row = 0
         for item in self.store_inventory[self.item_type]:
+            if ' M' in item:
+                if self.game.player.equipped['gender'] not in ['male']:
+                    continue
+            elif ' F' in item:
+                if self.game.player.equipped['gender'] not in ['female', 'other']:
+                    continue
             if item not in displayed_list:
                 item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
                 self.item_sprites.add(item_name)

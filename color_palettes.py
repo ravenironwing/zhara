@@ -27,7 +27,7 @@ ARMOR_COLORS = {
     'steel': (205, 207, 208),
     'brass': (71, 65, 26),
     'bronze': (80, 50, 20),
-    'gold': (197, 179, 88),
+    'golden': (197, 179, 88),
     'aluminum': (177, 178, 180),
     'tin': (211, 212, 213),
     'copper': (72, 45, 20),
@@ -44,7 +44,7 @@ MATERIALS['brass'] = {'color': (197, 179, 88), 'hardness': 0.6, 'weight': 1.5, '
 MATERIALS['aluminum'] = {'color': (197, 198, 200), 'hardness': 0.5, 'weight': 0.4, 'value': 0.4}
 MATERIALS['copper'] = {'color': (142, 115, 90), 'hardness': 0.3, 'weight': 1.7, 'value': 0.5}
 MATERIALS['silver'] = {'color': (180, 178, 183), 'hardness': 0.2, 'weight': 2.1, 'value': 2}
-MATERIALS['gold'] = {'color': (255, 233, 87), 'hardness': 0.1, 'weight': 4, 'value': 4}
+MATERIALS['golden'] = {'color': (255, 233, 87), 'hardness': 0.1, 'weight': 4, 'value': 4}
 MATERIALS['tin'] = {'color': (211, 212, 213), 'hardness': 0.1, 'weight': 1, 'value': 0.7}
 MATERIALS['lead'] = {'color': (78, 89, 93), 'hardness': 0.1, 'weight': 2.4, 'value': 0.1}
 
