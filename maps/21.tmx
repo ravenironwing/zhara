@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="69" nextobjectid="1132">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="69" nextobjectid="1137">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="100" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="2560"/>
  </tileset>
@@ -1616,6 +1616,11 @@
   <object id="994" name="light" x="2653.33" y="5852" width="156" height="162.667"/>
   <object id="999" name="wall" x="7938.67" y="2025.33" width="126.667" height="658.667"/>
   <object id="1037" name="light" x="5380" y="6661.33" width="122.667" height="120"/>
+  <object id="1132" name="lantern" x="5167.33" y="3250.67" width="22.6667" height="24"/>
+  <object id="1133" name="lantern" x="5552.67" y="3250.67" width="22.6667" height="24"/>
+  <object id="1134" name="lantern" x="5556.67" y="3508" width="22.6667" height="24"/>
+  <object id="1135" name="lantern" x="5559.33" y="4010.67" width="22.6667" height="24"/>
+  <object id="1136" name="light" x="5649.33" y="4252" width="122.667" height="120"/>
  </objectgroup>
  <objectgroup id="68" name="AIPATH">
   <object id="1052" name="UD" x="4128" y="1645.33" width="201.333" height="5918.67"/>

@@ -2956,7 +2956,7 @@ class Npc(pg.sprite.Sprite):
     def aipath(self, value):
         if value != self._aipath: # Runs if the path list changes
             self._aipath = value
-            if value:
+            if value and self.aggression != 'awd' and (not self.provoked):
                 self.last_path_change = pg.time.get_ticks()
                 self.target = self.goal_target # Resets the target back to the goal target whenever you cross new pathways.
                 self.set_aipath_target()
@@ -3102,13 +3102,14 @@ class Npc(pg.sprite.Sprite):
                 dist = dist.length()
                 if last_dist > dist:  # Finds closest door
                     self.target = entry
+                    self.offensive = False
+                    self.provoked = False
                     self.approach_vector = vec(1, 0)
                     last_dist = dist
 
     def seek_mobs(self):
         last_dist = 100000
         non_targets = 0
-
         if self.guard:
             for mob in self.game.moving_targets_on_screen:
                 if mob != self:
@@ -3159,13 +3160,11 @@ class Npc(pg.sprite.Sprite):
             dist = dist.length()
             if dist < TALK_RADIUS:
                 self.target = self.game.player
-            #else:
-            #    self.seek_random_target()
 
         # Seeks a random target if there are no target mobs in range.
         elif non_targets == len(self.game.moving_targets_on_screen) - 1:
             if not self.aipath:
-                self.seek_random_target()
+                self.target = self.goal_target
 
     def is_moving(self):
         # This checks to see if the NPC has moved since the last check.
@@ -3281,7 +3280,7 @@ class Npc(pg.sprite.Sprite):
                     if self.target != self.game.player:
                         if not self.target.living:  # Makes it so NPC switches target after it kills one.
                             self.offensive = False
-                            #self.seek_mobs()
+                            self.seek_mobs()
                         if self.aggression in ['awp', 'sap', 'fup']:
                             if self.provoked:
                                 if not self.game.player.invisible:
@@ -3327,7 +3326,7 @@ class Npc(pg.sprite.Sprite):
 
                 if not self.needs_move:
                     if ora - self.last_seek > 1000: # Checks for the closest target
-                        #self.seek_mobs()
+                        self.seek_mobs()
                         self.last_seek = ora
 
                 # Stops them from climbing after a certain time if they aren't on an object that requires you climb on it.
@@ -3343,99 +3342,84 @@ class Npc(pg.sprite.Sprite):
                 target_dist_lsquared = self.target_dist.length_squared()
 
                 # This part makes the NPC avoid walls
-                #now = pg.time.get_ticks()
-                #if not self.immaterial:
-                #    hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False)
-                #    if hits:
-                #        if hits[0] not in self.game.door_walls:
-                #            if self.target == self.goal_target:
-                #                self.hit_wall = True
-                #                x = self.pos.x + choice([30, -30])
-                #                y = self.pos.y + choice([30, -30])
-                #                if now - self.last_wall_hit > 1000:
-                #                    self.last_wall_hit = now
-                #                    if hits[0].orient == 'h':
-                #                        hvec = vec(1, 0)
-                #                        if self.direction.angle_to(hvec) > 90:
-                #                            x = self.pos.x + 100
-                #                        else:
-                #                            x = self.pos.x - 100
-                #                    else:
-                #                        vvec = vec(0, 1)
-                #                        if self.direction.angle_to(vvec) > 90:
-                #                            y = self.pos.y + 100
-                #                        else:
-                #                            y = self.pos.y - 100
-                #                    self.target = self.temp_target
-                #                    self.temp_target.set_position(x,y)
-                #    elif now - self.last_wall_hit > randrange(3000, 5000):
-                #        self.last_wall_hit = now
-                #        self.hit_wall = False
+                now = pg.time.get_ticks()
+                if not self.immaterial:
+                    hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False)
+                    if hits and (hits[0] not in self.game.door_walls):
+                        self.acc = vec(0, 0)
+                        self.hit_wall = True
+                        if now - self.last_wall_hit > 1000:
+                            self.last_wall_hit = now
+                            self.seek_random_target()
+                    elif now - self.last_wall_hit > randrange(3000, 5000):
+                        self.last_wall_hit = now
+                        self.hit_wall = False
 
                 # The AI that controlls NPC attacking.
-                if True not in [self.melee_playing, self.animating_reload]:
-                    if self.offensive:
-                        if self.aggression not in ['fwd', 'fwp']:
-                            if target_dist_lsquared < self.melee_range**2:
-                                self.approach_vector = vec(1, 0)
-                                now = pg.time.get_ticks()
-                                if now - self.last_melee > randrange(1000, 3000):
-                                    self.last_melee = now
-                                    self.pre_melee()
-                            elif True not in [self.reloading, self.hit_wall, self.swimming]:
-                                if self.gun:
-                                    if target_dist_lsquared < self.weapon_range ** 2:
-                                        if self.bow:
-                                            if self.arrow != None:
-                                                self.shoot()
-                                                self.arrow.kill()
-                                                self.arrow = None
-                                            else:
-                                                self.reloading = True
-                                                self.animating_reload = True
-                                        else:
-                                            self.shoot()
-                                        if self.bullets_shot >= self.mag_size:
-                                            self.bullets_shot = 0
-                                            self.reloading = True
-                                            self.animating_reload = True
-                                else:
-                                    if target_dist_lsquared < self.detect_radius ** 2:
-                                        magic_chance = randrange(0, 100)
-                                        if magic_chance == 1:
-                                            self.cast_spell()
-                            if self.game.player.in_vehicle:
-                                if target_dist_lsquared < 3*self.melee_range**2:
+                if self.target in self.game.moving_targets_on_screen:
+                    if True not in [self.melee_playing, self.animating_reload]:
+                        if self.offensive:
+                            if self.aggression not in ['fwd', 'fwp']:
+                                if target_dist_lsquared < self.melee_range**2:
+                                    self.approach_vector = vec(1, 0)
                                     now = pg.time.get_ticks()
                                     if now - self.last_melee > randrange(1000, 3000):
                                         self.last_melee = now
                                         self.pre_melee()
-                        elif not self.running: # Non agressive but provoked NPCs
-                            if target_dist_lsquared < self.melee_range**2:
-                                self.approach_vector = vec(1, 0)
-                                now = pg.time.get_ticks()
-                                if self.last_melee != 0:
-                                    if now - self.last_melee > 20000: # Makes it so the villagers stop attacking you if you've left them alone for 20 seconds.
-                                        self.offensive = False
-                                        self.last_melee = 0
-                                if self.offensive:
-                                    if now - self.last_melee > 3000:
-                                        self.last_melee = now
-                                        self.pre_melee()
+                                elif True not in [self.reloading, self.hit_wall, self.swimming]:
+                                    if self.gun:
+                                        if target_dist_lsquared < self.weapon_range ** 2:
+                                            if self.bow:
+                                                if self.arrow != None:
+                                                    self.shoot()
+                                                    self.arrow.kill()
+                                                    self.arrow = None
+                                                else:
+                                                    self.reloading = True
+                                                    self.animating_reload = True
+                                            else:
+                                                self.shoot()
+                                            if self.bullets_shot >= self.mag_size:
+                                                self.bullets_shot = 0
+                                                self.reloading = True
+                                                self.animating_reload = True
+                                    else:
+                                        if target_dist_lsquared < self.detect_radius ** 2:
+                                            magic_chance = randrange(0, 100)
+                                            if magic_chance == 1:
+                                                self.cast_spell()
+                                if self.game.player.in_vehicle:
+                                    if target_dist_lsquared < 3*self.melee_range**2:
+                                        now = pg.time.get_ticks()
+                                        if now - self.last_melee > randrange(1000, 3000):
+                                            self.last_melee = now
+                                            self.pre_melee()
+                            elif not self.running: # Non agressive but provoked NPCs
+                                if target_dist_lsquared < self.melee_range**2:
+                                    self.approach_vector = vec(1, 0)
+                                    now = pg.time.get_ticks()
+                                    if self.last_melee != 0:
+                                        if now - self.last_melee > 20000: # Makes it so the villagers stop attacking you if you've left them alone for 20 seconds.
+                                            self.offensive = False
+                                            self.last_melee = 0
+                                    if self.offensive:
+                                        if now - self.last_melee > 3000:
+                                            self.last_melee = now
+                                            self.pre_melee()
 
-                #self.avoid_mobs()
                 target_angle = self.target_dist.angle_to(self.approach_vector)
                 if (target_dist_lsquared < self.melee_range**2) and (self.target in self.game.moving_targets_on_screen) and self.offensive: # NPC stops in combat range if offensive
                     pass
                 elif (target_dist_lsquared < TALK_RADIUS**2) and (self.target in self.game.moving_targets_on_screen) and (not self.target.offensive): # NPC stops in talking range if not offensive.
                     pass
-                elif target_dist_lsquared > 4:
+                elif (target_dist_lsquared > 4) and True not in [self.melee_playing, self.animating_reload]:
                     self.animate()
                     self.rotate_to(vec(1, 0).rotate(-target_angle))
                     speed = self.speed
                     if self.running:
                         speed = self.run_speed
                     self.acc = vec(speed, 0).rotate(-self.rot)
+                    self.avoid_mobs()
                     self.accelerate()
                     if self.sounds and random() < 0.002:  # This makes different sounds for each type of npc
                         choice(self.sounds).play()
@@ -3749,7 +3733,7 @@ class Npc(pg.sprite.Sprite):
             if self.arrow != None:
                 self.arrow.kill()
                 self.arrow = None
-            magic_chance = randrange(0, 10)
+            magic_chance = randrange(0, 40)
             if self.has_magic:
                 if magic_chance == 1:
                     self.cast_spell()
@@ -3764,7 +3748,6 @@ class Npc(pg.sprite.Sprite):
                 self.weapon_hand = 'weapons2'
             else:
                 self.weapon_hand = choice(['weapons', 'weapons2'])
-
             now = pg.time.get_ticks()
             if self.equipped[self.weapon_hand] != None:
                 rate =  WEAPONS[self.equipped[self.weapon_hand]]['rate']
@@ -3784,12 +3767,10 @@ class Npc(pg.sprite.Sprite):
         # Default values if no weapons
         self.melee_rate = 200 #default timing between melee attacks if no agility. Reduces with higher agility
         speed = 60 #default speed of melee attacks
-
         if self.weapon_hand == 'weapons':
             self.animation_playing = self.body.melee_anim
         else:
             self.animation_playing = self.body.l_melee_anim
-
         if self.equipped[self.weapon_hand] != None:
             # Slows down attacks with heavier weapons
             if WEAPONS[self.equipped[self.weapon_hand]]['type'] == 'shield':
