@@ -2774,10 +2774,6 @@ class Npc(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot = randrange(0, 360)
         self.rot_speed = MOB_ROT_SPEED
-        self._aipath = None
-        if kind != 'generic':
-            self.temp_target = Target(self.game)
-            self.goal_target = Target(self.game)
         self.frame = 0
         self.jumping = False
         self.falling = False
@@ -2806,6 +2802,7 @@ class Npc(pg.sprite.Sprite):
         self.mag_size = 0
         self.bullets_shot = 0
         # Timing vars
+        self.last_path_change = 0
         self.last_seek = 0
         self.last_damage = 0
         self.last_step = 0
@@ -2862,10 +2859,14 @@ class Npc(pg.sprite.Sprite):
         self.armed = self.kind['armed']
         self.dual_wield = self.kind['dual wield']
         #self.dual_melee = False
-        if not self.game.player.invisible:
-            self.target = self.game.player
+        if len(self.game.random_targets) > 0:
+            self.target = self.goal_target = choice(list(self.game.random_targets))
         else:
-            self.target = choice(list(self.game.random_targets))
+            self.target = self.goal_target = self.game.player
+        if kind != 'generic':
+            self.temp_target = Target(self.game)
+        self._aipath = None
+        self.selected_path = None
         self.damage = self.kind['damage']
         self.knockback = self.kind['knockback']
         self.detect_radius = self.default_detect_radius = self.kind['detect radius']
@@ -2909,6 +2910,12 @@ class Npc(pg.sprite.Sprite):
             random_inventory_item(self, self.kind['inventory']) # assigns individual randomized items to NPC
 
             change_clothing(self)
+        # Sets sounds the NPCs randomly make
+        self.sounds = None
+        if self.equipped['race'] == 'immortui':
+            self.sounds = self.game.zombie_moan_sounds
+        if 'wraith' in self.equipped['race']:
+            self.sounds = self.game.wraith_sounds
         self.set_vectors()
 
         # Create Body object (keep this as the last attribute.
@@ -2947,35 +2954,106 @@ class Npc(pg.sprite.Sprite):
 
     @aipath.setter
     def aipath(self, value):
-        if value != self._aipath:
+        if value != self._aipath: # Runs if the path list changes
             self._aipath = value
             if value:
+                self.last_path_change = pg.time.get_ticks()
+                self.target = self.goal_target # Resets the target back to the goal target whenever you cross new pathways.
                 self.set_aipath_target()
         else:
             pass
 
     def set_aipath_target(self):
         if self.target != self.temp_target:
-            self.target = self.temp_target
-            if self.aipath.kind == 'UD':
-                if choice([0, 1]):
-                    y = self.aipath.rect.top
+            RL_paths = []
+            UD_paths = []
+            for aipath in self.aipath: # Sorts hits paths by direction
+                if aipath.kind == 'UD':
+                    UD_paths.append(aipath)
                 else:
-                    y = self.aipath.rect.bottom
-                x = self.aipath.rect.centerx
-            elif self.aipath.kind == 'RL':
-                if choice([0, 1]):
-                    x = self.aipath.rect.left
+                    RL_paths.append(aipath)
+
+            path_dir = None
+            npc_dir = None
+            last_dist = 100000
+            if len(RL_paths) > 0:
+                if (abs(self.goal_target_dist.x) > abs(self.goal_target_dist.y)) or (len(UD_paths) == 0): # Taking an RL path is more beneficial
+                    path_dir = 'RL'
+                    if self.goal_target_dist.x < 0: # take a left path because the target is to the left.
+                        npc_dir = 'left'
+                        for aipath in RL_paths: # Finds the path that goes closest to the target.
+                            dist = abs(aipath.rect.left - self.goal_target.pos.x)
+                            if last_dist > dist:
+                                self.selected_path = aipath
+                                last_dist = dist
+
+                    else: # take a right path.
+                        npc_dir = 'right'
+                        for aipath in RL_paths: # Finds the path that goes closest to the target.
+                            dist = abs(aipath.rect.right - self.goal_target.pos.x)
+                            if last_dist > dist:
+                                self.selected_path = aipath
+                                last_dist = dist
                 else:
-                    x = self.aipath.rect.right
-                y = self.aipath.rect.centery
+                    path_dir = 'UD'
+                    if self.goal_target_dist.y < 0: # take an up path because the target is upward.
+                        npc_dir = 'top'
+                        for aipath in UD_paths: # Finds the path that goes closest to the target.
+                            dist = abs(aipath.rect.top - self.goal_target.pos.y)
+                            if last_dist > dist:
+                                self.selected_path = aipath
+                                last_dist = dist
+                    else: # take a down path.
+                        npc_dir = 'bottom'
+                        for aipath in UD_paths: # Finds the path that goes closest to the target.
+                            dist = abs(aipath.rect.bottom - self.goal_target.pos.y)
+                            if last_dist > dist:
+                                self.selected_path = aipath
+                                last_dist = dist
+            else:
+                path_dir = 'UD'
+                if self.goal_target_dist.y < 0:  # take an up path because the target is upward.
+                    npc_dir = 'top'
+                    for aipath in UD_paths:  # Finds the path that goes closest to the target.
+                        dist = abs(aipath.rect.top - self.goal_target.pos.y)
+                        if last_dist > dist:
+                            self.selected_path = aipath
+                            last_dist = dist
+                else:  # take a down path.
+                    for aipath in UD_paths:  # Finds the path that goes closest to the target.
+                        npc_dir = 'bottom'
+                        dist = abs(aipath.rect.bottom - self.goal_target.pos.y)
+                        if last_dist > dist:
+                            self.selected_path = aipath
+                            last_dist = dist
+
+            if path_dir == 'UD':
+                x = self.selected_path.rect.centerx
+                ystr = "self.selected_path.rect." + npc_dir
+                y = eval(ystr)
+                if npc_dir == 'top': # Makes it so you don't overshoot the goal target.
+                    if y < self.goal_target.pos.y:
+                        y = self.goal_target.pos.y
+                else:
+                    if y > self.goal_target.pos.y:
+                        y = self.goal_target.pos.y
+            else:
+                y = self.selected_path.rect.centery
+                xstr = "self.selected_path.rect." + npc_dir
+                x = eval(xstr)
+                if npc_dir == 'left': # Makes it so you don't overshoot the goal target.
+                    if x < self.goal_target.pos.x:
+                        x = self.goal_target.pos.x
+                else:
+                    if x > self.goal_target.pos.x:
+                        x = self.goal_target.pos.x
             self.temp_target.set_position(x, y)
+            self.target = self.temp_target
 
     def update_collide_list(self):
         self.collide_list = [self.game.walls_on_screen]
 
     def set_vectors(self):
-        # Makes it so immortui don't run after you if you are immortui
         if self.aggression == 'fwd':
             self.approach_vector = vec(-1, 0)
         if self.aggression == 'awd':
@@ -2984,18 +3062,18 @@ class Npc(pg.sprite.Sprite):
         if self.aggression == 'fwp':
             self.approach_vector = vec(1, 0)
         if self.aggression == 'awp':
-            self.approach_vector = vec(0, 1)
+            self.approach_vector = vec(1, 0)
         if self.aggression == 'sap':
             self.approach_vector = vec(0, 0)
             self.speed = 0
 
         if self.equipped['race'] in self.game.player.equipped['race']:
-            if self.aggression == 'fwd':
-                self.aggression = 'awd'
-                self.approach_vector = vec(1, 0)
-            if self.aggression == 'awd':
+            #if self.aggression == 'fwd':
+            #    self.aggression = 'awd'
+            #    self.approach_vector = vec(1, 0)
+            if self.aggression == 'awd': # Makes it so NPCs that are your same race only attack you when you provoke them.
                 self.aggression = 'awp'
-                self.approach_vector = vec(0, 1)
+                self.approach_vector = vec(1, 0)
                 self.offensive = False
 
     def avoid_mobs(self):
@@ -3023,7 +3101,7 @@ class Npc(pg.sprite.Sprite):
                 dist = self.pos - entry.pos
                 dist = dist.length()
                 if last_dist > dist:  # Finds closest door
-                    self.target = self.goal_target = entry
+                    self.target = entry
                     self.approach_vector = vec(1, 0)
                     last_dist = dist
 
@@ -3141,12 +3219,12 @@ class Npc(pg.sprite.Sprite):
         if self.in_vehicle:
             rot_speed = self.vehicle.rot_speed/3
             if self.vehicle.turret == None:
-                self.set_rot_speed(rot_speed, vector, angle)
+                self.set_rot_speed(rot_speed, angle)
         else:
             rot_speed = MOB_ROT_SPEED
-            self.set_rot_speed(rot_speed, vector, angle)
+            self.set_rot_speed(rot_speed, angle)
 
-    def set_rot_speed(self, rot_speed, vector, angle):
+    def set_rot_speed(self, rot_speed, angle):
         if angle < 0:
             self.rot_speed = -rot_speed * 10 * abs(angle) / 180
         else:
@@ -3154,7 +3232,8 @@ class Npc(pg.sprite.Sprite):
 
     def check_walls(self):
         proj_vec = self.direction
-        proj_vec.scale_to_length(MOB_HIT_RECT.width * 3/2 - 10) # makes a vector that projects out in front of NPC the max detect distance for a wall with no walls in between.
+        vec_length = vec_increment = MOB_HIT_RECT.width * 3/2 - 10
+        proj_vec.scale_to_length(vec_length) # makes a vector that projects out in front of NPC the max detect distance for a wall with no walls in between.
         self.temp_target.set_position(proj_vec.x, proj_vec.y)
         hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
         if hits:
@@ -3174,11 +3253,12 @@ class Npc(pg.sprite.Sprite):
                     if not hits:
                         self.target = self.temp_target
                 else:
-                    self.targe = self.temp_target
+                    self.target = self.temp_target
             else:
                 self.target = self.temp_target
         else:
-            self.target = self.goal_target  # Heads to the goal_target if there's nothing in the way.
+            self.target = self.goal_target
+
 
     def update(self):
         # This parts synchs the body sprite with the NPC's soul.
@@ -3201,7 +3281,7 @@ class Npc(pg.sprite.Sprite):
                     if self.target != self.game.player:
                         if not self.target.living:  # Makes it so NPC switches target after it kills one.
                             self.offensive = False
-                            self.seek_mobs()
+                            #self.seek_mobs()
                         if self.aggression in ['awp', 'sap', 'fup']:
                             if self.provoked:
                                 if not self.game.player.invisible:
@@ -3242,12 +3322,12 @@ class Npc(pg.sprite.Sprite):
                 if ora - self.last_hit > 3000: # Used to set the time NPCs flee for after being attacked.
                     if self.running:
                         if self.aggression == 'fwp':
-                            self.approach_vector = vec(-1, -1)
+                            self.approach_vector = vec(1, 0)
                         self.running = False
 
                 if not self.needs_move:
                     if ora - self.last_seek > 1000: # Checks for the closest target
-                        self.seek_mobs()
+                        #self.seek_mobs()
                         self.last_seek = ora
 
                 # Stops them from climbing after a certain time if they aren't on an object that requires you climb on it.
@@ -3261,12 +3341,6 @@ class Npc(pg.sprite.Sprite):
                 self.goal_target_dist = self.goal_target.pos - self.pos
                 self.temp_target_dist = self.temp_target.pos - self.pos
                 target_dist_lsquared = self.target_dist.length_squared()
-                # What the NPC does when it's moving.
-                if random() < 0.002: # This makes different sounds for each type of npc
-                    if self.equipped['race'] == 'immortui':
-                        choice(self.game.zombie_moan_sounds).play()
-                    if 'wraith' in self.equipped['race']:
-                        choice(self.game.wraith_sounds).play()
 
                 # This part makes the NPC avoid walls
                 #now = pg.time.get_ticks()
@@ -3274,14 +3348,29 @@ class Npc(pg.sprite.Sprite):
                 #    hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False)
                 #    if hits:
                 #        if hits[0] not in self.game.door_walls:
-                #            self.hit_wall = True
-                #            if now - self.last_wall_hit > 1000:
-                #                self.last_wall_hit = now
-                #                self.seek_random_target()
+                #            if self.target == self.goal_target:
+                #                self.hit_wall = True
+                #                x = self.pos.x + choice([30, -30])
+                #                y = self.pos.y + choice([30, -30])
+                #                if now - self.last_wall_hit > 1000:
+                #                    self.last_wall_hit = now
+                #                    if hits[0].orient == 'h':
+                #                        hvec = vec(1, 0)
+                #                        if self.direction.angle_to(hvec) > 90:
+                #                            x = self.pos.x + 100
+                #                        else:
+                #                            x = self.pos.x - 100
+                #                    else:
+                #                        vvec = vec(0, 1)
+                #                        if self.direction.angle_to(vvec) > 90:
+                #                            y = self.pos.y + 100
+                #                        else:
+                #                            y = self.pos.y - 100
+                #                    self.target = self.temp_target
+                #                    self.temp_target.set_position(x,y)
                 #    elif now - self.last_wall_hit > randrange(3000, 5000):
                 #        self.last_wall_hit = now
                 #        self.hit_wall = False
-
 
                 # The AI that controlls NPC attacking.
                 if True not in [self.melee_playing, self.animating_reload]:
@@ -3334,11 +3423,7 @@ class Npc(pg.sprite.Sprite):
                                         self.last_melee = now
                                         self.pre_melee()
 
-                speed = self.speed
-                if self.running:
-                    speed = self.run_speed
-                self.acc = vec(speed, 0).rotate(-self.rot)
-                self.avoid_mobs()
+                #self.avoid_mobs()
                 target_angle = self.target_dist.angle_to(self.approach_vector)
                 if (target_dist_lsquared < self.melee_range**2) and (self.target in self.game.moving_targets_on_screen) and self.offensive: # NPC stops in combat range if offensive
                     pass
@@ -3346,10 +3431,17 @@ class Npc(pg.sprite.Sprite):
                     pass
                 elif target_dist_lsquared > 4:
                     self.animate()
-                    self.rotate_to(vec(1, 0).rotate(target_angle))
+                    self.rotate_to(vec(1, 0).rotate(-target_angle))
+                    speed = self.speed
+                    if self.running:
+                        speed = self.run_speed
+                    self.acc = vec(speed, 0).rotate(-self.rot)
                     self.accelerate()
+                    if self.sounds and random() < 0.002:  # This makes different sounds for each type of npc
+                        choice(self.sounds).play()
                 else:
-                    #self.check_walls()
+                    self.target = self.goal_target
+                if self.goal_target_dist.length_squared() < 4: # Seeks a new target once it has reached it's goal.
                     self.seek_random_target()
 
                 # Used for lights NPCs are carrying.
@@ -5352,6 +5444,10 @@ class Obstacle(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x
         self.rect.y = y
+        if self.rect.width > self.rect.height:
+            self.orient = 'h'
+        else:
+            self.orient = 'v'
 
 class Charger(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h, amount = 4, rate = 2000):

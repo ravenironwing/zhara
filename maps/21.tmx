@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="69" nextobjectid="1101">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="69" nextobjectid="1132">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="100" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="2560"/>
  </tileset>
@@ -1141,7 +1141,7 @@
   <object id="28" name="wall" x="7616" y="3208" width="444.121" height="112"/>
   <object id="29" name="wall" x="7784" y="3848" width="272" height="112"/>
   <object id="30" name="wall" x="7928" y="3272" width="136" height="608"/>
-  <object id="31" name="wall" x="7168" y="16" width="128" height="1192.85"/>
+  <object id="31" name="wall" x="7168" y="1.33333" width="128" height="1207.52"/>
   <object id="32" name="wall" x="7688" y="8" width="120" height="2040"/>
   <object id="33" name="wall" x="7776" y="1928" width="288" height="114.788"/>
   <object id="35" name="wall" x="7632" y="2568" width="312" height="112"/>
@@ -1618,23 +1618,23 @@
   <object id="1037" name="light" x="5380" y="6661.33" width="122.667" height="120"/>
  </objectgroup>
  <objectgroup id="68" name="AIPATH">
-  <object id="1052" name="UD" x="4104" y="0" width="248" height="7520"/>
-  <object id="1053" name="RL" x="730.667" y="2684" width="6748" height="260"/>
-  <object id="1054" name="RL" x="740" y="1232" width="6740" height="208"/>
-  <object id="1055" name="UD" x="640" y="-2.66667" width="184" height="7476"/>
-  <object id="1056" name="UD" x="7370.67" y="-30.6667" width="206.667" height="7638.67"/>
-  <object id="1057" name="RL" x="656" y="7362.67" width="6876" height="198.667"/>
-  <object id="1059" name="UD" x="1812" y="2814" width="78" height="852"/>
-  <object id="1060" name="UD" x="2712" y="2822" width="78" height="842"/>
-  <object id="1063" name="RL" x="4212" y="3740" width="968" height="76"/>
-  <object id="1065" name="RL" x="4178" y="5148" width="1008" height="68"/>
-  <object id="1066" name="RL" x="4198" y="6316" width="1068" height="56"/>
+  <object id="1052" name="UD" x="4128" y="1645.33" width="201.333" height="5918.67"/>
+  <object id="1053" name="RL" x="646.667" y="2684" width="6928" height="260"/>
+  <object id="1054" name="RL" x="640" y="1277.33" width="3345.33" height="125.333"/>
+  <object id="1055" name="UD" x="640" y="-120" width="184" height="7593.33"/>
+  <object id="1056" name="UD" x="7370.67" y="-146.667" width="206.667" height="7708"/>
+  <object id="1057" name="RL" x="656" y="7362.67" width="6912" height="198.667"/>
+  <object id="1059" name="UD" x="1834.67" y="2684.67" width="36.6667" height="981.333"/>
+  <object id="1060" name="UD" x="2724" y="2702" width="47.3333" height="962"/>
+  <object id="1063" name="RL" x="4164" y="3753.33" width="1222.67" height="40"/>
+  <object id="1065" name="RL" x="4172.67" y="5148" width="1013.33" height="68"/>
+  <object id="1066" name="RL" x="4176.67" y="6316" width="1089.33" height="56"/>
   <object id="1067" name="UD" x="5198" y="5950" width="106" height="544"/>
   <object id="1068" name="UD" x="5124" y="4918" width="278" height="412"/>
   <object id="1069" name="RL" x="5192" y="4888" width="514" height="218"/>
   <object id="1070" name="UD" x="5052" y="3350" width="328" height="838"/>
-  <object id="1071" name="UD" x="5916" y="2292" width="74" height="530"/>
-  <object id="1072" name="UD" x="5792" y="2302" width="74" height="518"/>
+  <object id="1071" name="UD" x="5933.33" y="2294.67" width="39.3333" height="527.333"/>
+  <object id="1072" name="UD" x="5806.67" y="2300.67" width="39.3333" height="639.333"/>
   <object id="1073" name="RL" x="5078" y="2282" width="920" height="110"/>
   <object id="1074" name="UD" x="4996" y="1678" width="136" height="710"/>
   <object id="1075" name="RL" x="5038" y="1666" width="944" height="134"/>
@@ -1644,21 +1644,49 @@
   <object id="1080" name="UD" x="6142" y="2068" width="226" height="364"/>
   <object id="1081" name="UD" x="6572" y="2076" width="206" height="366"/>
   <object id="1082" name="RL" x="6260" y="2328" width="388" height="104"/>
-  <object id="1083" name="UD" x="5916" y="400" width="72" height="974"/>
+  <object id="1083" name="UD" x="5916" y="400" width="72" height="1036.67"/>
   <object id="1084" name="RL" x="5168" y="480" width="800" height="64"/>
   <object id="1085" name="RL" x="5956" y="524" width="808" height="96"/>
   <object id="1086" name="UD" x="6288" y="136" width="468" height="758"/>
   <object id="1087" name="RL" x="5962" y="784" width="362" height="116"/>
-  <object id="1088" name="UD" x="2206.67" y="2856" width="100" height="4028"/>
-  <object id="1089" name="RL" x="1064" y="6696" width="2597.33" height="344"/>
+  <object id="1088" name="UD" x="2224" y="2721.33" width="60" height="4312"/>
+  <object id="1089" name="RL" x="1093.33" y="6696" width="2568" height="344"/>
   <object id="1090" name="UD" x="5920" y="2837.33" width="120" height="4058.67"/>
-  <object id="1091" name="RL" x="4250.67" y="6808" width="1797.33" height="88"/>
-  <object id="1092" name="RL" x="4232" y="5584" width="1760" height="96"/>
-  <object id="1093" name="UD" x="6438" y="2824" width="54" height="834"/>
-  <object id="1095" name="UD" x="1040" y="2864" width="192" height="3928"/>
+  <object id="1091" name="RL" x="4104" y="6808" width="1944" height="88"/>
+  <object id="1092" name="RL" x="4168" y="5584" width="1824" height="96"/>
+  <object id="1093" name="UD" x="6438" y="2824" width="47.3333" height="834"/>
+  <object id="1095" name="UD" x="1040" y="2690.67" width="192" height="4349.33"/>
   <object id="1096" name="RL" x="2234.67" y="5513.33" width="1344" height="237.333"/>
-  <object id="1098" name="RL" x="2244" y="4370.67" width="1322.67" height="224"/>
-  <object id="1099" name="UD" x="3409.33" y="2821.34" width="196" height="1521.34"/>
-  <object id="1100" name="UD" x="3501.33" y="4620" width="162.667" height="2381.33"/>
+  <object id="1098" name="RL" x="2244" y="4370.67" width="1372" height="224"/>
+  <object id="1099" name="UD" x="3409.33" y="2706.67" width="153.333" height="1794.68"/>
+  <object id="1100" name="UD" x="3501.33" y="4242.67" width="162.667" height="2758.66"/>
+  <object id="1101" name="RL" x="1145.33" y="5564" width="1137.33" height="120"/>
+  <object id="1102" name="UD" x="3472" y="7416" width="218.667" height="464"/>
+  <object id="1103" name="UD" x="4756" y="7397.33" width="205.333" height="486.667"/>
+  <object id="1104" name="UD" x="4000" y="7380" width="452" height="466.667"/>
+  <object id="1105" name="UD" x="7472" y="7485.33" width="108" height="390.667"/>
+  <object id="1106" name="RL" x="7476" y="7469.33" width="381.333" height="97.3333"/>
+  <object id="1107" name="UD" x="7748" y="7480" width="106.667" height="390.667"/>
+  <object id="1108" name="RL" x="7481.33" y="7757.33" width="374.667" height="109.333"/>
+  <object id="1109" name="RL" x="317.333" y="7466.67" width="413.333" height="98.6667"/>
+  <object id="1110" name="UD" x="644" y="7464" width="85.3333" height="396"/>
+  <object id="1111" name="RL" x="345.333" y="7746.67" width="377.333" height="110.667"/>
+  <object id="1112" name="UD" x="313.333" y="7474.67" width="113.333" height="372"/>
+  <object id="1113" name="RL" x="5033.33" y="3333.33" width="668" height="97.3333"/>
+  <object id="1114" name="RL" x="5018.67" y="4112" width="478.667" height="112"/>
+  <object id="1115" name="UD" x="5492" y="4176" width="130.667" height="157.333"/>
+  <object id="1117" name="RL" x="4462.67" y="1284" width="3076" height="121.333"/>
+  <object id="1118" name="RL" x="3913.33" y="1577.33" width="610.667" height="124"/>
+  <object id="1119" name="RL" x="3934.67" y="969.333" width="584" height="124"/>
+  <object id="1120" name="UD" x="4421.33" y="1001.33" width="113.333" height="661.333"/>
+  <object id="1121" name="UD" x="3897.33" y="1006.67" width="134.667" height="629.333"/>
+  <object id="1122" name="RL" x="4336" y="3693.33" width="364" height="145.333"/>
+  <object id="1124" name="RL" x="5974.67" y="5297.33" width="517.333" height="28"/>
+  <object id="1125" name="RL" x="5957.33" y="5928" width="378.667" height="37.3333"/>
+  <object id="1126" name="UD" x="1970.67" y="5261.33" width="30.6667" height="720"/>
+  <object id="1128" name="RL" x="2242.67" y="6312" width="796" height="34.6667"/>
+  <object id="1129" name="UD" x="2726.67" y="6042.67" width="340" height="297.333"/>
+  <object id="1130" name="RL" x="2644" y="6056" width="426.667" height="265.333"/>
+  <object id="1131" name="RL" x="5093.33" y="3513.33" width="308" height="524"/>
  </objectgroup>
 </map>

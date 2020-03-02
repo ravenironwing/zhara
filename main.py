@@ -1260,8 +1260,12 @@ class Game:
         self.group._map_layer = self.map.map_layer # Sets the map as the Pyscroll group base layer.
         self.camera = Camera(self, self.map.width, self.map.height)
 
-        for i in range(0, 10): # Creates random targets for Npcs
-            Target(self)
+        for i in range(0, 20): # Creates random targets for Npcs
+            target = Target(self)
+            hits = pg.sprite.spritecollide(target, self.walls, False)  # Kills targets that appear in walls.
+            if hits:
+                target.kill()
+
 
         if self.sprite_data.visited: # Loads stored map data for sprites if you have visited before.
             companion_names = []
@@ -2584,7 +2588,9 @@ class Game:
         hits = pg.sprite.groupcollide(self.npcs_on_screen, self.aipaths, False, False)
         for npc in self.npcs_on_screen:
             if npc in hits:
-                npc.aipath = hits[npc][-1]  #Uses last hit in list.
+                now = pg.time.get_ticks()
+                if now - npc.last_path_change > 3000:
+                    npc.aipath = hits[npc]  #sets aipath to list of paths hit
             else:
                 npc.aipath = None
 
