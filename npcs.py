@@ -93,7 +93,7 @@ PEOPLE['goblin slave'] = {'name': 'slave', 'protected': True, 'health': 100, 'to
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': ['random'], 'tops': ['random VILLAGER_'], 'bottoms': ['random VILLAGER_'], 'shoes': ['random'], 'gloves': [None], 'gold': 100, 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 HUMAN_RACES = ['shaktele', 'osidine']
-PEOPLE['immortui'] = {'name': 'Immortui', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 600, 'avoid radius': 50, 'aggression': 'awd', 'armed': False, 'dual wield': False,
+PEOPLE['immortui'] = {'name': 'Immortui', 'protected': False, 'health': 100, 'touch damage': True, 'damage': 10, 'knockback': 20, 'walk speed': (75, 150), 'run speed': 200, 'detect radius': 600, 'avoid radius': 80, 'aggression': 'awd', 'armed': False, 'dual wield': False,
     'collide': ['obstacles'],
     'gender': 'random', 'race': 'immortui',
     'colors':  {'hair': 'random COLOR_PALETTE', 'skin': 'random IMMORTUI_SKIN_TONES'}, 'dialogue': 'random IMMORTUI_DLG', 'store': None,

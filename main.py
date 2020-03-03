@@ -15,7 +15,7 @@ from menu import *
 from sprites import *
 from tilemap import *
 import datetime
-from time import sleep
+from time import sleep, perf_counter
 import math
 
 
@@ -207,6 +207,8 @@ class Game:
         self.screen = pg.display.set_mode((self.screen_width, self.screen_height), self.flags)
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
+        self.beg = perf_counter()
+        self.dt = 0.1
         # Loads Mutant Python Logo Faid in/out.
         mpy_logo_image = pg.image.load(path.join(img_folder, LOGO_IMAGE)).convert_alpha()
         mpy_logo_image = pg.transform.scale(mpy_logo_image, (int(self.screen_height/4), int(self.screen_height/4)))
@@ -1759,7 +1761,7 @@ class Game:
         # game loop - set self.playing = False to end the game
         self.playing = True
         while self.playing:
-            self.dt = self.clock.tick(FPS) / 1000.0  # fix for Python 2.x
+            #self.dt = self.clock.tick(FPS) / 1000.0
             self.events()
             if not self.paused:
                 self.update()
@@ -2303,6 +2305,7 @@ class Game:
                             mob.last_wall_hit = pg.time.get_ticks()
                             mob.seek_random_target()
                         elif (mob in self.companions) or mob.target == self.player:
+                            mob.running = False
                             mob.climbing = True
                             mob.last_climb = pg.time.get_ticks()
                         elif mob in self.npcs_on_screen:
@@ -2685,7 +2688,7 @@ class Game:
 
 
     def draw(self):
-        pg.display.set_caption("Legends of Zhara  FPS: {:.2f}".format(self.clock.get_fps()))
+        pg.display.set_caption("Legends of Zhara")
         self.group.draw(self.screen, self)
         if self.draw_debug:
             for wall in self.walls_on_screen:
@@ -2768,12 +2771,17 @@ class Game:
             self.draw_text("Paused", self.title_font, 105, RED, self.screen_width / 2, self.screen_height / 2, align="center")
         if self.message_text == True:
             self.draw_text(self.message, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100, align="center")
-        self.draw_text("FPS {:.0f}".format(self.clock.get_fps()), self.hud_font, 20, WHITE, self.screen_width/2, 10, align="topleft")
+        self.draw_text("FPS {:.0f}".format(1/self.dt), self.hud_font, 20, WHITE, self.screen_width/2, 10, align="topleft")
         self.draw_text("HP {:.0f}".format(self.hud_health_num), self.hud_font, 20, WHITE, 120, 10, align="topleft")
         self.draw_text("ST {:.0f}".format(self.player.stats['stamina']), self.hud_font, 20, WHITE, 120, 40, align="topleft")
         self.draw_text("MP {:.0f}".format(self.player.stats['magica']), self.hud_font, 20, WHITE, 120, 70, align="topleft")
 
         pg.display.flip()
+        self.wt = self.beg + (1 / FPS)
+        while (perf_counter() < self.wt):
+            pass
+        self.dt = perf_counter() - self.beg
+        self.beg = perf_counter()
         if self.in_inventory_menu:
             self.menu.update()
         if self.in_quest_menu:

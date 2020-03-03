@@ -2775,30 +2775,8 @@ class Npc(pg.sprite.Sprite):
         self.rot = randrange(0, 360)
         self.rot_speed = MOB_ROT_SPEED
         self.frame = 0
-        self.jumping = False
-        self.falling = False
-        self.climbing = False
-        self.swimming = False
-        self.invisible = False
-        self.flying = False
-        self.in_shallows = False
-        self.in_grass = False
-        self.in_vehicle = False
-        self.in_player_vehicle = False
-        self.in_flying_vehicle = False
-        self.possessing = None
-        self.arrow = None
-        self.driver = None
-        self.possessed = False
-        self.has_dragon_body = False
-        self.living = True
-        self.weapon_hand = 'weapons'
-        self.gun = False
-        self.bow = False
-        self.melee_range = 100
-        self.offensive = False # Used to tell weather or not the npc will attack
-        self.provoked = False # Used to tell if the player attacked the npc
         self.melee_rate = 1000
+        self.melee_range = 50
         self.mag_size = 0
         self.bullets_shot = 0
         # Timing vars
@@ -2820,11 +2798,36 @@ class Npc(pg.sprite.Sprite):
         self.last_melee_sound = 0
         self.last_climb = 0
         # State vars
+        self.running = False
+        self.fleeing = False
         self.needs_move = False
         self.last_weapon = None
         self.last_weapon2 = None
         self.current_weapon = None
         self.current_weapon2 = None
+        self.jumping = False
+        self.falling = False
+        self.climbing = False
+        self.swimming = False
+        self.invisible = False
+        self.flying = False
+        self.in_shallows = False
+        self.in_grass = False
+        self.in_vehicle = False
+        self.in_player_vehicle = False
+        self.in_flying_vehicle = False
+        self.possessing = None
+        self.arrow = None
+        self.driver = None
+        self.possessed = False
+        self.has_dragon_body = False
+        self.living = True
+        self.weapon_hand = 'weapons'
+        self.gun = False
+        self.bow = False
+        self.offensive = False  # Used to tell weather or not the npc will attack
+        self.provoked = False  # Used to tell if the player attacked the npc
+
         self.last_pos = self.rect.center # Used for tracking whether or not the NPC is moving towards its target.
         #NPC specific data:
         self.species = kind
@@ -2871,8 +2874,6 @@ class Npc(pg.sprite.Sprite):
         self.knockback = self.kind['knockback']
         self.detect_radius = self.default_detect_radius = self.kind['detect radius']
         self.avoid_radius = self.kind['avoid radius']
-        self.running = False
-
         if 'walls' not in self.kind['collide'] and 'obstacles' not in self.kind['collide']:
             self.immaterial = True
         else:
@@ -3076,13 +3077,6 @@ class Npc(pg.sprite.Sprite):
                 self.approach_vector = vec(1, 0)
                 self.offensive = False
 
-    def avoid_mobs(self):
-        for mob in self.game.mobs_on_screen:
-            if mob != self:
-                dist = self.pos - mob.pos
-                if 0 < dist.length() < self.avoid_radius:
-                    self.acc += dist.normalize()
-
     def equip_lamp(self):
         if self.race not in ['mechanima', 'mech_suit']:
             if self.game.night:
@@ -3183,10 +3177,18 @@ class Npc(pg.sprite.Sprite):
             self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
             self.direction = vec(1, 0).rotate(-self.rot)
             self.acc += self.vel * -1
+            self.avoid_mobs()
             self.vel += self.acc
             self.pos += (self.vel + 0.5 * self.acc) * self.game.dt
             collide(self)
             self.rect.center = self.talk_rect.center = self.pos
+
+    def avoid_mobs(self):
+        for mob in self.game.mobs_on_screen:
+            if mob != self:
+                dist = self.pos - mob.pos
+                if 0 < dist.length() < self.avoid_radius:
+                    self.acc += dist
 
     def animate(self):
         # Animates Character's Walking
@@ -3203,12 +3205,12 @@ class Npc(pg.sprite.Sprite):
             self.body.animate(self.body.shallows_anim, temp_animate_speed)
         elif self.in_grass:
             self.body.animate(self.body.shallows_anim, temp_animate_speed)
-        elif self.running:
-            self.body.animate(self.body.run_anim, temp_animate_speed)
         elif self.climbing:
             self.body.animate(self.body.climbing_anim, temp_animate_speed)
         elif self.jumping:
             self.jump()
+        elif self.running:
+            self.body.animate(self.body.run_anim, temp_animate_speed)
         else:
             self.body.animate(self.body.walk_anim, temp_animate_speed)
 
@@ -3308,7 +3310,7 @@ class Npc(pg.sprite.Sprite):
                 ora = pg.time.get_ticks() # Makes it so the NPCs don't stay in one place too long.
                 #if not self.offensive:
                 #    if not self.needs_move:
-                #        if ora - self.last_move_check > randrange(1000, 2000):
+                #        if ora - self.last_move_check > randrange(4000, 6000):
                 #            if not self.is_moving():
                 #                self.seek_random_target()
                 #                self.needs_move = True
@@ -3323,6 +3325,7 @@ class Npc(pg.sprite.Sprite):
                         if self.aggression == 'fwp':
                             self.approach_vector = vec(1, 0)
                         self.running = False
+                        self.fleeing = False
 
                 if not self.needs_move:
                     if ora - self.last_seek > 1000: # Checks for the closest target
@@ -3408,10 +3411,11 @@ class Npc(pg.sprite.Sprite):
                                             self.pre_melee()
 
                 target_angle = self.target_dist.angle_to(self.approach_vector)
-                if (target_dist_lsquared < self.melee_range**2) and (self.target in self.game.moving_targets_on_screen) and self.offensive: # NPC stops in combat range if offensive
-                    pass
-                elif (target_dist_lsquared < TALK_RADIUS**2) and (self.target in self.game.moving_targets_on_screen) and (not self.target.offensive): # NPC stops in talking range if not offensive.
-                    pass
+                if (target_dist_lsquared < self.melee_range**2) and (self.target in self.game.moving_targets_on_screen) and self.offensive and (not self.fleeing): # NPC stops in combat range if offensive
+                    self.animate()
+                    self.rotate_to(vec(1, 0).rotate(-target_angle))
+                elif (target_dist_lsquared < TALK_RADIUS**2) and (self.target in self.game.moving_targets_on_screen) and (not self.offensive) and (not self.fleeing): # NPC stops in talking range if not offensive.
+                    self.rotate_to(vec(1, 0).rotate(-target_angle))
                 elif (target_dist_lsquared > 4) and True not in [self.melee_playing, self.animating_reload]:
                     self.animate()
                     self.rotate_to(vec(1, 0).rotate(-target_angle))
@@ -3419,7 +3423,6 @@ class Npc(pg.sprite.Sprite):
                     if self.running:
                         speed = self.run_speed
                     self.acc = vec(speed, 0).rotate(-self.rot)
-                    self.avoid_mobs()
                     self.accelerate()
                     if self.sounds and random() < 0.002:  # This makes different sounds for each type of npc
                         choice(self.sounds).play()
@@ -3584,6 +3587,7 @@ class Npc(pg.sprite.Sprite):
                     if self.aggression == 'fwp':
                         self.approach_vector = vec(-1, 0)
                         self.running = True
+                        self.fleeing = True
                         self.run_speed = self.kind['run speed']
                         self.detect_radius = self.game.screen_width
 
