@@ -17,6 +17,7 @@ import re
 from npc_design import Npc_Info_Designer
 from math import ceil
 from sprites import Npc, Animal
+from time import perf_counter
 
 vec = pg.math.Vector2
 
@@ -117,14 +118,14 @@ class Menu():  # used as the parent class for other menus.
                 if event.key == pg.K_ESCAPE:
                     self.game.quit()
                 if event.key == self.action_keys[0]: # use/buy
-                    if self.selected_item != None:
+                    if self.selected_item:
                         self.use_item()
                 if event.key == self.action_keys[1]:  # drop/sell item
-                    if self.selected_item != None:
+                    if self.selected_item:
                         self.drop_item()
                         self.clear_item_info()
                 if event.key == self.action_keys[2]:  # place item
-                    if self.selected_item != None:
+                    if self.selected_item:
                         self.place_item()
                         self.clear_item_info()
             if event.type == pg.MOUSEBUTTONDOWN:  # Clears off pictures and stats from previously clicked item when new item is clicked.
@@ -224,7 +225,7 @@ class Menu():  # used as the parent class for other menus.
 
     def update_external_variables(self):
         self.game.in_menu = False
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
     def use_item(self):
         pass
@@ -379,7 +380,7 @@ class Character_Design_Menu(Menu):
         pg.draw.rect(self.game.screen, BLACK, description_rect_fill)
         if self.item_type == 'hair':
             self.draw_text("Pick Your Hair Color:", default_font, 24, WHITE, int(self.game.screen_width * (3 / 4)) - 70, 90, "topleft")
-            if self.palette != None:
+            if self.palette:
                 self.palette.kill()
             try:
                 self.palette = Picture(self.game, self, self.game.color_swatch_images[HAIR_PALETE_IMAGES[self.character.equipped['race']]], int(self.game.screen_width * (3/ 4)), 300)
@@ -388,7 +389,7 @@ class Character_Design_Menu(Menu):
 
         elif self.item_type == 'race':
             self.draw_text("Pick Your Skin Tone:", default_font, 24, WHITE, int(self.game.screen_width * (1 / 4) + 30), 90, "topleft")
-            if self.palette != None:
+            if self.palette:
                 self.palette.kill()
             try:
                 self.palette = Picture(self.game, self, self.game.color_swatch_images[PALETE_IMAGES[self.character.equipped['race']]], int(self.game.screen_width * (1 / 4) + 100), 300)
@@ -414,7 +415,7 @@ class Character_Design_Menu(Menu):
         # This code calculates the player's armor rating
         self.character.inventory['hair'] = [self.character.equipped['hair']] # Removes all other hairstyles from inventory.
         for item in self.character.equipped:
-            if self.character.equipped[item] != None:
+            if self.character.equipped[item]:
                 if '2' in item:
                     temp_item = item.replace('2', '')
                 else:
@@ -432,7 +433,7 @@ class Character_Design_Menu(Menu):
         check_equip(self.character)
         self.character.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
         self.character.dragon_body.update_animations()
-        if self.character.possessing != None:
+        if self.character.possessing:
             self.character.body.update_animations()
         self.character.pre_reload()
         self.character.stats = RACE[self.character.race]['start_stats'] # Gives player different stats based on selected race.
@@ -752,14 +753,14 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
                     x_row += max_width + 10
                 item_name = Text(self, item, default_font, 20, WHITE, x_row, 30 * row + 75, "topleft")
                 self.item_sprites.add(item_name)
-                if self.character.equipped[self.item_type] != None and self.character.equipped[self.item_type] == item:
+                if self.character.equipped[self.item_type] and self.character.equipped[self.item_type] == item:
                     if self.item_type == 'weapons':
                         equipped_text = Text(self, "(R)", default_font, 20, WHITE, item_name.rect.right + 25, 30 * row + 75, "topleft")
                         self.item_tags_sprites.add(equipped_text)
                     else:
                         equipped_text = Text(self, "(E)", default_font, 20, WHITE, item_name.rect.right + 25, 30 * row + 75, "topleft")
                         self.item_tags_sprites.add(equipped_text)
-                if self.character.equipped['weapons2'] != None and self.character.equipped['weapons2'] == item:
+                if self.character.equipped['weapons2'] and self.character.equipped['weapons2'] == item:
                     left_equipped_text = Text(self, "(L)", default_font, 20, WHITE, item_name.rect.left - 32, 30 * row + 75, "topleft")
                     self.item_tags_sprites.add(left_equipped_text)
                 if self.counter[item] > 1:
@@ -774,7 +775,7 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         if self.character == self.game.player:
             self.character.stats['armor'] = 0
             for item in self.character.equipped:
-                if self.character.equipped[item] != None:
+                if self.character.equipped[item]:
                     if '2' in item:
                         temp_item = item.replace('2', '')
                     else:
@@ -849,10 +850,10 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
             if not self.character.vehicle.mountable:
                 self.character.vehicle.reequip()
         self.game.player.bow = False
-        if self.game.player.equipped['weapons'] != None:
+        if self.game.player.equipped['weapons']:
             if 'bow' in self.game.player.equipped['weapons']:
                 self.game.player.bow = True
-        if self.game.player.equipped['weapons2'] != None:
+        if self.game.player.equipped['weapons2']:
             if 'bow' in self.game.player.equipped['weapons2']:
                 self.game.player.bow = True
         self.game.in_inventory_menu = False
@@ -868,14 +869,14 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         check_equip(self.character)
         self.character.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
         self.character.dragon_body.update_animations()
-        if self.character.possessing != None:
+        if self.character.possessing:
             self.character.body.update_animations()
         if self.character == self.game.player:
             self.character.calculate_fire_power()
             self.character.calculate_perks()
             # Reloads
             self.character.pre_reload()
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
 
     def draw(self):
@@ -950,7 +951,7 @@ class Loot_Menu(Inventory_Menu):
                 if event.key == self.action_keys[0]: # A key Takes all loot
                     for item_type in range(0, 8):
                         for item in self.container.inventory[ITEM_TYPE_LIST[item_type]]:
-                            if item != None:
+                            if item:
                                 if self.game.player.equipped['gender'] == 'male':  # Makes it so looted clothes fit you based on gender.
                                     item = item.replace(' F', ' M')
                                 else:
@@ -962,7 +963,7 @@ class Loot_Menu(Inventory_Menu):
                     if self.game.player.stats['weight'] > self.game.player.stats['max weight']:
                         for item_type in range(0, 8):
                             for i, item in enumerate(self.container.inventory[ITEM_TYPE_LIST[item_type]]):
-                                if item != None:
+                                if item:
                                     self.game.player.inventory[ITEM_TYPE_LIST[item_type]].remove(item)
                                     self.game.player.stats['looting'] -= 1
                         self.game.player.calculate_weight()
@@ -1065,7 +1066,7 @@ class Loot_Menu(Inventory_Menu):
             loot_counter = Counter(self.container.inventory[ITEM_TYPE_LIST[item_type]])
             for item in self.container.inventory[ITEM_TYPE_LIST[item_type]]:
                     if item not in displayed_list:
-                        if item != None:
+                        if item:
                             item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft", ITEM_TYPE_LIST[item_type])
                             if loot_counter[item] > 1:
                                 item_count = Text(self, str(loot_counter[item]), default_font, 20, WHITE, item_name.rect.right + 10, 30 * row + 75, "topleft")
@@ -1106,7 +1107,7 @@ class Loot_Menu(Inventory_Menu):
         self.container.inventory['gold'] = 0
         if self.container in self.game.corpses:
             self.container.check_empty()
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
         del self
 
     def draw(self):
@@ -1201,7 +1202,7 @@ class Lock_Menu():
             self.draw()
         self.game.in_lock_menu = self.game.in_menu = False
         pg.mixer.music.play(loops=-1)
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
         del self
 
     def draw(self):
@@ -1382,12 +1383,12 @@ class Load_Menu(Menu):
         self.no_save_selected = True
 
     def use_item(self):
-        if self.selected_item != None:
+        if self.selected_item:
             pass
 
     def drop_item(self):
         if not self.game.in_character_menu:
-            if self.selected_item != None:
+            if self.selected_item:
                 pass
 
     def right_equip(self, item):
@@ -1401,7 +1402,7 @@ class Load_Menu(Menu):
         self.no_save_selected = False
 
     def left_equip(self, item):
-        if self.previous_item != None:
+        if self.previous_item:
             if item.text == self.previous_item.text:
                 self.game.load_save(path.join(saves_folder, item.text))
                 self.running = False
@@ -1422,7 +1423,7 @@ class Load_Menu(Menu):
     def update_external_variables(self):
         self.game.in_load_menu = False
         self.game.in_menu = False
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
     def draw(self):
         self.game.screen.fill(BLACK)
@@ -1476,7 +1477,7 @@ class Stats_Menu(Draw_Text):
             self.events()
             self.draw()
         self.game.in_stats_menu = self.game.in_menu = False
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
     def draw(self):
         self.game.screen.fill(BLACK)
@@ -1549,7 +1550,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
                 sound = 'scrape'
                 for i, item in enumerate(self.game.player.inventory['items']):
                     if not task_accomplished:
-                        if item != None:
+                        if item:
                             if 'skin' in item:
                                 self.game.player.inventory[self.item_type].append(self.selected_item.text)  # adds forged item to inventory
                                 self.game.player.inventory['items'][i] = None
@@ -1920,10 +1921,10 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
                     self.game.quit()
                 if event.key == self.action_keys[0]: # use/buy
                     if self.kind != 'enchanter':
-                        if self.selected_item != None:
+                        if self.selected_item:
                             self.forge_item()
                     else:
-                        if self.selected_item != None and self.selected_enchantment != None:
+                        if self.selected_item and self.selected_enchantment:
                             self.forge_item()
 
             if event.type == pg.MOUSEBUTTONDOWN:  # Clears off pictures and stats from previously clicked item when new item is clicked.
@@ -1960,7 +1961,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             row = 0
             item_dict = eval(self.item_type.upper())
             for item in item_dict:
-                if item != None:
+                if item:
                     if 'LV' not in item:    # no upgraded items show in forge
                         if ' M' in item:
                             if self.game.player.equipped['gender'] not in ['male']:
@@ -1985,7 +1986,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             item_dict = eval(self.item_type.upper())
             for item in item_dict:
                 if 'food' in item_dict[item]:
-                    if item != None:
+                    if item:
                         if 'materials' in item_dict[item]:
                             if self.check_materials(item):
                                 item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
@@ -1997,7 +1998,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             item_dict = eval(self.item_type.upper())
             for item in item_dict:
                 if 'alchemy' in ITEMS[item].keys():
-                    if item != None:
+                    if item:
                         if 'materials' in item_dict[item]:
                             if self.check_materials(item):
                                 item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
@@ -2008,7 +2009,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             row = 0
             item_dict = eval(self.item_type.upper())
             for item in item_dict:
-                if item != None:
+                if item:
                     if 'LV' not in item:    # no upgraded items show in crafting
                         if 'materials' in item_dict[item]:
                             if self.check_materials(item):
@@ -2022,7 +2023,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             item_dict = eval(self.item_type.upper())
             for item in item_dict:
                 if 'ingot' in item:
-                    if item != None:
+                    if item:
                         if 'materials' in item_dict[item]:
                             if self.check_materials(item):
                                 item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
@@ -2040,7 +2041,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
         elif self.kind == 'enchanter':
             row = 0
             for item in eval(self.item_type.upper()):
-                if item != None:
+                if item:
                     if self.item_type == 'enchantments':  # Only lists enchantments you have materials to perform.
                         if 'materials' in ENCHANTMENTS[item]:
                             if self.check_materials(item):
@@ -2056,15 +2057,15 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
                         row = 0
                         for item in self.game.player.inventory[self.item_type]:
                             if item not in displayed_list:
-                                if item != None and self.selected_enchantment != None:
+                                if item and self.selected_enchantment:
                                     if self.item_type in ENCHANTMENTS[self.selected_enchantment]['equip kind']:
                                         if 'enchanted' not in item:  # Only shows items that are not enchanted already
                                             item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
                                             self.item_sprites.add(item_name)
-                                            if self.game.player.equipped[self.item_type] != None and self.game.player.equipped[self.item_type] == item:
+                                            if self.game.player.equipped[self.item_type] and self.game.player.equipped[self.item_type] == item:
                                                 equipped_text = Text(self, "(Equipped)", default_font, 20, WHITE, item_name.rect.right + 25, 30 * row + 75, "topleft")
                                                 self.item_tags_sprites.add(equipped_text)
-                                            elif self.game.player.equipped['weapons2'] != None and self.game.player.equipped['weapons2'] == item:
+                                            elif self.game.player.equipped['weapons2'] and self.game.player.equipped['weapons2'] == item:
                                                 equipped_text = Text(self, "(Equipped Left)", default_font, 20, WHITE, item_name.rect.right + 25, 30 * row + 75, "topleft")
                                                 self.item_tags_sprites.add(equipped_text)
                                             if self.counter[item] > 1:
@@ -2080,16 +2081,16 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             row = 0
             for item in self.game.player.inventory[self.item_type]:
                 if item not in displayed_list:
-                    if item != None:
+                    if item:
                         if item[-1:] != '4':
                             if 'upgrade' in eval(self.item_type.upper())[item]:
                                 if self.check_materials(item, True):
                                     item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
                                     self.item_sprites.add(item_name)
-                                    if self.game.player.equipped[self.item_type] != None and self.game.player.equipped[self.item_type] == item:
+                                    if self.game.player.equipped[self.item_type] and self.game.player.equipped[self.item_type] == item:
                                         equipped_text = Text(self, "(Equipped)", default_font, 20, WHITE, item_name.rect.right + 25, 30 * row + 75, "topleft")
                                         self.item_tags_sprites.add(equipped_text)
-                                    elif self.game.player.equipped['weapons2'] != None and self.game.player.equipped['weapons2'] == item:
+                                    elif self.game.player.equipped['weapons2'] and self.game.player.equipped['weapons2'] == item:
                                         equipped_text = Text(self, "(Equipped Left)", default_font, 20, WHITE, item_name.rect.right + 25, 30 * row + 75, "topleft")
                                         self.item_tags_sprites.add(equipped_text)
                                     if self.counter[item] > 1:
@@ -2101,7 +2102,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
         # Calculates the player's armor rating
         self.game.player.stats['armor'] = 0
         for item in self.game.player.equipped:
-            if self.game.player.equipped[item] != None:
+            if self.game.player.equipped[item]:
                 if '2' in item:
                     temp_item = item.replace('2', '')
                 else:
@@ -2155,13 +2156,13 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
         check_equip(self.game.player)
         self.game.player.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
         self.game.player.dragon_body.update_animations()
-        if self.game.player.possessing != None:
+        if self.game.player.possessing:
             self.game.player.body.update_animations()
         self.game.player.calculate_fire_power()
         self.game.player.calculate_perks()
         # Reloads
         self.game.player.pre_reload()
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
     def draw(self):
         self.game.screen.fill(BLACK)
@@ -2191,7 +2192,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
                 self.draw_text(x + " " + str(self.items_numbered[x]), default_font, 14, WHITE, 30 + previous_line_location, self.game.screen_height - 120, "topleft")
                 previous_line_location += (len(x) * 10)
 
-        if self.kind == 'enchanter' and self.selected_enchantment != None:
+        if self.kind == 'enchanter' and self.selected_enchantment:
             self.draw_text(self.selected_enchantment.capitalize() + ' enchantment selected.', default_font, 30, WHITE, 50, self.game.screen_height - 170, "topleft")
         self.draw_text("Armor Rating: " + str(self.game.player.stats['armor']) + "   Carry Weight: " + str(self.game.player.stats['weight']) + "  Max Carry Weight: " + str(self.game.player.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
         self.draw_text("Left Click: Select Item    F: create item    E: Exit Menu   ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
@@ -2240,7 +2241,7 @@ class Dialogue_Menu():
         self.lines = 0
 
     def assign_quest_info(self):
-        if self.quest != None:
+        if self.quest:
             # This is used for quests that involve giving the NPC an item.
             if self.game.quests[self.quest]['inventory check']:
                 self.inventory_check = True
@@ -2253,7 +2254,7 @@ class Dialogue_Menu():
                 else:
                     self.needed_item = self.game.quests[self.quest]['needed item']
             if self.game.quests[self.quest]['completed']:
-                if (self.game.quests[self.quest]['next quest'] != None) and (self.hit.talk_counter == 1):
+                if (self.game.quests[self.quest]['next quest']) and (self.hit.talk_counter == 1):
                     self.hit.kind['dialogue'] = self.game.quests[self.quest]['next dialogue']
                     self.quest = self.hit.kind['quest'] = self.game.quests[self.quest]['next quest']
                     self.hit.talk_counter = 0
@@ -2298,7 +2299,7 @@ class Dialogue_Menu():
                     if self.YN:
                         self.deny_quest()
                 if event.key == pg.K_b:
-                    if self.store != None:
+                    if self.store:
                         self.game.in_dialogue_menu = False
                         self.running = False
                         self.game.store_menu = Store_Menu(self.game, self.store)
@@ -2328,7 +2329,7 @@ class Dialogue_Menu():
                 self.game.player.inventory['gold'] += gold
 
     def accept_quest(self):
-        if self.quest != None:
+        if self.quest:
             if self.game.quests[self.quest]['accepted'] == True: #This block of code is used for a second quesiton in the 'accept text' section. For NPCs who don't want to go through the bother of asking you to give them the item later
                 if not self.player_has_item:
                     self.check_inventory()
@@ -2353,7 +2354,7 @@ class Dialogue_Menu():
                 self.player_has_item = False
                 self.hit.kind['dialogue'] = self.game.quests[self.quest]['next dialogue']
                 self.quest = self.hit.kind['quest'] = self.game.quests[self.quest]['next quest']
-                if self.quest != None:
+                if self.quest:
                     if 'autoaccept' in self.game.quests[self.quest]:
                         if self.game.quests[self.quest]['autoaccept']:
                             self.game.quests[self.quest]['accepted'] = True
@@ -2363,7 +2364,7 @@ class Dialogue_Menu():
                 self.format_response()
                 self.clear_menu()
                 self.YN = False
-                if self.quest != None:
+                if self.quest:
                     if 'autocomplete' in self.game.quests[self.quest]:
                         if self.game.quests[self.quest]['autocomplete']:
                             self.game.quests[self.quest]['completed'] = True
@@ -2371,7 +2372,7 @@ class Dialogue_Menu():
                             self.previous_quest = self.quest
 
     def deny_quest(self):
-        if self.quest != None:
+        if self.quest:
             if self.player_has_item:
                 self.response_text = self.game.quests[self.quest]['refuse to give text']
                 self.format_response()
@@ -2391,7 +2392,7 @@ class Dialogue_Menu():
         if 'gold:' not in self.needed_item:
             for item_type in ITEM_TYPE_LIST:
                 for i, item in enumerate(self.game.player.inventory[item_type]):
-                    if item != None:
+                    if item:
                         if self.needed_item in item:
                             count += 1
                             if count <= self.needed_item_count:
@@ -2419,7 +2420,7 @@ class Dialogue_Menu():
             for item_type in ITEM_TYPE_LIST:
                 counter = Counter(self.game.player.inventory[item_type])
                 for item in self.game.player.inventory[item_type]:
-                    if item != None:
+                    if item:
                         if self.needed_item in item:
                             if counter[item] >= self.needed_item_count:
                                 self.player_has_item = True
@@ -2460,7 +2461,7 @@ class Dialogue_Menu():
             item.kill()
 
     def format_response(self, text = None): # Used for formatting quest responses.
-        if text != None:
+        if text:
             self.response_text = text
         self.text_data = []
         self.text_screen = 0
@@ -2552,7 +2553,7 @@ class Dialogue_Menu():
 
         self.draw_text(self.name + ':', default_font, 40, BLUE, self.game.screen_width / 5 + 15, self.game.screen_height * 4 / 7 + 15, "topleft")
         self.draw_text("E: Exit Dialogue Menu   SPACE: Advance Dialogue", HUD_FONT, 30, WHITE, self.game.screen_width/5 + 50, self.game.screen_height - 40, "topleft")
-        if self.store != None:
+        if self.store:
             self.draw_text("B: Buy/Sell", HUD_FONT, 30, WHITE, self.game.screen_width / 5 + 700, self.game.screen_height - 40, "topleft")
         self.menu_sprites.draw(self.game.screen)
         pg.display.flip()
@@ -2571,7 +2572,7 @@ class Dialogue_Menu():
         self.game.in_dialogue_menu = False
         self.game.in_menu = False
         self.game.last_dialogue = pg.time.get_ticks() # Gets the time you exited the menu. This is used so that the menu doesn't keep popping up.
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter()  # Resets the counter so the dt doesn't get messed up.
         del self
 
 
@@ -2614,11 +2615,11 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
                     self.cost = 0
                     self.worth = 0
                 if event.key == pg.K_b: # buy
-                    if self.selected_item != None:
+                    if self.selected_item:
                         if self.display_inventory == 'store':
                             self.buy_item()
                 if event.key == pg.K_s:  # drop/sell item
-                    if self.selected_item != None:
+                    if self.selected_item:
                         if self.display_inventory == 'player':
                             self.sell_item()
             if event.type == pg.MOUSEBUTTONDOWN:  # Clears off pictures and stats from previously clicked item when new item is clicked.
@@ -2769,13 +2770,13 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
         check_equip(self.game.player)
         self.game.player.human_body.update_animations()  # Updates animations for newly equipped or removed weapons etc.
         self.game.player.dragon_body.update_animations()
-        if self.game.player.possessing != None:
+        if self.game.player.possessing:
             self.game.player.body.update_animations()
         self.game.player.calculate_fire_power()
         self.game.player.calculate_perks()
         # Reloads
         self.game.player.pre_reload()
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
     def draw(self):
         self.game.screen.fill(BLACK)
@@ -2820,7 +2821,7 @@ class Quest_Menu(Menu):
         self.selected_heading = 'Active Quests'
 
     def use_item(self):
-        if self.selected_item != None:
+        if self.selected_item:
             pass
 
     def drop_item(self):
@@ -2860,7 +2861,7 @@ class Quest_Menu(Menu):
     def update_external_variables(self):
         self.game.in_quest_menu = False
         self.game.in_menu = False
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
         del self
 
     def draw(self):
@@ -2908,7 +2909,7 @@ class Fly_Menu(Draw_Text):
     def update_external_variables(self):
         self.game.in_fly_menu = False
         self.game.in_menu = False
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
         map = str(self.game.map_data_list[int(self.game.world_location.y)][int(self.game.world_location.x)]) + '.tmx'
         # Puts player in map center
         self.game.player.pos = vec(self.game.map.width/2, self.game.map.height/2)

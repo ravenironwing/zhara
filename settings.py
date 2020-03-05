@@ -105,21 +105,6 @@ EQUIP_IMG_LIST = ['shoe', 'shoe', 'bottom', 'glove', 'glove', None, None, 'top']
 
 #print(len([name for name in os.listdir(body_parts_folder) if os.path.isfile(os.path.join(body_parts_folder, name))]))
 
-# define some colors (R, G, B)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-DARKGREY = (40, 40, 40)
-LIGHTGREY = (100, 100, 100)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
-BROWN = (106, 55, 5)
-CYAN = (0, 255, 255)
-TRANSPARENT = (255, 0, 255)
-SHADOW = (0, 0, 0, 150)
-DEFAULT_HAIR_COLOR = (138,54,15)
-DEFAULT_SKIN_COLOR = (255, 255, 255)
 UNDERWORLD = ['cave', 'tunnel', 'hole', 'mine', 'tower'] # Used for map naming conventions that are under or over the overworld maps.
 
 # game settings
@@ -185,6 +170,8 @@ PLAYER_IMG = 'player1.png'
 PLAYER_HIT_RECT = pg.Rect(0, 0, 45, 45)
 WING1_OFFSET = (-15, 21)
 WING2_OFFSET = (-15, -21)
+MELEE_SIZE = 5
+WALL_DETECT_DIST = 80
 
 #Misc Sprite Settings
 TREE_SIZES = {'sm': 400, 'md': 580, 'lg': 750}

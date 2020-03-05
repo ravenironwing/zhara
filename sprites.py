@@ -9,8 +9,18 @@ from collections import Counter
 from menu import *
 from vehicles import *
 from math import ceil
+from time import perf_counter
 
 vec = pg.math.Vector2
+
+def in_wall(game, group, pos):
+    for wall in group:
+        if wall not in game.door_walls:
+            if wall.rect.left < pos.x < wall.rect.right:
+                if wall.rect.top < pos.y < wall.rect.bottom:
+                    return wall
+    else:
+        return False
 
 def set_elevation(sprite):
     # Sets elevation to the highest elevation you hit.
@@ -282,7 +292,7 @@ def random_inventory_item(container, temp_inventory):
 
     for item_type in ITEM_TYPE_LIST:
         for i, value in enumerate(temp_inventory[item_type]):
-            if value != None:
+            if value:
                 if 'random ' in value:
                     temp_value = value.replace('random ', '')
                     temp_list = eval(temp_value + item_type.upper())
@@ -290,12 +300,12 @@ def random_inventory_item(container, temp_inventory):
                         female_list = []
                         male_list = []
                         for x in temp_list:
-                            if x != None:
+                            if x:
                                 if eval(item_type.upper())[x]['gender'] in ['female', 'other']:
                                     female_list.append(x)
                             else:
                                 female_list.append(x)
-                            if x != None:
+                            if x:
                                 if eval(item_type.upper())[x]['gender'] in ['male', 'other']:
                                     male_list.append(x)
                             else:
@@ -344,7 +354,7 @@ def drop_all_items(sprite, delete_items = False):
         if item_type != 'magic':
             if not delete_items:
                 for item in sprite.inventory[item_type]:
-                    if item != None:
+                    if item:
                         Dropped_Item(sprite.game, sprite.pos + vec(randrange(-50, 50), randrange(-100, 100)), item_type, item)
             sprite.inventory[item_type] = [None]
             sprite.equipped[item_type] = None
@@ -367,7 +377,7 @@ def change_clothing(character, best = False, naked = False):
             stat = 0
             best_item = None
             for item in character.inventory[item_type]:
-                if item != None:
+                if item:
                     if item_type == 'weapons':
                         if WEAPONS[item]['gun']:
                             if WEAPONS[item]['damage'] > stat:
@@ -436,10 +446,10 @@ def remove_nones(*my_lists):
 
 def toggle_equip(character, var): # Toggles whether weapons are equipped/drawn or not
     if var:  # Unequips weapons
-        if character.equipped['weapons'] != None:
+        if character.equipped['weapons']:
             character.current_weapon = character.equipped['weapons']
             character.equipped['weapons'] = None
-        if character.equipped['weapons2'] != None:
+        if character.equipped['weapons2']:
             character.current_weapon2 = character.equipped['weapons2']
             character.equipped['weapons2'] = None
     else:  # Equips weapons
@@ -598,10 +608,10 @@ class Vehicle(pg.sprite.Sprite):
         self._forward = False
         self.elevation = 0
         self.in_vehicle = self.in_player_vehicle = False
-        if health == None:
-            self.health = self.max_health = self.data['hp']
+        if not health:
+            self.stats = {'health': self.data['hp'], 'max health': self.data['hp']}
         else:
-            self.health = self.max_health = health
+            self.stats = {'health': health, 'max health': self.data['hp']}
         self.last_hit = 0
         self.last_drain = 0
         self.living = True
@@ -629,22 +639,27 @@ class Vehicle(pg.sprite.Sprite):
             self._forward = value
             if self.occupied:
                 if value:
-                    if self.drive_sound != None:
+                    if self.drive_sound:
                         if not self.forward_sound_playing:
                             self.forward_sound_playing = True
                             self.game.channel6.stop()
                             self.game.channel6.play(self.game.effects_sounds[self.drive_sound], loops=-1)
                 else:
-                    if self.run_sound != None:
+                    if self.run_sound:
                         if self.forward_sound_playing:
                             self.game.channel6.stop()
                             self.game.channel6.play(self.game.effects_sounds[self.run_sound], loops=-1)
                             self.forward_sound_playing = False
 
     def add_health(self, amount):
-        self.health += amount
-        if self.health > self.max_health:
-            self.health = self.max_health
+        self.stats['health']+= amount
+        if self.stats['health']> self.stats['max health']:
+            self.stats['health']= self.stats['max health']
+        if self.stats['health'] <= 0:
+            self.living = False
+            self.exit_vehicle()
+        if self.game.hud_health_stats == self.stats:
+            self.game.hud_health = self.stats['health'] / self.stats['max health']
 
     def get_keys(self):
         keys = pg.key.get_pressed()
@@ -652,13 +667,15 @@ class Vehicle(pg.sprite.Sprite):
             self.exit_vehicle()
 
     def reequip(self):
-        if self.data['weapons'] != None:
+        if self.data['weapons']:
             self.driver.equipped['weapons'] = self.driver.current_weapon = self.data['weapons']
-        if self.data['weapons2'] != None:
+        if self.data['weapons2']:
             self.driver.equipped['weapons2'] = self.driver.current_weapon2 = self.data['weapons2']
 
     def enter_vehicle(self, driver):
-        if self.run_sound != None:
+        if driver == self.game.player:
+            self.game.hud_health_stats = self.stats
+        if self.run_sound:
             self.game.channel6.play(self.game.effects_sounds[self.run_sound], loops=-1)
         self.driver = driver
         self.driver.pos = vec(self.rect.center)# centers the driver in the vehicle.
@@ -667,15 +684,15 @@ class Vehicle(pg.sprite.Sprite):
         self.occupied = True
         self.driver.in_vehicle = True
         self.driver.vehicle = self
-        if self.data['weapons'] != None:
+        if self.data['weapons']:
             self.driver.last_weapon = self.driver.current_weapon
             self.driver.inventory['weapons'].append(self.data['weapons'])
             self.driver.equipped['weapons'] = self.driver.current_weapon = self.data['weapons']
-        if self.data['weapons2'] != None:
+        if self.data['weapons2']:
             self.driver.last_weapon2 = self.driver.current_weapon2
             self.driver.inventory['weapons'].append(self.data['weapons2'])
             self.driver.equipped['weapons2'] = self.driver.current_weapon2 = self.data['weapons2']
-        if self.data['weapons'] != None or self.data['weapons2'] != None:
+        if self.data['weapons'] or self.data['weapons2']:
             self.driver.pre_reload()
         if self.cat == 'airship':
             self.light_mask = pg.transform.scale(self.game.light_mask_images[6], (800, 800))
@@ -709,9 +726,11 @@ class Vehicle(pg.sprite.Sprite):
             if self.driver == self.game.player:
                 for companion in self.game.companions:
                     companion.in_player_vehicle = True
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter()  # resets dt
 
     def exit_vehicle(self):
+        if driver == self.game.player:
+            self.game.hud_health_stats = driver.stats
         self.game.channel6.stop()
         self.forward_sound_playing = False
         self.pos = vec(self.rect.center)
@@ -719,13 +738,13 @@ class Vehicle(pg.sprite.Sprite):
         self.driver.in_vehicle = False
         self.driver.friction = PLAYER_FRIC
         self.driver.acceleration = PLAYER_ACC
-        if self.data['weapons'] != None:
+        if self.data['weapons']:
             self.driver.inventory['weapons'].remove(self.data['weapons'])
             if self.driver.last_weapon != self.data['weapons']:
                 self.driver.equipped['weapons'] = self.driver.current_weapon = self.driver.last_weapon
             else:
                 self.driver.equipped['weapons'] = None
-        if self.data['weapons2'] != None:
+        if self.data['weapons2']:
             self.driver.inventory['weapons'].remove(self.data['weapons2'])
             if self.driver.last_weapon2 != self.data['weapons2']:
                 self.driver.equipped['weapons2'] = self.driver.current_weapon2 = self.driver.last_weapon2
@@ -762,7 +781,7 @@ class Vehicle(pg.sprite.Sprite):
             self.driver.dragon_body.update_animations()
         self.driver.in_flying_vehicle = False
         self.driver = None
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you exit the menu.
+        self.game.beg = perf_counter()  # resets dt
     
 
     def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
@@ -771,13 +790,10 @@ class Vehicle(pg.sprite.Sprite):
             if now - self.last_hit > dam_rate * 2:
                 self.game.effects_sounds[self.data['hit sound']].play()
                 self.last_hit = now
-                self.health -= damage
+                self.add_health(-damage)
                 self.transparency -= 2
                 if self.transparency < 30:
                     self.transparency = 30
-                if self.health < 0:
-                    self.living = False
-                    self.exit_vehicle()
 
     def update(self):
         if self.occupied == True:
@@ -807,7 +823,7 @@ class Vehicle(pg.sprite.Sprite):
                         self.transparency = 255
             self.driver.acceleration = self.veh_acc
             self.rot = self.driver.rot
-            if self.turret != None: # Rotates the turret if you rotate the vehicle.
+            if self.turret: # Rotates the turret if you rotate the vehicle.
                 delta_rot = self.prev_rot - self.rot
                 if delta_rot != 0:
                     self.turret.rot -= delta_rot
@@ -826,9 +842,9 @@ class Vehicle(pg.sprite.Sprite):
                             companion.pos = companion.rect.center = companion.talk_rect.center = self.driver.pos + offset_vec
             collide(self)
             self.get_keys() # this needs to be last in this method to avoid executing the rest of the update section if you exit
-            if self.turret != None:
+            if self.turret:
                 self.turret.update()
-            if self.light_mask != None:
+            if self.light_mask:
                 if self.cat == 'tank':
                     self.light_mask = self.game.flashlight_masks[int(self.turret.rot/3)]
                     self.light_mask_rect = self.light_mask.get_rect()
@@ -859,12 +875,12 @@ class Character(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.mother.pos
         # Collission rects for left and right hands/weapons.
-        self.melee_rect = pg.Rect(0, 0, 2, 2)
-        self.weapon_melee_rect = pg.Rect(0, 0, 2, 2)
-        self.mid_weapon_melee_rect = pg.Rect(0, 0, 2, 2)
-        self.melee2_rect = pg.Rect(0, 0, 2, 2)
-        self.weapon2_melee_rect = pg.Rect(0, 0, 2, 2)
-        self.mid_weapon2_melee_rect = pg.Rect(0, 0, 2, 2)
+        self.melee_rect = pg.Rect(0, 0, MELEE_SIZE, MELEE_SIZE)
+        self.weapon_melee_rect = pg.Rect(0, 0, MELEE_SIZE, MELEE_SIZE)
+        self.mid_weapon_melee_rect = pg.Rect(0, 0, MELEE_SIZE, MELEE_SIZE)
+        self.melee2_rect = pg.Rect(0, 0, MELEE_SIZE, MELEE_SIZE)
+        self.weapon2_melee_rect = pg.Rect(0, 0, MELEE_SIZE, MELEE_SIZE)
+        self.mid_weapon2_melee_rect = pg.Rect(0, 0, MELEE_SIZE, MELEE_SIZE)
         self.swing_weapon1 = False # Used for timing melee attacks for stinging vs stabbing weapons.
         self.swing_weapon2 = False  # Used for timing melee attacks for stinging vs stabbing weapons.
         # Default Animation lists
@@ -957,9 +973,14 @@ class Character(pg.sprite.Sprite):
                     image = pg.transform.rotate(colored_img, part[2])
                     temp_rect = image.get_rect()
                     body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
+                    if i == 7 and 'mechanima' in self.mother.equipped['race']: # draws back lights on mechs.
+                        temp_img = self.game.mech_back_image
+                        colored_img = color_image(temp_img, self.mother.colors['hair'])
+                        temp_rect = colored_img.get_rect()
+                        body_surface.blit(colored_img, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
 
                 if i in [0, 1, 2, 3, 4, 7]: #Adds all clothing except weapons and hats.
-                    if self.mother.equipped[EQUIP_DRAW_LIST[i]] != None:
+                    if self.mother.equipped[EQUIP_DRAW_LIST[i]]:
                         dict = eval(EQUIP_DRAW_LIST[i].upper())
                         imgpath = eval('self.game.' + EQUIP_IMG_LIST[i] + '_images')
                         temp_img = imgpath[dict[self.mother.equipped[EQUIP_DRAW_LIST[i]]]['image']]
@@ -974,7 +995,7 @@ class Character(pg.sprite.Sprite):
                 elif i == 9:
                     weapon_pos = vec(part[0], part[1])
                     weapon_angle = part[2]
-                    if self.mother.equipped['weapons'] != None:
+                    if self.mother.equipped['weapons']:
                         temp_img = self.game.weapon_images[WEAPONS[self.mother.equipped['weapons']]['image']]
                         if 'color' in WEAPONS[self.mother.equipped['weapons']]:
                             temp_img = color_image(temp_img, WEAPONS[self.mother.equipped['weapons']]['color'])
@@ -984,7 +1005,7 @@ class Character(pg.sprite.Sprite):
                 elif i == 10:
                     weapon2_pos = vec(part[0], part[1])
                     weapon2_angle = part[2]
-                    if self.mother.equipped['weapons2'] != None:
+                    if self.mother.equipped['weapons2']:
                         temp_img = self.game.weapon_images[WEAPONS[self.mother.equipped['weapons2']]['image']]
                         if 'color' in WEAPONS[self.mother.equipped['weapons2']]:
                             temp_img = color_image(temp_img, WEAPONS[self.mother.equipped['weapons2']]['color'])
@@ -992,13 +1013,13 @@ class Character(pg.sprite.Sprite):
                         temp_rect = image.get_rect()
                         body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
                     if 'dragon' not in self.race:
-                        if self.mother.equipped['hair'] != None:
+                        if self.mother.equipped['hair']:
                             temp_img = self.game.hair_images[HAIR[self.mother.equipped['hair']]['image']]
                             colored_img = color_image(temp_img, self.mother.colors['hair'])
                             image = pg.transform.rotate(colored_img, part_placement[8][2])
                             temp_rect = image.get_rect()
                             body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part_placement[8][0]), rect.centery - (temp_rect.centery - part_placement[8][1])))
-                        if self.mother.equipped['hats'] != None:
+                        if self.mother.equipped['hats']:
                             temp_img = self.game.hat_images[HATS[self.mother.equipped['hats']]['image']]
                             if 'color' in HATS[self.mother.equipped['hats']]:
                                 temp_img = color_image(temp_img, HATS[self.mother.equipped['hats']]['color'])
@@ -1040,9 +1061,9 @@ class Character(pg.sprite.Sprite):
         if now - self.last_step > speed:
             self.body_surface = animation_images[self.frame]
             self.weapon_pos = weapon_info[self.frame][0]
-            self.weapon_angle = weapon_info[self.frame][1]
+            self.weapon_angle = weapon_info[self.frame][1]/2
             self.weapon2_pos = weapon2_info[self.frame][0]
-            self.weapon2_angle = weapon2_info[self.frame][1]
+            self.weapon2_angle = weapon2_info[self.frame][1]/2
             self.last_step = now
             self.frame += 1
 
@@ -1101,7 +1122,7 @@ class Character(pg.sprite.Sprite):
                 toggle_equip(self.mother, False)
 
                 # Default animations if right equipped
-                if self.mother.equipped['weapons'] != None:
+                if self.mother.equipped['weapons']:
                     #self.reload_anim = self.render_animation(eval(WEAPONS[self.mother.equipped['weapons']]['reload animation']))
                     self.stand_anim = self.render_animation([eval(WEAPONS[self.mother.equipped['weapons']]['grip'])])  # Change after animations are created
                     self.shoot_anim = self.render_animation([eval(WEAPONS[self.mother.equipped['weapons']]['grip'])])
@@ -1113,7 +1134,7 @@ class Character(pg.sprite.Sprite):
                     else:
                         self.swing_weapon1 = False
                 # Default animations if left equipped
-                if self.mother.equipped['weapons2'] != None:
+                if self.mother.equipped['weapons2']:
                     #self.l_reload_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['reload animation']))
                     self.l_shoot_anim = self.render_animation([eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['grip'])])
                     self.l_melee_anim = self.render_animation(eval('L_' + WEAPONS[self.mother.equipped['weapons2']]['melee animation']))
@@ -1125,7 +1146,7 @@ class Character(pg.sprite.Sprite):
                     else:
                         self.swing_weapon2 = False
                 # Default animaitons for duel wielding
-                if self.mother.equipped['weapons'] != None and self.mother.equipped['weapons2'] != None:
+                if self.mother.equipped['weapons'] and self.mother.equipped['weapons2']:
                     self.dual_reload_anim = self.render_animation(RELOAD + L_RELOAD)
                     self.stand_anim = self.render_animation(STAND)
                     self.shoot_anim = self.render_animation([CP_STANDING_ARMS_OUT0])
@@ -1162,12 +1183,12 @@ class Character(pg.sprite.Sprite):
         self.melee_rect.center = self.mother.pos + self.weapon_offset_temp
         self.weapon2_offset_temp = self.weapon2_pos.rotate(-self.mother.rot)
         self.melee2_rect.center = self.mother.pos + self.weapon2_offset_temp
-        if not self.mother.equipped['weapons'] == None:
+        if self.mother.equipped['weapons']:
             self.weapon_offset_temp = (self.weapon_pos + vec(self.weapon_width/2, 0)).rotate(-(self.mother.rot + self.weapon_angle))
             self.mid_weapon_melee_rect.center = self.mother.pos + self.weapon_offset_temp
             self.weapon_offset_temp = (self.weapon_pos + vec(self.weapon_width, 0)).rotate(-(self.mother.rot + self.weapon_angle))
             self.weapon_melee_rect.center = self.mother.pos + self.weapon_offset_temp
-        if not self.mother.equipped['weapons2'] == None:
+        if self.mother.equipped['weapons2']:
             self.weapon2_offset_temp = (self.weapon2_pos + vec(self.weapon2_width/2, 0)).rotate(-(self.mother.rot + self.weapon2_angle))
             self.mid_weapon2_melee_rect.center = self.mother.pos + self.weapon2_offset_temp
             self.weapon2_offset_temp = (self.weapon2_pos + vec(self.weapon2_width, 0)).rotate(-(self.mother.rot + self.weapon2_angle))
@@ -1333,7 +1354,7 @@ class Player(pg.sprite.Sprite):
 
         # Controlls shooting/automatic shooting
         mouse_buttons_down = pg.mouse.get_pressed()
-        if self.equipped[self.weapon_hand] != None:
+        if self.equipped[self.weapon_hand]:
             if WEAPONS[self.equipped[self.weapon_hand]]['bullet_count'] > 0:
                 if WEAPONS[self.equipped[self.weapon_hand]]['auto']:
                     if mouse_buttons_down == (0, 0, 1) or mouse_buttons_down == (0, 1, 1):
@@ -1466,7 +1487,7 @@ class Player(pg.sprite.Sprite):
         elif self.jumping:
             if self.climbing:
                 self.acceleration = PLAYER_CLIMB
-            elif self.possessing != None:
+            elif self.possessing:
                 self.acceleration = self.possessing.run_speed / 6
             else:
                 self.acceleration = PLAYER_RUN
@@ -1482,7 +1503,7 @@ class Player(pg.sprite.Sprite):
                 self.animation_playing = self.body.shallows_anim
                 animate_speed = 120
             elif self.climbing:
-                if self.equipped['weapons2'] != None or self.equipped['weapons'] != None:
+                if self.equipped['weapons2'] or self.equipped['weapons']:
                     self.animation_playing = self.body.climbing_weapon_anim
                 else:
                     self.animation_playing = self.body.climbing_anim
@@ -1602,7 +1623,7 @@ class Player(pg.sprite.Sprite):
                     keys = pg.key.get_pressed()
                     if not (keys[pg.K_v] or self.is_attacking()):
                         if not (keys[pg.K_LSHIFT] and self.is_moving()):
-                            self.add_stamina((6 + self.stats['stamina regen']/50) * self.game.hud_hunger) # Stamina regenerates based off of your hunger level
+                            self.add_stamina((6 + self.stats['stamina regen']/50) * self.stats['hunger']) # Stamina regenerates based off of your hunger level
                             if (self.stats['hunger'] > 75) or not self.hungers:  # You only heal when you're not too hungry.
                                 self.add_health(self.stats['healing'] / 150)
                             self.last_stam_regen = pg.time.get_ticks()
@@ -1710,7 +1731,7 @@ class Player(pg.sprite.Sprite):
             if self.climbing:
                 self.animation_playing = self.body.climbing_shoot_anim
 
-        if self.equipped[self.weapon_hand] != None:
+        if self.equipped[self.weapon_hand]:
             if WEAPONS[self.equipped[self.weapon_hand]]['bullet_count'] > 0:
                 if not WEAPONS[self.equipped[self.weapon_hand]]['gun']: # Makes it so you attack with melee weapons that also shoot things (enchanted weapons, slings, etc.)
                     self.pre_melee(True)
@@ -1729,7 +1750,7 @@ class Player(pg.sprite.Sprite):
             self.pre_melee()
 
     def dual_shoot(self, auto = False):
-        if self.equipped['weapons'] != None and self.equipped['weapons2'] != None:
+        if self.equipped['weapons'] and self.equipped['weapons2']:
             if WEAPONS[self.equipped['weapons']]['bullet_count'] > 0 and WEAPONS[self.equipped['weapons2']]['bullet_count'] > 0:
                 temp_list = ['weapons', 'weapons2']
                 now = pg.time.get_ticks()
@@ -1763,7 +1784,7 @@ class Player(pg.sprite.Sprite):
             self.pre_melee()
 
     def fire_bullets(self):
-        if self.arrow != None: # Gets rid of arrow shown in bow before firing.
+        if self.arrow: # Gets rid of arrow shown in bow before firing.
             self.arrow.kill()
             self.arrow = None
 
@@ -1828,13 +1849,13 @@ class Player(pg.sprite.Sprite):
 
     def pre_reload(self):
         if not (self.melee_playing or self.jumping or self.swimming):
-            if self.arrow != None:  # Gets rid of arrow shown in bow before reloading them.
+            if self.arrow:  # Gets rid of arrow shown in bow before reloading them.
                 self.arrow.kill()
                 self.arrow = None
-            if self.equipped['weapons'] != None:
+            if self.equipped['weapons']:
                 if WEAPONS[self.equipped['weapons']]['type'] == 'bow':
                     self.game.effects_sounds['bow reload'].play()
-            if self.equipped['weapons2'] != None:
+            if self.equipped['weapons2']:
                 if WEAPONS[self.equipped['weapons2']]['type'] == 'bow':
                     self.game.effects_sounds['bow reload'].play()
             self.is_reloading = True
@@ -1846,7 +1867,7 @@ class Player(pg.sprite.Sprite):
         speed1 = 0
         speed2 = 0
         delay = 500
-        if self.equipped['weapons'] != None and WEAPONS[self.equipped['weapons']]['bullet_count'] > 0: # checks if you are holding a gun
+        if self.equipped['weapons'] and WEAPONS[self.equipped['weapons']]['bullet_count'] > 0: # checks if you are holding a gun
             if self.is_moving():
                 self.animation_playing = self.body.walk_reload_anim
             else:
@@ -1856,7 +1877,7 @@ class Player(pg.sprite.Sprite):
             right = True
         else:
             right = False
-        if self.equipped['weapons2'] != None and WEAPONS[self.equipped['weapons2']]['bullet_count'] > 0: # checks if you are holding a gun
+        if self.equipped['weapons2'] and WEAPONS[self.equipped['weapons2']]['bullet_count'] > 0: # checks if you are holding a gun
             if self.is_moving():
                 self.animation_playing = self.body.l_walk_reload_anim
             else:
@@ -1883,7 +1904,7 @@ class Player(pg.sprite.Sprite):
                 self.body.animate(self.animation_playing, speed)
                 if self.body.frame > len(self.animation_playing[0]) - 1:
                     # Reloads magazines
-                    if self.equipped['weapons'] != None:
+                    if self.equipped['weapons']:
                         if 'enchanted' in self.equipped['weapons'] and WEAPONS[self.equipped['weapons']]['gun']:
                             if self.ammo['crystals'] - (WEAPONS[self.equipped['weapons']]['magazine size'] - self.mag1) < 0:
                                 self.ammo['crystals'] = 0
@@ -1922,7 +1943,7 @@ class Player(pg.sprite.Sprite):
                     else:
                         self.mag1 = self.ammo_cap1 = 0
 
-                    if self.equipped['weapons2'] != None:
+                    if self.equipped['weapons2']:
                         if 'enchanted' in self.equipped['weapons2'] and WEAPONS[self.equipped['weapons2']]['gun']:
                             if self.ammo['crystals'] - (WEAPONS[self.equipped['weapons2']]['magazine size'] - self.mag2) < 0:
                                 self.ammo['crystals'] = 0
@@ -1945,7 +1966,7 @@ class Player(pg.sprite.Sprite):
                                     self.mag2 = WEAPONS[self.equipped['weapons2']]['magazine size']
                                 self.ammo_cap2 = self.ammo['crystals'] # Used for HUD display value to improve frame rate by not looking up the value every cycle
                             if WEAPONS[self.equipped['weapons2']]['bullet_count'] > 0:
-                                if self.equipped['weapons'] != None:
+                                if self.equipped['weapons']:
                                     if 'enchanted' in self.equipped['weapons'] and 'enchanted' in self.equipped['weapons2']:
                                         self.ammo_cap1 = self.ammo_cap2 # Makes sure if both your weapons use the same ammo they display the same ammo capacity.
 
@@ -1957,7 +1978,7 @@ class Player(pg.sprite.Sprite):
                                     self.ammo[WEAPONS[self.equipped['weapons2']]['type']] -= (WEAPONS[self.equipped['weapons2']]['magazine size'] - self.mag2)
                                     self.mag2 = WEAPONS[self.equipped['weapons2']]['magazine size']
                                 self.ammo_cap2 = self.ammo[WEAPONS[self.equipped['weapons2']]['type']] # Used for HUD display value to improve frame rate by not looking up the value every cycle
-                        if self.equipped['weapons'] != None:
+                        if self.equipped['weapons']:
                             if not 'enchanted' in self.equipped['weapons'] or not 'enchanted' in self.equipped['weapons2']:
                                 if WEAPONS[self.equipped['weapons']]['bullet_count'] > 0 and WEAPONS[self.equipped['weapons2']]['bullet_count'] > 0:
                                     if self.ammo[WEAPONS[self.equipped['weapons']]['type']] == self.ammo[WEAPONS[self.equipped['weapons2']]['type']]:
@@ -1974,20 +1995,20 @@ class Player(pg.sprite.Sprite):
 
     def empty_mags(self):
         # Empties previous weapon mags back into ammo inventory:
-        if self.equipped['weapons'] != None:
+        if self.equipped['weapons']:
             if 'enchanted' in self.equipped['weapons'] and not WEAPONS[self.equipped['weapons']]['gun']:
-                if self.equipped['weapons'] != None and WEAPONS[self.equipped['weapons']]['bullet_count'] > 0:
+                if self.equipped['weapons'] and WEAPONS[self.equipped['weapons']]['bullet_count'] > 0:
                     self.ammo['crystals'] += self.mag1
                     self.mag1 = 0
-        if self.equipped['weapons2'] != None:
+        if self.equipped['weapons2']:
             if 'enchanted' in self.equipped['weapons2'] and not WEAPONS[self.equipped['weapons2']]['gun']:
-                if self.equipped['weapons2'] != None and WEAPONS[self.equipped['weapons2']]['bullet_count'] > 0:
+                if self.equipped['weapons2'] and WEAPONS[self.equipped['weapons2']]['bullet_count'] > 0:
                     self.ammo['crystals'] += self.mag2
                     self.mag2 = 0
-        if self.equipped['weapons'] != None and WEAPONS[self.equipped['weapons']]['gun']:
+        if self.equipped['weapons'] and WEAPONS[self.equipped['weapons']]['gun']:
                 self.ammo[WEAPONS[self.equipped['weapons']]['type']] += self.mag1
                 self.mag1 = 0
-        if self.equipped['weapons2'] != None and WEAPONS[self.equipped['weapons2']]['gun']:
+        if self.equipped['weapons2'] and WEAPONS[self.equipped['weapons2']]['gun']:
                 self.ammo[WEAPONS[self.equipped['weapons2']]['type']] += self.mag2
                 self.mag2 = 0
 
@@ -2007,16 +2028,16 @@ class Player(pg.sprite.Sprite):
         snd.play()
 
     def pre_melee(self, shot = False): # Used to get the timing correct between each melee strike, and for the sounds
-        if True not in [self.jumping, self.is_reloading, self.arrow != None]:
+        if True not in [self.jumping, self.is_reloading, self.arrow]:
             if not self.melee_playing:
                 # Subtracts stamina
-                if self.equipped[self.weapon_hand] != None:
+                if self.equipped[self.weapon_hand]:
                     self.add_stamina(-WEAPONS[self.equipped[self.weapon_hand]]['weight']/50, 100)
                 else:
                     self.add_stamina(-0.04, 100)
 
                 now = pg.time.get_ticks()
-                if self.equipped[self.weapon_hand] != None:
+                if self.equipped[self.weapon_hand]:
                     rate =  WEAPONS[self.equipped[self.weapon_hand]]['rate']
                     if now - self.last_melee_sound > rate:
                         self.last_melee_sound = now
@@ -2061,7 +2082,7 @@ class Player(pg.sprite.Sprite):
             self.animation_playing = climbing_anim
         else:
             self.animation_playing = melee_anim
-        if self.equipped[self.weapon_hand] != None:
+        if self.equipped[self.weapon_hand]:
             if WEAPONS[self.equipped[self.weapon_hand]]['type'] == 'shield':
                 self.melee_rate = self.melee_rate + WEAPONS[self.equipped[self.weapon_hand]]['weight'] * 2
                 speed = WEAPONS[self.equipped[self.weapon_hand]]['weight'] * 4
@@ -2072,19 +2093,19 @@ class Player(pg.sprite.Sprite):
                     self.animation_playing = climbing_weapon_anim
 
         if self.dual_melee:
-            if self.climbing and (self.equipped['weapons'] != None or self.equipped['weapons2'] != None):
+            if self.climbing and (self.equipped['weapons'] or self.equipped['weapons2']):
                 self.animation_playing = choice([self.body.climbing_l_weapon_melee_anim, self.body.climbing_weapon_melee_anim])
             elif self.climbing:
                 self.animation_playing = choice([self.body.climbing_l_melee_anim, self.body.climbing_melee_anim])
             else:
                 self.animation_playing = self.body.dual_melee_anim
-            if self.equipped['weapons'] != None and self.equipped['weapons2'] != None:
+            if self.equipped['weapons'] and self.equipped['weapons2']:
                 self.melee_rate = self.melee_rate + (WEAPONS[self.equipped['weapons']]['weight'] + WEAPONS[self.equipped['weapons2']]['weight'])/2 * 30
                 speed = speed + (WEAPONS[self.equipped['weapons']]['weight'] + WEAPONS[self.equipped['weapons2']]['weight'])/2
-            elif self.equipped['weapons'] != None:
+            elif self.equipped['weapons']:
                 self.melee_rate = self.melee_rate + WEAPONS[self.equipped['weapons']]['weight'] * 20
                 speed = speed + WEAPONS[self.equipped['weapons']]['weight']/2 * 5
-            elif self.equipped['weapons2'] != None:
+            elif self.equipped['weapons2']:
                 self.melee_rate = self.melee_rate + WEAPONS[self.equipped['weapons2']]['weight'] * 20
                 speed = speed + WEAPONS[self.equipped['weapons2']]['weight']/2 * 5
 
@@ -2181,7 +2202,7 @@ class Player(pg.sprite.Sprite):
     def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
         if self.in_vehicle:
             self.vehicle.gets_hit(damage, knockback, rot)
-        elif self.possessing != None:
+        elif self.possessing:
             self.possessing.gets_hit(damage, knockback, rot)
         else:
             now = pg.time.get_ticks()
@@ -2200,10 +2221,13 @@ class Player(pg.sprite.Sprite):
                         choice(self.game.female_player_hit_sounds).play()
                 self.add_health(-damage_done)
                 self.pos += vec(knockback, 0).rotate(-rot)
+                if pg.sprite.spritecollide(self, self.game.barriers, False): #Prevents sprite from being knocked through a wall.
+                    self.pos -= vec(knockback, 0).rotate(-rot)
+                self.rect.center = self.hit_rect.center = self.pos
                 self.stats['hits taken'] += 1
 
     def does_melee_damage(self, mob):
-        if self.possessing != None: # Makes it so if you are in a mech suit or possessing an NPC your damage depends on their stats.
+        if self.possessing: # Makes it so if you are in a mech suit or possessing an NPC your damage depends on their stats.
             now = pg.time.get_ticks()
             if now - self.last_damage > self.melee_rate:
                 if self.equipped[self.weapon_hand] == None:
@@ -2211,7 +2235,7 @@ class Player(pg.sprite.Sprite):
                     mob.vel = vec(0, 0)
                     choice(self.game.punch_sounds).play()
                     mob.gets_hit(damage, 2, self.rot)
-                    self.game.hud_mobhp = mob.health / mob.max_health
+                    self.game.hud_mobhp = mob.stats['health'] / mob.stats['max health']
                     self.game.last_mobhp_update = pg.time.get_ticks()
                     self.game.show_mobhp = True
                 else:
@@ -2221,7 +2245,7 @@ class Player(pg.sprite.Sprite):
                     knockback = self.possessing.knockback / 2 + WEAPONS[self.equipped[self.weapon_hand]]['knockback']
                     self.play_weapon_hit_sound()
                     mob.gets_hit(damage, knockback, self.rot)
-                    self.game.hud_mobhp = mob.health / mob.max_health
+                    self.game.hud_mobhp = mob.stats['health'] / mob.stats['max health']
                     self.game.last_mobhp_update = pg.time.get_ticks()
                     self.game.show_mobhp = True
                 self.stats['melee'] += 0.1
@@ -2240,7 +2264,7 @@ class Player(pg.sprite.Sprite):
                     mob.vel = vec(0, 0)
                     choice(self.game.punch_sounds).play()
                     mob.gets_hit(damage, 2, self.rot)
-                    self.game.hud_mobhp = mob.health / mob.max_health
+                    self.game.hud_mobhp = mob.stats['health'] / mob.stats['max health']
                     self.game.last_mobhp_update = pg.time.get_ticks()
                     self.game.show_mobhp = True
                 else:
@@ -2250,7 +2274,7 @@ class Player(pg.sprite.Sprite):
                     knockback = WEAPONS[self.equipped[self.weapon_hand]]['knockback']
                     self.play_weapon_hit_sound()
                     mob.gets_hit(damage, knockback, self.rot)
-                    self.game.hud_mobhp = mob.health / mob.max_health
+                    self.game.hud_mobhp = mob.stats['health'] / mob.stats['max health']
                     self.game.last_mobhp_update = pg.time.get_ticks()
                     self.game.show_mobhp = True
                 #choice(mob.hit_sounds).play()
@@ -2284,7 +2308,7 @@ class Player(pg.sprite.Sprite):
             self.dragon_body.update_animations()
 
     def cast_spell(self):
-        if self.equipped['magic'] != None:
+        if self.equipped['magic']:
             now = pg.time.get_ticks()
             if now - self.last_cast > self.game.effects_sounds[MAGIC[self.equipped['magic']]['sound']].get_length() * 1000:
                 if self.stats['magica'] >= MAGIC[self.equipped['magic']]['cost']:
@@ -2317,9 +2341,9 @@ class Player(pg.sprite.Sprite):
                                     corpse.death()
                                     self.human_body.update_animations()
                                     self.dragon_body.update_animations()
-                                    self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you mount them.
+                                    self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
                             else:
-                                self.add_health(self.possessing.health)
+                                self.add_health(self.possessing.stats['health'])
                                 self.possessing.gets_hit(self.stats['stamina'])
                                 self.possessing.depossess()
 
@@ -2380,7 +2404,7 @@ class Player(pg.sprite.Sprite):
 
     def use_item(self):
         remove = False
-        if self.equipped['items'] != None:
+        if self.equipped['items']:
             if self.equipped['items'] == 'airship fuel':
                 if self.in_vehicle:
                     if self.vehicle.cat == 'airship':
@@ -2518,7 +2542,7 @@ class Player(pg.sprite.Sprite):
             return True
 
     def place_item(self):
-        if self.equipped['items'] != None:
+        if self.equipped['items']:
             dropped_item = Dropped_Item(self.game, self.pos + vec(50, 0).rotate(-self.rot), 'items', self.equipped['items'], self.rot - 90)
             self.inventory['items'].remove(self.equipped['items'])
             self.equipped['items'] = None
@@ -2576,6 +2600,8 @@ class Player(pg.sprite.Sprite):
             self.stats['health'] = self.stats['max health']
         if self.stats['health'] < 0:
             self.game.playing = False
+        if self.game.hud_health_stats == self.stats:
+            self.game.hud_health = self.stats['health'] / self.stats['max health']
 
     def add_stamina(self, amount, percent = 0):
         if percent != 0:
@@ -2592,6 +2618,7 @@ class Player(pg.sprite.Sprite):
         elif self.stats['stamina'] < 0:
             self.add_health(self.stats['stamina']) # Subtracts from your health if your stamina is too low.
             self.stats['stamina'] = 0
+        self.game.hud_stamina = self.stats['stamina'] / self.stats['max stamina']
 
     def add_magica(self, amount):
         if amount > 20:
@@ -2603,14 +2630,16 @@ class Player(pg.sprite.Sprite):
             self.stats['magica'] = self.stats['max magica']
         elif self.stats['magica'] < 0:
             self.stats['magica'] = 0
+        self.game.hud_magica = self.stats['magica'] / self.stats['max magica']
 
     def add_hunger(self, amount):
         self.stats['hunger'] += amount
         if self.stats['hunger'] > self.stats['max hunger']:
             self.stats['hunger'] = self.stats['max hunger']
         elif self.stats['hunger'] < 0:
-            self.add_stamina(self.stats['hunger']) # Subtracts from your stamina if your hunger is too much.
+            self.add_stamina(self.stats['hunger']) # Subtracts from your stamina if you're too hungry.
             self.stats['hunger'] = 0
+        self.game.hud_hunger = self.stats['hunger'] / self.stats['max hunger']
 
     def calculate_weight(self):
         # Calculates the weight the player is carrying
@@ -2618,7 +2647,7 @@ class Player(pg.sprite.Sprite):
         for item_type in self.inventory:
             if isinstance(self.inventory[item_type], list):
                 for item in self.inventory[item_type]:
-                    if item != None:
+                    if item:
                         if 'weight' in eval(item_type.upper())[item]:
                             self.stats['weight'] += eval(item_type.upper())[item]['weight']
         self.stats['weight'] = round(self.stats['weight'], 1)
@@ -2659,7 +2688,7 @@ class Player(pg.sprite.Sprite):
             else:
                 temp_item_type = item_type
             item_dict = eval(temp_item_type.upper())
-            if self.equipped[item_type] != None:
+            if self.equipped[item_type]:
                 if 'fire enhance' in item_dict[self.equipped[item_type]]:
                     self.after_effect = item_dict[self.equipped[item_type]]['fire enhance']['after effect']
                     self.fire_damage += item_dict[self.equipped[item_type]]['fire enhance']['damage']
@@ -2741,7 +2770,7 @@ class Player(pg.sprite.Sprite):
 
 
 class Npc(pg.sprite.Sprite):
-    def __init__(self, game, x, y, map, kind, health = None):
+    def __init__(self, game, x, y, map, kind, health = None, inventory = None, colors = None):
         self._layer = ITEMS_LAYER # The NPC's body is set to the PLAYER LAYER, but the NPC is set to the ITEMS_LAYER so its corpse appears under the player when it dies.
         self.game = game
         if kind == 'mech suit':
@@ -2828,6 +2857,7 @@ class Npc(pg.sprite.Sprite):
         self.offensive = False  # Used to tell weather or not the npc will attack
         self.provoked = False  # Used to tell if the player attacked the npc
 
+        self.wall_hit_or = ""
         self.last_pos = self.rect.center # Used for tracking whether or not the NPC is moving towards its target.
         #NPC specific data:
         self.species = kind
@@ -2837,7 +2867,10 @@ class Npc(pg.sprite.Sprite):
             self.kind = PEOPLE[kind]
             self.game.people[kind] = self.kind
         self.race = self.kind['race']
-        self.colors = self.kind['colors'].copy()
+        if not colors:
+            self.colors = self.kind['colors'].copy()
+        else:
+            self.colors = colors
         if 'random' in self.colors['skin']:
             skin_list = eval(self.colors['skin'].replace('random', ''))
             self.colors['skin'] = choice(skin_list)
@@ -2853,10 +2886,10 @@ class Npc(pg.sprite.Sprite):
         self.dialogue = self.kind['dialogue']
         self.aggression = self.kind['aggression']
         self.touch_damage = self.kind['touch damage']
-        if health == None:
-            self.health = self.max_health = self.kind['health']
+        if not health:
+            self.stats = {'health': self.kind['health'], 'max health': self.kind['health']}
         else:
-            self.health = self.max_health = health
+            self.stats = {'health': health, 'max health': self.kind['health']}
         self.speed = randrange(self.kind['walk speed'][0], self.kind['walk speed'][1])
         self.run_speed = self.kind['run speed']
         self.armed = self.kind['armed']
@@ -2904,13 +2937,16 @@ class Npc(pg.sprite.Sprite):
         else:
             self.gender = self.kind['gender']
             self.equipped['gender'] = self.gender
-        if self.kind['inventory'] == 'random':
-            random_inventory(self)
+        if not inventory:
+            if self.kind['inventory'] == 'random':
+                random_inventory(self)
+            else:
+                self.inventory = copy.deepcopy(self.kind['inventory'])
+                random_inventory_item(self, self.kind['inventory']) # assigns individual randomized items to NPC
         else:
-            self.inventory = copy.deepcopy(self.kind['inventory'])
-            random_inventory_item(self, self.kind['inventory']) # assigns individual randomized items to NPC
+            self.inventory = inventory
 
-            change_clothing(self)
+        change_clothing(self)
         # Sets sounds the NPCs randomly make
         self.sounds = None
         if self.equipped['race'] == 'immortui':
@@ -2928,7 +2964,7 @@ class Npc(pg.sprite.Sprite):
         if 'run' in self.kind['animations']: # Overrides default animations for custom NPCs
             self.body.run_anim = self.body.render_animation(self.kind['animations']['run'])
         self.body.update_animations()
-        if self.inventory['magic'][0] != None:
+        if self.inventory['magic'][0]:
             self.has_magic = True
         else:
             self.has_magic = False
@@ -2957,7 +2993,7 @@ class Npc(pg.sprite.Sprite):
     def aipath(self, value):
         if value != self._aipath: # Runs if the path list changes
             self._aipath = value
-            if value and self.aggression != 'awd' and (not self.provoked):
+            if value and self.aggression in ['fwp', 'awp'] and (not self.offensive):
                 self.last_path_change = pg.time.get_ticks()
                 self.target = self.goal_target # Resets the target back to the goal target whenever you cross new pathways.
                 self.set_aipath_target()
@@ -3088,18 +3124,25 @@ class Npc(pg.sprite.Sprite):
                     lamp_check(self)
 
     def seek_random_target(self):
-        self.target = self.goal_target = choice(list(self.game.random_targets))
         if randrange(0, 5) == 1: # Makes it so NPCs randomly target nearby doors.
-            last_dist = 3000
-            for entry in self.game.entryways_on_screen:
-                dist = self.pos - entry.pos
-                dist = dist.length()
-                if last_dist > dist:  # Finds closest door
-                    self.target = entry
-                    self.offensive = False
-                    self.provoked = False
-                    self.approach_vector = vec(1, 0)
-                    last_dist = dist
+            self.seek_door()
+        else:
+            try:
+                self.target = self.goal_target = choice(list(choice(self.game.target_list)))
+            except:
+                self.target = self.game.player
+
+    def seek_door(self):
+        last_dist = 3000
+        for entry in self.game.entryways_on_screen:
+            dist = self.pos - entry.pos
+            dist = dist.length()
+            if last_dist > dist:  # Finds closest door
+                self.target = entry
+                self.offensive = False
+                self.provoked = False
+                self.approach_vector = vec(1, 0)
+                last_dist = dist
 
     def seek_mobs(self):
         last_dist = 100000
@@ -3149,11 +3192,11 @@ class Npc(pg.sprite.Sprite):
                     else:
                         non_targets += 1
 
-        if self.aggression in ['fwp', 'sap', 'awp']:  # Makes it so non aggressive mobs target the player when you are close.
-            dist = self.pos - self.game.player.pos
-            dist = dist.length()
-            if dist < TALK_RADIUS:
-                self.target = self.game.player
+        #if self.aggression in ['fwp', 'sap', 'awp']:  # Makes it so non aggressive mobs target the player when you are close.
+        #    dist = self.pos - self.game.player.pos
+        #    dist = dist.length()
+        #    if dist < TALK_RADIUS:
+        #        self.target = self.game.player
 
         # Seeks a random target if there are no target mobs in range.
         elif non_targets == len(self.game.moving_targets_on_screen) - 1:
@@ -3231,35 +3274,59 @@ class Npc(pg.sprite.Sprite):
         else:
             self.rot_speed = rot_speed * 10 * abs(angle) / 180
 
-    def check_walls(self):
-        proj_vec = self.direction
-        vec_length = vec_increment = MOB_HIT_RECT.width * 3/2 - 10
-        proj_vec.scale_to_length(vec_length) # makes a vector that projects out in front of NPC the max detect distance for a wall with no walls in between.
-        self.temp_target.set_position(proj_vec.x, proj_vec.y)
-        hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
+    def avoid_wall(self):
+        hits = pg.sprite.spritecollide(self, self.game.inside_on_screen, False) # Checks to see if the NPC is in a building
         if hits:
-            angle = choice([90, -90]) # Checks to either right or left if there is a wall in front.
-            proj_vec.rotate(angle)
-            self.temp_target.set_position(proj_vec.x, proj_vec.y)
-            hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
-            if hits:
-                angle = -angle # Checks to the other direction if it finds a second wall.
-                proj_vec.rotate(angle * 2)
-                self.temp_target.set_position(proj_vec.x, proj_vec.y)
-                hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
-                if hits:
-                    proj_vec.rotate(angle) # Checks behinds it for a wall.
-                    self.temp_target.set_position(proj_vec.x, proj_vec.y)
-                    hits = pg.sprite.spritecollide(self.temp_target, self.game.walls_on_screen, False)
-                    if not hits:
-                        self.target = self.temp_target
-                else:
-                    self.target = self.temp_target
-            else:
-                self.target = self.temp_target
+            if not pg.sprite.spritecollide(self.goal_target, self.game.inside_on_screen, False): # checks to see if they are trying to go outside of the building.
+                self.seek_door()
         else:
-            self.target = self.goal_target
+            goal_angle = self.goal_target_dist.angle_to(self.direction)
+            if self.wall_hit_or == 'h':
+                if abs(180 - goal_angle) > abs(0 - goal_angle):
+                    angle = 0
+                else:
+                    angle = 180
+            elif self.wall_hit_or == 'v':
+                if abs(270 - goal_angle) > abs(90 - goal_angle):
+                    angle = 90
+                else:
+                    angle = 270
+            proj_vec = vec(WALL_DETECT_DIST, 0).rotate(angle)
+            proj_vec += self.pos
+            self.temp_target.set_position(proj_vec.x, proj_vec.y) # Temporarily moves the temp target
+            self.target = self.temp_target
+            hits = pg.sprite.spritecollide(self.temp_target, self.game.barriers_on_screen, False) # Switches the direction of the target if it hits a wall the other way.
+            if hits:
+                if hits[0] not in self.game.door_walls:
+                    self.seek_random_target()
+            #    proj_vec = vec(MOB_HIT_RECT.width * 3 / 2 - 10, 0).rotate((angle + 180)%360)
+            #    proj_vec += self.pos
+            #    self.temp_target.set_position(proj_vec.x, proj_vec.y)  # Temporarily moves the temp target
 
+    def check_walls(self):
+        proj_vec = vec(self.direction.x, self.direction.y)
+        proj_vec.scale_to_length(WALL_DETECT_DIST) # makes a vector that projects out in front of NPC the max detect distance for a wall with no walls in between.
+        proj_vec += self.pos
+        if self.target == self.game.player:
+            hit = in_wall(self.game, self.game.walls_on_screen, proj_vec)
+        else:
+            hit = in_wall(self.game, self.game.barriers_on_screen, proj_vec)
+        if hit:
+            self.wall_hit_or = hit.orient
+        else:
+            hit = in_wall(self.game, self.game.players, proj_vec) #makes Npc walk around player (hopefully)
+            if hit:
+                self.target = self.game.player
+                return True
+        return not hit
+
+    def target_forward(self):
+        proj_vec = vec(self.direction.x, self.direction.y)
+        vec_length = MOB_HIT_RECT.width * 3/2 - 10
+        proj_vec.scale_to_length(vec_length) # makes a vector that projects out in front of NPC the max detect distance for a wall with no walls in between.
+        proj_vec += self.pos
+        self.temp_target.set_position(proj_vec.x, proj_vec.y) # moves the temp target forward a bit.
+        self.target = self.temp_target
 
     def update(self):
         # This parts synchs the body sprite with the NPC's soul.
@@ -3269,34 +3336,36 @@ class Npc(pg.sprite.Sprite):
         self.body.rect.center = self.pos
 
         if self.living:
-            if self.driver != None:
+            if self.driver:
                 self.pos = self.driver.pos
                 self.rect.center = self.pos
                 self.hit_rect.center = self.pos
-                if self.health <= 0:
+                if self.stats['health'] <= 0:
                     self.depossess()
                     self.death()
             else:
                 self.acc = vec(0, 0)
-                if not self.needs_move:
-                    if self.target != self.game.player:
-                        if not self.target.living:  # Makes it so NPC switches target after it kills one.
-                            self.offensive = False
-                            self.seek_mobs()
-                        if self.aggression in ['awp', 'sap', 'fup']:
-                            if self.provoked:
-                                if not self.game.player.invisible:
-                                    self.target = self.game.player
-                                    self.offensive = True
-                    elif self.aggression in ['awp', 'sap', 'fup']:
-                        if not self.provoked:
-                            self.offensive = False
-                        if self.race in ['osidine', 'shaktele', 'elf']: # Makes it so humans and elves attack you if you are zombie or skeleton.
-                            if self.target == self.game.player:
-                                if self.game.player.race in ['immortui', 'skeleton']:
-                                    self.provoked = True
-                                    self.offensive = True
-                                    self.approach_vector = vec(1, 0)
+                if not self.needs_move and (self.target in self.game.moving_targets) and (not self.target.living):  # Makes it so NPC switches target after it kills one.
+                    self.seek_mobs()
+                #if not self.needs_move:
+                #    if self.target != self.game.player:
+                #        if not self.target.living:  # Makes it so NPC switches target after it kills one.
+                #            self.offensive = False
+                #            self.seek_mobs()
+                #        if self.aggression in ['awp', 'sap', 'fup']:
+                #            if self.provoked:
+                #                if not self.game.player.invisible:
+                #                    self.target = self.game.player
+                #                    self.offensive = True
+                #    elif self.aggression in ['awp', 'sap', 'fup']:
+                #        if not self.provoked:
+                #            self.offensive = False
+                #        if self.race in ['osidine', 'shaktele', 'elf']: # Makes it so humans and elves attack you if you are zombie or skeleton.
+                #            if self.target == self.game.player:
+                #                if self.game.player.race in ['immortui', 'skeleton']:
+                #                    self.provoked = True
+                #                    self.offensive = True
+                #                    self.approach_vector = vec(1, 0)
 
                 if self in self.game.companions:
                     if self.target == self.game.player:
@@ -3373,7 +3442,7 @@ class Npc(pg.sprite.Sprite):
                                     if self.gun:
                                         if target_dist_lsquared < self.weapon_range ** 2:
                                             if self.bow:
-                                                if self.arrow != None:
+                                                if self.arrow:
                                                     self.shoot()
                                                     self.arrow.kill()
                                                     self.arrow = None
@@ -3416,19 +3485,17 @@ class Npc(pg.sprite.Sprite):
                     self.rotate_to(vec(1, 0).rotate(-target_angle))
                 elif (target_dist_lsquared < TALK_RADIUS**2) and (self.target in self.game.moving_targets_on_screen) and (not self.offensive) and (not self.fleeing): # NPC stops in talking range if not offensive.
                     self.rotate_to(vec(1, 0).rotate(-target_angle))
-                elif (target_dist_lsquared > 4) and True not in [self.melee_playing, self.animating_reload]:
-                    self.animate()
-                    self.rotate_to(vec(1, 0).rotate(-target_angle))
-                    speed = self.speed
-                    if self.running:
-                        speed = self.run_speed
-                    self.acc = vec(speed, 0).rotate(-self.rot)
-                    self.accelerate()
-                    if self.sounds and random() < 0.002:  # This makes different sounds for each type of npc
-                        choice(self.sounds).play()
-                else:
+                elif (target_dist_lsquared > 4) and self.check_walls() and True not in [self.melee_playing, self.animating_reload]:
+                    self.move_forward(target_angle)
+                elif not self.check_walls():
+                    self.avoid_wall()
+                    self.move_forward(target_angle)
+                elif self.target not in self.game.entryways_on_screen:
                     self.target = self.goal_target
-                if self.goal_target_dist.length_squared() < 4: # Seeks a new target once it has reached it's goal.
+                else:  # Makes NPCs keep moving after they open doors.... Hopefully
+                    self.move_forward(target_angle)
+                    self.target_forward()
+                if self.goal_target_dist.length_squared() < 10: # Seeks a new target once it has reached it's goal.
                     self.seek_random_target()
 
                 # Used for lights NPCs are carrying.
@@ -3446,8 +3513,16 @@ class Npc(pg.sprite.Sprite):
                         self.light_mask_rect = self.light_mask.get_rect()
                         self.light_mask_rect.center = old_center
 
-                if self.health <= 0:
-                    self.death()
+    def move_forward(self, target_angle):
+        self.animate()
+        self.rotate_to(vec(1, 0).rotate(-target_angle))
+        speed = self.speed
+        if self.running:
+            speed = self.run_speed
+        self.acc = vec(speed, 0).rotate(-self.rot)
+        self.accelerate()
+        if self.sounds and random() < 0.002:  # This makes different sounds for each type of npc
+            choice(self.sounds).play()
 
     def check_empty(self):
         count = 0
@@ -3483,14 +3558,16 @@ class Npc(pg.sprite.Sprite):
         self.run_speed = 100
 
     def possess(self, driver, demon = False):
-        if self.driver == None:
-            if driver.possessing == None:
+        if not self.driver:
+            if not driver.possessing:
                 self.game.group.change_layer(self.body, PLAYER_LAYER)
                 if demon:
                     self.possessed = True
                 self.frame = 0
                 self.knockback = 0
                 self.driver = driver
+                if driver == self.game.player:
+                    self.game.hud_health_stats = self.stats
                 if self.driver.dragon:
                     self.driver.transform()
                 self.driver.possessing = self
@@ -3514,10 +3591,12 @@ class Npc(pg.sprite.Sprite):
                         for item in self.inventory[item_type]:
                             self.driver.inventory[item_type].append(item)
                 self.driver.body.update_animations()
-                self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you mount them.
+                self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
     def depossess(self):
-        if self.driver != None:
+        if self.driver:
+            if driver == self.game.player:
+                self.game.hud_health_stats = driver.stats
             self.driver.possessing = None
             self.knockback = self.kind['knockback']
             if self.driver.swimming:
@@ -3556,10 +3635,10 @@ class Npc(pg.sprite.Sprite):
             self.game.group.change_layer(self.body, MOB_LAYER)
             self.body.update_animations()
             self.frame = 0
-            self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you dismount the animal.
+            self.game.beg = perf_counter()  # resets dt
 
     def set_gun_vars(self):
-        if self.equipped[self.weapon_hand] != None:
+        if self.equipped[self.weapon_hand]:
             if WEAPONS[self.equipped[self.weapon_hand]]['gun']:
                 self.gun = True
                 self.mag_size = WEAPONS[self.equipped[self.weapon_hand]]['magazine size']
@@ -3576,8 +3655,11 @@ class Npc(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         if now - self.last_hit > dam_rate:
             self.last_hit = now
-            self.health -= damage
+            self.add_health(-damage)
             self.pos += vec(knockback, 0).rotate(-rot)
+            if pg.sprite.spritecollide(self, self.game.barriers, False):  # Prevents sprite from being knocked through a wall.
+                self.pos -= vec(knockback, 0).rotate(-rot)
+            self.rect.center = self.hit_rect.center = self.pos
             if damage > 0.5:
                 if self.equipped['gender'] == 'male':
                     choice(self.game.male_player_hit_sounds).play()
@@ -3620,7 +3702,7 @@ class Npc(pg.sprite.Sprite):
                 mob.gets_hit(self.damage, self.knockback, self.rot)
             else:
                 weapon_damage = WEAPONS[self.equipped[self.weapon_hand]]['melee damage']
-                damage = self.damage + weapon_damage*(self.health/self.max_health)
+                damage = self.damage + weapon_damage*(self.stats['health']/self.stats['max health'])
                 mob.vel = vec(0, 0)
                 self.knockback = WEAPONS[self.equipped[self.weapon_hand]]['knockback']
                 self.play_weapon_hit_sound()
@@ -3631,12 +3713,17 @@ class Npc(pg.sprite.Sprite):
             mob.target = self
 
     def add_health(self, amount):
-        self.health += amount
-        if self.health > self.max_health:
-            self.health = self.max_health
+        self.stats['health'] += amount
+        if self.stats['health'] > self.stats['max health']:
+            self.stats['health'] = self.stats['max health']
+        if self.stats['health'] <= 0:
+            self.living = False
+            self.death()
+        if self.game.hud_health_stats == self.stats:
+            self.game.hud_health = self.stats['health'] / self.stats['max health']
 
     def use_item(self):
-        if self.equipped['items'] != None:
+        if self.equipped['items']:
             if 'spell' in ITEMS[self.equipped['items']]:
                 self.inventory['magic'].append(ITEMS[self.equipped['items']]['spell'])
                 self.game.effects_sounds['page turn'].play()
@@ -3684,10 +3771,10 @@ class Npc(pg.sprite.Sprite):
                 self.equipped['items'] = None
 
     def cast_spell(self):
-        if self.inventory['magic'][0] != None:
+        if self.inventory['magic'][0]:
             self.equipped['magic'] = choice(self.inventory['magic'])
             if 'healing' in MAGIC[self.equipped['magic']]:
-                if self.health < (self.max_health - 15):
+                if self.stats['health'] < (self.stats['max health'] - 15):
                     self.add_health(MAGIC[self.equipped['magic']]['healing'])
                     self.game.effects_sounds[MAGIC[self.equipped['magic']]['sound']].play()
                     Spell_Animation(self.game, self.equipped['magic'], self.pos, self.rot, self.vel)
@@ -3734,7 +3821,7 @@ class Npc(pg.sprite.Sprite):
 
     def pre_melee(self): # Used to get the timing correct between each melee strike, and for the sounds
         if not (self.jumping or self.melee_playing):
-            if self.arrow != None:
+            if self.arrow:
                 self.arrow.kill()
                 self.arrow = None
             magic_chance = randrange(0, 40)
@@ -3742,18 +3829,18 @@ class Npc(pg.sprite.Sprite):
                 if magic_chance == 1:
                     self.cast_spell()
             # Selects which hand they attack with based on which hands are armed.
-            if self.equipped['weapons'] != None:
-                if self.equipped['weapons2'] != None:
+            if self.equipped['weapons']:
+                if self.equipped['weapons2']:
                     self.weapon_hand = choice(['weapons', 'weapons2'])
                     #self.dual_melee = choice([True, False])
                 else:
                     self.weapon_hand = 'weapons'
-            elif self.equipped['weapons2'] != None:
+            elif self.equipped['weapons2']:
                 self.weapon_hand = 'weapons2'
             else:
                 self.weapon_hand = choice(['weapons', 'weapons2'])
             now = pg.time.get_ticks()
-            if self.equipped[self.weapon_hand] != None:
+            if self.equipped[self.weapon_hand]:
                 rate =  WEAPONS[self.equipped[self.weapon_hand]]['rate']
                 if now - self.last_melee_sound > rate:
                     self.last_melee_sound = now
@@ -3775,7 +3862,7 @@ class Npc(pg.sprite.Sprite):
             self.animation_playing = self.body.melee_anim
         else:
             self.animation_playing = self.body.l_melee_anim
-        if self.equipped[self.weapon_hand] != None:
+        if self.equipped[self.weapon_hand]:
             # Slows down attacks with heavier weapons
             if WEAPONS[self.equipped[self.weapon_hand]]['type'] == 'shield':
                 self.melee_rate = self.melee_rate + WEAPONS[self.equipped[self.weapon_hand]]['weight'] * 2
@@ -3786,13 +3873,13 @@ class Npc(pg.sprite.Sprite):
 
         #if self.dual_melee:
         #    self.animation_playing = self.body.dual_melee_anim
-        #    if self.equipped['weapons'] != None and self.equipped['weapons2'] != None:
+        #    if self.equipped['weapons'] and self.equipped['weapons2']:
         #        self.melee_rate = self.melee_rate + (WEAPONS[self.equipped['weapons']]['weight'] + WEAPONS[self.equipped['weapons2']]['weight'])/2 * 30
         #        speed = speed + (WEAPONS[self.equipped['weapons']]['weight'] + WEAPONS[self.equipped['weapons2']]['weight'])/4 * 5
-        #    elif self.equipped['weapons'] != None:
+        #    elif self.equipped['weapons']:
         #        self.melee_rate = self.melee_rate + WEAPONS[self.equipped['weapons']]['weight'] * 20
         #        speed = speed + WEAPONS[self.equipped['weapons']]['weight']/2 * 5
-        #    elif self.equipped['weapons2'] != None:
+        #    elif self.equipped['weapons2']:
         #        self.melee_rate = self.melee_rate + WEAPONS[self.equipped['weapons2']]['weight'] * 20
         #        speed = speed + WEAPONS[self.equipped['weapons2']]['weight']/2 * 5
 
@@ -3871,13 +3958,13 @@ class Npc(pg.sprite.Sprite):
         snd.play()
 
     def draw_health(self):
-        if self.health > self.max_health * 0.6:
+        if self.stats['health'] > self.stats['max health'] * 0.6:
             col = GREEN
-        elif self.health > self.max_health * 0.3:
+        elif self.stats['health'] > self.stats['max health'] * 0.3:
             col = YELLOW
         else:
             col = RED
-        width = int(MOB_HEALTH_BAR_LENGTH * self.health / self.max_health)
+        width = int(MOB_HEALTH_BAR_LENGTH * self.stats['health'] / self.stats['max health'])
         return width
 
     def pre_jump(self):
@@ -3937,10 +4024,10 @@ class Animal(pg.sprite.Sprite):
         self.knockback = self.kind['knockback']
         self.detect_radius = self.default_detect_radius = self.kind['detect radius']
         self.avoid_radius = self.kind['avoid radius']
-        if health == None:
-            self.health = self.max_health = self.kind['health']
+        if not health:
+            self.stats = {'health': self.kind['health'], 'max health': self.kind['health']}
         else:
-            self.health = self.max_health = health
+            self.stats = {'health': health, 'max health': self.kind['health']}
         self.mountable = self.kind['mountable']
         self.occupied = False
         self.run_speed = self.kind['run speed'] * (randrange(7, 10)/10)
@@ -4140,7 +4227,7 @@ class Animal(pg.sprite.Sprite):
                         self.target.kill()
                         self.target = self.game.player
                         self.eating_coprse = 0
-                        self.health = self.max_health # heals animal
+                        self.stats['health']= self.stats['max health'] # heals animal
             else:
                 self.eating_coprse = 0
 
@@ -4174,8 +4261,10 @@ class Animal(pg.sprite.Sprite):
             self.unmount()
 
     def mount(self, driver):
+        if driver == self.game.player:
+            self.game.hud_health_stats = self.stats
         self.rot_speed = 60 * self.walk_speed / self.width
-        if driver.possessing != None:
+        if driver.possessing:
             if driver.possessing.race == 'mech_suit':
                 return
         self.game.group.change_layer(self, MOB_LAYER)
@@ -4195,9 +4284,11 @@ class Animal(pg.sprite.Sprite):
             if self.driver == self.game.player:
                 if 'horse bridle' in self.game.player.inventory['items']:
                     self.make_companion()
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you mount them.
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
     def unmount(self):
+        if driver == self.game.player:
+            self.game.hud_health_stats = driver.stats
         self.rot_speed = self.orig_rot_speed
         self.game.group.change_layer(self, self.original_layer)
         self.occupied = False
@@ -4220,7 +4311,7 @@ class Animal(pg.sprite.Sprite):
         self.driver.pos = self.driver.pos + (80, 80)
         self.driver = None
         self.frame = 0
-        self.game.clock.tick(FPS)  # I don't know why this makes it so the animals don't move through walls after you dismount the animal.
+        self.game.beg = perf_counter()  # resets dt
 
     def make_companion(self):
         self.game.companions.add(self)
@@ -4279,7 +4370,7 @@ class Animal(pg.sprite.Sprite):
                 if (target_dist.length_squared() < self.detect_radius**2) and (self.target not in self.game.random_targets):
                     #if random() < 0.002:
                     #    choice(self.game.zombie_moan_sounds).play()
-                    if self.spells != None:
+                    if self.spells:
                         direction_vec = self.pos + vec(self.detect_radius, 0).rotate(-self.rot)
                         difx = abs(self.target.pos.x - direction_vec.x)
                         dify = abs(self.target.pos.y - direction_vec.y)
@@ -4352,9 +4443,6 @@ class Animal(pg.sprite.Sprite):
                 collide(self)
                 self.get_keys()  # this needs to be last in this method to avoid executing the rest of the update section if you exit
 
-            if self.health <= 0:
-                self.death()
-
     def check_empty(self):
         if len(self.inventory['items']) == 0 or (self.inventory['items'][0] == None and len(self.inventory['items']) == 1):
             self.kill()
@@ -4366,12 +4454,27 @@ class Animal(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.hit_rect.center = vec(old_center) #+ self.rect_offset.rotate(-self.rot)
 
+    def add_health(self, amount):
+        self.stats['health']+= amount
+        if self.stats['health']> self.stats['max health']:
+            self.stats['health']= self.stats['max health']
+        if self.stats['health'] <= 0:
+            self.living = False
+            self.death()
+        if self.game.hud_health_stats == self.stats:
+            self.game.hud_health = self.stats['health'] / self.stats['max health']
+
     def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
         now = pg.time.get_ticks()
         if now - self.last_hit > dam_rate:
             self.last_hit = now
-            self.health -= damage
+            self.add_health(-damage)
             self.pos += vec(knockback, 0).rotate(-rot)
+            if pg.sprite.spritecollide(self, self.game.barriers, False):  # Prevents sprite from being knocked through a wall.
+                self.pos -= vec(knockback, 0).rotate(-rot)
+            self.rect.center = self.hit_rect.center = self.pos
+            if self.game.hud_health_stats == self.stats:
+                self.game.hud_health = self.stats['health'] / self.stats['max health']
             if damage > 0:
                 if self.aggression == 'fwp':
                     self.approach_vector = vec(-1, 0)
@@ -4401,7 +4504,7 @@ class Animal(pg.sprite.Sprite):
             if self.kind['death action'] == 'explode':
                 Explosion(self.game, self, 0.5, self.damage * 4)
 
-        if self.kind['corpse'] != None:
+        if self.kind['corpse']:
             self.living = False
             self.inventory = {'locked': False, 'combo': None, 'difficulty': 0,'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None],
                   'items': self.kind['dropped items'].copy(), 'magic': [None], 'gold': 0}
@@ -4415,7 +4518,7 @@ class Animal(pg.sprite.Sprite):
             self.rect.center = self.pos
         else:
             for i in self.kind['dropped items']:
-                if i != None:
+                if i:
                     for item_type in ITEM_TYPE_LIST:
                         if i in eval(item_type.upper()).keys():
                             Dropped_Item(self.game, self.pos, item_type, i, self.rot)
@@ -4756,7 +4859,7 @@ class Stationary_Animated(pg.sprite.Sprite): # Used for fires and other stationa
                 self.light_mask_rect.center = self.rect.center
 
 
-        if self.lifetime != None:
+        if self.lifetime:
             if now - self.spawn_time > self.lifetime:
                 self.kill()
 
@@ -4779,7 +4882,7 @@ class Entryway(pg.sprite.Sprite):
         self.combo = randrange(10, 350)
         self.difficulty = randrange(0, 30)
         self.length = 88
-        self.health = DOOR_STYLES[self.kind]['hp']
+        self.stats = {'health': DOOR_STYLES[self.kind]['hp'], 'max health': DOOR_STYLES[self.kind]['hp']}
         self.protected = False
         self.orig_rot = 0
         temp_img = self.game.door_images[DOOR_STYLES[self.kind]['image']]
@@ -4927,8 +5030,8 @@ class Entryway(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         if now - self.last_hit > dam_rate:
             self.last_hit = now
-            self.health -= damage
-        if self.health <= 0:
+            self.stats['health'] -= damage
+        if self.stats['health'] <= 0:
             if self.living:
                 self.game.channel5.stop()
                 self.game.channel5.play(self.game.effects_sounds['rocks'])
@@ -5100,6 +5203,7 @@ class FirePot(pg.sprite.Sprite):
         self.lit_time = 0
         self.life_time = 8000
         self.elevation = elev
+        self.orient = choice(['h', 'v'])
 
     def update(self):
         now = pg.time.get_ticks()
@@ -5207,7 +5311,7 @@ class Portal(pg.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.rect.center = old_center
 
-        if self.lifetime != None:
+        if self.lifetime:
             if now - self.spawn_time > self.lifetime:
                 self.kill()
 
@@ -5319,7 +5423,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
                     self.rect = self.image.get_rect()
                     self.rect.center = self.trunk.rect.center = self.hit_rect.center = old_center
             if self.break_type == 'gradual':
-                if self.hit_weapon == self.weapon_required:
+                if self.hit_weapon in self.weapon_required:
                     self.frame = self.right_hits
                     if self.frame > len(self.image_list) - 2:
                         self.frame = 0
@@ -5354,7 +5458,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         if now - self.last_hit > dam_rate * 10:
             if not self.hit:
                 if self.hp > 0:
-                    if weapon_type == self.weapon_required:
+                    if weapon_type in self.weapon_required:
                         self.right_hit_sound.play()
                     else:
                         self.hit_sound.play()
@@ -5364,7 +5468,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
             self.hit_weapon = weapon_type
             self.last_hit = now
             self.hits += 1
-            if weapon_type == self.weapon_required:
+            if weapon_type in self.weapon_required:
                 self.hp -= 1
                 self.right_hits += 1
             elif weapon_type == 'explosion':
@@ -5420,7 +5524,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
 
 class Obstacle(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
-        self.groups = game.obstacles, game.walls, game.all_static_sprites
+        self.groups = game.obstacles, game.walls, game.all_static_sprites, game.barriers
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)
@@ -5457,7 +5561,7 @@ class Charger(pg.sprite.Sprite):
         now = pg.time.get_ticks()
         if now - self.last_charge > self.rate:
             self.last_charge = now
-            if hit.possessing != None:
+            if hit.possessing:
                 if hit.possessing.race == 'mech_suit':
                     hit.possessing.add_health(self.amount)
             else:
@@ -5499,11 +5603,11 @@ class NoSpawn(pg.sprite.Sprite):
 class Elevation(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h, elev, climb = False, kind = None):
         if climb:
-            self.groups = game.elevations, game.all_static_sprites, game.climbs
-        elif kind != None:
-            self.groups = game.elevations, game.all_static_sprites, game.climbables_and_jumpables
+            self.groups = game.elevations, game.all_static_sprites, game.climbs, game.barriers
+        elif kind:
+            self.groups = game.elevations, game.all_static_sprites, game.climbables_and_jumpables, game.barriers
         else:
-            self.groups = game.elevations, game.all_static_sprites
+            self.groups = game.elevations, game.all_static_sprites, game.barriers
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(x, y, w, h)
@@ -5520,6 +5624,10 @@ class Elevation(pg.sprite.Sprite):
         if kind == 'climbable':
             set_elevation(self)
             self.elevation += 3
+        if self.rect.width > self.rect.height:
+            self.orient = 'h'
+        else:
+            self.orient = 'v'
 
 class Water(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
@@ -5616,6 +5724,10 @@ class Chest(pg.sprite.Sprite):
         self.elevation = 0
         set_elevation(self)
         self.elevation += elev
+        if self.rect.width > self.rect.height:
+            self.orient = 'h'
+        else:
+            self.orient = 'v'
 
 class Work_Station(pg.sprite.Sprite): # Used for work benches, tanning racks, grinders, forges, enchanting tables, etc.
     def __init__(self, game, x, y, w, h, kind):
@@ -5629,6 +5741,7 @@ class Work_Station(pg.sprite.Sprite): # Used for work benches, tanning racks, gr
         self.y = y
         self.rect.x = x
         self.rect.y = y
+        self.pos = vec(self.rect.centerx, self.rect.centery)
 
 class Bed(pg.sprite.Sprite): # Used to rest in
     def __init__(self, game, x, y, w, h, name, elev = 2):
@@ -5650,6 +5763,10 @@ class Bed(pg.sprite.Sprite): # Used to rest in
         self.elevation = 0
         set_elevation(self)
         self.elevation += elev
+        if self.rect.width > self.rect.height:
+            self.orient = 'h'
+        else:
+            self.orient = 'v'
 
 class Toilet(pg.sprite.Sprite): # Used to rest in
     def __init__(self, game, x, y, w, h, elev = 2):
@@ -5665,6 +5782,10 @@ class Toilet(pg.sprite.Sprite): # Used to rest in
         self.elevation = 0
         set_elevation(self)
         self.elevation += elev
+        if self.rect.width > self.rect.height:
+            self.orient = 'h'
+        else:
+            self.orient = 'v'
 
 class Detector(pg.sprite.Sprite): # Used to rest in
     def __init__(self, game, x, y, w, h, name):
@@ -5734,7 +5855,7 @@ class Target(pg.sprite.Sprite): # Used for fires and other stationary animated s
         self.pos = vec(self.rect.centerx, self.rect.centery)
 
     def set_position(self, x, y):
-        self.rect = self.hit_rect = pg.Rect(x - 30, y - 30, self.rect_size, self.rect_size)
+        self.rect = self.hit_rect = pg.Rect(x - self.rect_size/2, y - self.rect_size/2, self.rect_size, self.rect_size)
         self.pos = vec(self.rect.centerx, self.rect.centery)
 
 class AIPath(pg.sprite.Sprite):
@@ -5749,3 +5870,4 @@ class AIPath(pg.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.kind = kind
+        self.pos = vec(self.rect.centerx, self.rect.centery)

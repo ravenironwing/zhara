@@ -164,7 +164,7 @@ def breakable_melee_hit_rect(one, two):
                 if one.frame > 3:
                     return True
             else:
-                if one.frame < 3:
+                if one.frame < 6:
                     return True
         else:
             return False
@@ -175,7 +175,7 @@ def breakable_melee_hit_rect(one, two):
                 if one.frame > 3:
                     return True
             else:
-                if one.frame < 3:
+                if one.frame < 6:
                     return True
         else:
             return False
@@ -207,8 +207,7 @@ class Game:
         self.screen = pg.display.set_mode((self.screen_width, self.screen_height), self.flags)
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        self.beg = perf_counter()
-        self.dt = 0.1
+        self.dt = 0.0001
         # Loads Mutant Python Logo Faid in/out.
         mpy_logo_image = pg.image.load(path.join(img_folder, LOGO_IMAGE)).convert_alpha()
         mpy_logo_image = pg.transform.scale(mpy_logo_image, (int(self.screen_height/4), int(self.screen_height/4)))
@@ -278,7 +277,7 @@ class Game:
         return datetime.datetime.now().strftime(directive)
 
     def save_sprite_locs(self):
-        # This block stores all sprite locations and their health in the map_sprite_data_list so the game remembers where everything is.
+        # This block stores all sprite locations and their health/inventories in the map_sprite_data_list so the game remembers where everything is.
         npc_list = []
         animal_list = []
         item_list = []
@@ -287,19 +286,19 @@ class Game:
         if not self.underworld:
             for npc in self.npcs:
                 if npc not in self.companions:
-                    npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
+                    npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.stats['health'], 'inventory': npc.inventory, 'colors': npc.colors})
                     self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].npcs = npc_list
             for animal in self.animals:
                 if animal not in self.companions:
                     if animal != self.player.vehicle:
-                        animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
+                        animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.stats['health']})
                         self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].animals = animal_list
             for item in self.dropped_items:
                 item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
                 self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].items = item_list
             for vehicle in self.vehicles:
                 if vehicle.driver != self.player:
-                    vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
+                    vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.stats['health']})
                     self.map_sprite_data_list[int(self.world_location.x)][int(self.world_location.y)].vehicles = vehicle_list
             for breakable in self.breakable:
                 breakable_list.append({'name': breakable.name, 'location': breakable.center, 'w': breakable.w, 'h': breakable.h,  'rotation': breakable.rot})
@@ -307,18 +306,18 @@ class Game:
         else:
             for npc in self.npcs:
                 if npc not in self.companions:
-                    npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.health})
+                    npc_list.append({'name': npc.species, 'location': npc.pos, 'health': npc.stats['health'], 'inventory': npc.inventory, 'colors': npc.colors})
                     self.underworld_sprite_data_dict[self.previous_map].npcs = npc_list
             for animal in self.animals:
                 if animal not in self.companions:
                     if animal != self.player.vehicle:
-                        animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.health})
+                        animal_list.append({'name': animal.species, 'location': animal.pos, 'health': animal.stats['health']})
                         self.underworld_sprite_data_dict[self.previous_map].animals = animal_list
             for item in self.dropped_items:
                 item_list.append({'name': item.name, 'location': item.pos, 'rotation': item.rot})
                 self.underworld_sprite_data_dict[self.previous_map].items = item_list
             for vehicle in self.vehicles:
-                vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.health})
+                vehicle_list.append({'name': vehicle.species, 'location': vehicle.pos, 'health': vehicle.stats['health']})
                 self.underworld_sprite_data_dict[self.previous_map].vehicles = vehicle_list
             for breakable in self.breakable:
                 breakable_list.append({'name': breakable.name, 'location': breakable.center, 'w': breakable.w, 'h': breakable.h,  'rotation': breakable.rot})
@@ -327,7 +326,7 @@ class Game:
     def save(self):
         self.save_sprite_locs()
         possessing = self.player.possessing
-        if self.player.possessing != None:
+        if self.player.possessing:
             self.player.possessing.depossess()
         self.player.dragon = False
         if 'dragon' in self.player.equipped['race']: # Makes it so you aren't a dragon when you load a game.
@@ -347,7 +346,7 @@ class Game:
         save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.player.colors, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict]
         with open(path.join(saves_folder, self.player.race + "_" + self.format_date() + ".sav"), "wb", -1) as FILE:
             pickle.dump(save_list, FILE)
-        if possessing != None:
+        if possessing:
             possessing.possess(self.player)
 
     def load_save(self, file_name):
@@ -490,6 +489,7 @@ class Game:
         self.keyed_keyway_image = pg.image.load(path.join(img_folder, 'keyed_keyway.png')).convert_alpha()
         self.lock_pick_image = pg.image.load(path.join(img_folder, 'lock_pick.png')).convert_alpha()
         self.swim_shadow_image = pg.image.load(path.join(img_folder, 'swim_shadow.png')).convert_alpha()
+        self.mech_back_image = pg.image.load(path.join(img_folder, 'mech_back_lights.png')).convert_alpha()
         #self.rock_shadow_image = pg.image.load(path.join(img_folder, 'rock_shadow.png')).convert_alpha()
         self.invisible_image = pg.image.load(path.join(img_folder, 'invisible.png')).convert_alpha()
         # creates a dictionary of animal images. This is not in the settings file like the others because of the order it needs to import info.
@@ -857,6 +857,8 @@ class Game:
         self.obstacles_on_screen = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.walls_on_screen = pg.sprite.Group()
+        self.barriers = pg.sprite.Group()
+        self.barriers_on_screen = pg.sprite.Group()
         self.elevations = pg.sprite.Group()
         self.elevations_on_screen = pg.sprite.Group()
         self.water = pg.sprite.Group()
@@ -911,7 +913,7 @@ class Game:
         self.turrets = pg.sprite.Group()
         self.occupied_vehicles = pg.sprite.Group()
         self.random_targets = pg.sprite.Group()
-        #self.tanks = pg.sprite.Group()
+        self.target_list = [self.random_targets, self.entryways, self.work_stations, self.moving_targets,  self.aipaths]
         self.new_game = True
         self.respawn = False
         self.previous_map = "1.tmx"
@@ -951,14 +953,16 @@ class Game:
         self.last_hud_update = 0
         self.last_fire = 0
         self.last_dialogue = 0
-        self.hud_health = 0
+        self.hud_health_stats = self.player.stats
+        self.hud_health = self.hud_health_stats['health'] / self.hud_health_stats['max health']
         self.hud_stamina = 0
+        self.hud_magica = 0
         self.hud_mobhp = 0
         self.show_mobhp = False
         self.last_mobhp_update = 0
         self.hud_hunger = 1
-        self.hud_ammo1 = 0
-        self.hud_ammo2 = 0
+        self.hud_ammo1 = ''
+        self.hud_ammo2 = ''
         self.e_down = False
         self.draw_debug = False
         self.paused = False
@@ -1110,7 +1114,7 @@ class Game:
         self.player.acc = vec(0, 0)
         direction = cardinal
         offset = 64
-        if cardinal != None:
+        if cardinal:
             if direction == 'north':
                 self.world_location -= vec(0, 1)
                 self.player.rect.top = self.map.height - offset
@@ -1137,7 +1141,7 @@ class Game:
             if self.world_location.y < 0:
                 self.world_location.y = self.world_height - 1
 
-        if coordinate != None:
+        if coordinate:
             # Sets player's location of world map
             self.world_location = vec(coordinate)
             # Sets player's location on local map
@@ -1164,16 +1168,12 @@ class Game:
         pg.mixer.music.stop()
         self.draw_text('Sweet dreams....', self.script_font, 50, WHITE, self.screen_width / 2, self.screen_height / 2, align="topright")
         pg.display.flip()
-        self.player.stats['health'] += 50
-        if self.player.stats['health'] > self.player.stats['max health']:
-            self.player.stats['health'] = self.player.stats['max health']
-        self.player.stats['stamina'] = self.player.stats['max stamina']
-        self.player.stats['magica'] += 50
-        if self.player.stats['magica'] > self.player.stats['max magica']:
-            self.player.stats['magica'] = self.player.stats['max magica']
+        self.player.add_health(50)
+        self.player.add_stamina(50)
+        self.player.add_magica(50)
         self.effects_sounds['snore'].play()
         sleep(10)
-        self.clock.tick(FPS) # Characters randomly disappear without this for some reason. I have no clue why this fixes it
+        self.beg = perf_counter() # resets dt
         pg.mixer.music.play(loops=-1)
         # Changes it to sunrise when you sleep.
         self.darkness = 225
@@ -1183,17 +1183,14 @@ class Game:
         self.day_start_time = pg.time.get_ticks() - NIGHT_LENGTH
 
     def use_toilet(self):
-        self.player.stats['health'] += 5
-        if self.player.stats['health'] > self.player.stats['max health']:
-            self.player.stats['health'] = self.player.stats['max health']
-        self.player.stats['stamina'] += 30
-        if self.player.stats['stamina'] > self.player.stats['stamina']:
-            self.player.stats['stamina'] = self.player.stats['stamina']
+        self.player.add_health(5)
+        self.player.add_stamina(30)
+        self.player.add_hunger(-4)
         toilet_sounds = ['fart', 'pee']
         self.effects_sounds[choice(toilet_sounds)].play()
         sleep(2)
         self.effects_sounds['toilet'].play()
-        self.clock.tick(FPS) # Characters randomly disappear without this for some reason. I have no clue why this fixes it
+        self.beg = perf_counter() # resets dt
 
     def garbage_collect(self): # This block of code removes everything in memory from previous maps
         for sprite in self.all_sprites:
@@ -1262,7 +1259,7 @@ class Game:
         self.group._map_layer = self.map.map_layer # Sets the map as the Pyscroll group base layer.
         self.camera = Camera(self, self.map.width, self.map.height)
 
-        for i in range(0, 20): # Creates random targets for Npcs
+        for i in range(0, 10): # Creates random targets for Npcs
             target = Target(self)
             hits = pg.sprite.spritecollide(target, self.walls, False)  # Kills targets that appear in walls.
             if hits:
@@ -1275,7 +1272,7 @@ class Game:
                 companion_names.append(companion.species)
             for npc in self.sprite_data.npcs:
                 if npc['name'] not in companion_names: # Makes it so it doesn't double load your companions.
-                    Npc(self, npc['location'].x, npc['location'].y, map, npc['name'], npc['health'])
+                    Npc(self, npc['location'].x, npc['location'].y, map, npc['name'], npc['health'], npc['inventory'], npc['colors'])
             for animal in self.sprite_data.animals:
                 Animal(self, animal['location'].x, animal['location'].y, map, animal['name'], animal['health'])
             for vehicle in self.sprite_data.vehicles:
@@ -1292,7 +1289,7 @@ class Game:
                 companion_names.append(companion.species)
             for npc in self.sprite_data.moved_npcs:
                 if npc['name'] not in companion_names: # Makes it so it doesn't double load your companions.
-                    Npc(self, npc['location'].x, npc['location'].y, map, npc['name'], npc['health'])
+                    Npc(self, npc['location'].x, npc['location'].y, map, npc['name'], npc['health'], npc['inventory'], npc['colors'])
             self.sprite_data.moved_npcs = []
             for animal in self.sprite_data.moved_animals:
                 Animal(self, animal['location'].x, animal['location'].y, map, animal['name'], animal['health'])
@@ -1344,7 +1341,7 @@ class Game:
                                         hit.kill()
 
         # This section creates ores based off of which tile is used in the map rather than having to create ore objects
-        #if self.map_type != None:
+        #if self.map_type:
         #    for type in UNDERWORLD:
         #        if type in self.map_type:
         #            # This section generates ore blocks to time in all the spaces with the tile specified in the position (0, 0).
@@ -1360,7 +1357,7 @@ class Game:
         #                            hit.kill()
 
         for tile_object in self.map.tmxdata.objects:
-            if tile_object.name != None:
+            if tile_object.name:
                 obj_center = vec(tile_object.x + tile_object.width / 2, tile_object.y + tile_object.height / 2)
                 # These are paths for the AIs to follow.
                 if tile_object.name in AIPATHS:
@@ -1613,7 +1610,7 @@ class Game:
 
         # Generates random animals/Npcs on maps that don't have existing animals on them. The type of animal depends on the maptype object in the tmx file.
         if (len(self.mobs) - len(self.companions)) < 4:
-            if self.map_type != None:
+            if self.map_type:
                 for i in range(0, randrange(10, 30)):
                     animal = choice(list(eval(self.map_type.upper() + '_ANIMALS')))
                     centerx = randrange(200, self.map.width - 200)
@@ -1634,7 +1631,7 @@ class Game:
 
         # Generates random ores, trees and plants
         if len(self.breakable) < 1:
-            if self.map_type != None:
+            if self.map_type:
                 if self.map_type in ['mountain', 'forest']:
                     if self.map_type == 'mountain':
                         rand_range = randrange(4, 7)
@@ -1754,14 +1751,20 @@ class Game:
             pg.mixer.music.load(path.join(music_folder, self.bg_music))
             pg.mixer.music.play(loops=-1)
 
-        self.clock.tick(FPS)  # I don't know why this fixes it, but without this the player can move while a new map is loading. I think it somehow interrupts the keyboard input in the sprite.update.
+        # sets up NPC target list for map
+        self.target_list = [self.random_targets, self.entryways, self.work_stations, self.moving_targets, self.aipaths]
+        for x in self.target_list:  # Replaces empty sprite groups with the random targets group.
+            if list(x) == []:
+                x = self.random_targets
+
+        self.clock.tick(FPS)  # resets dt
 
 
     def run(self):
         # game loop - set self.playing = False to end the game
         self.playing = True
+        self.beg = perf_counter()
         while self.playing:
-            #self.dt = self.clock.tick(FPS) / 1000.0
             self.events()
             if not self.paused:
                 self.update()
@@ -1816,6 +1819,7 @@ class Game:
         # finds static sprites (ones you don't see) on screen.
         self.obstacles_on_screen.empty()
         self.walls_on_screen.empty()
+        self.barriers_on_screen.empty()
         self.water_on_screen.empty()
         self.shallows_on_screen.empty()
         self.long_grass_on_screen.empty()
@@ -1830,6 +1834,7 @@ class Game:
                     self.obstacles_on_screen.add(sprite)
                     if sprite in self.walls:
                         self.walls_on_screen.add(sprite)
+                        self.barriers_on_screen.add(sprite)
                     elif sprite in self.water:
                         self.water_on_screen.add(sprite)
                     elif sprite in self.shallows:
@@ -1838,6 +1843,7 @@ class Game:
                         self.lava_on_screen.add(sprite)
                 elif sprite in self.elevations:
                     self.elevations_on_screen.add(sprite)
+                    self.barriers_on_screen.add(sprite)
                     if sprite in self.beds:
                         self.beds_on_screen.add(sprite)
                     if sprite in self.climbs:
@@ -1910,7 +1916,7 @@ class Game:
                 closest_fire = sprite
                 previous_distance = player_dist
 
-        if closest_fire != None:
+        if closest_fire:
             if previous_distance < 400:  # This part makes it so the fire volume decreases as you walk away from it.
                 volume = 150 / (previous_distance * 2 + 0.001)
                 self.channel4.set_volume(volume)
@@ -2054,7 +2060,7 @@ class Game:
             if True not in [self.message_text, self.in_menu]:
                 hits = pg.sprite.spritecollide(self.player, self.npcs_on_screen, False, npc_talk_rect)
                 if hits:
-                    if hits[0].dialogue != None:
+                    if hits[0].dialogue:
                         if not self.in_dialogue_menu:
                             now = pg.time.get_ticks()
                             if now - self.last_dialogue > 2000:
@@ -2365,8 +2371,8 @@ class Game:
                 pass
             for mob in hits[body]:
                 if mob.immaterial:
-                    if body.mother.equipped[body.mother.weapon_hand] != None:
-                        if 'aetherial' not in body.mother.equipped[body.mother.weapon_hand]:
+                    if body.mother.equipped[body.mother.weapon_hand]:
+                        if ('aetherial' not in body.mother.equipped[body.mother.weapon_hand]) or ('plasma' not in body.mother.equipped[body.mother.weapon_hand]):
                             continue
                 if mob.in_player_vehicle:
                     continue
@@ -2496,7 +2502,7 @@ class Game:
                                         mob.offensive = True
                                         mob.provoked = True
                                         mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
-                                    self.hud_mobhp = mob.health / mob.max_health
+                                    self.hud_mobhp = mob.stats['health'] / mob.stats['max health']
                                     self.show_mobhp = True
                                     self.last_mobhp_update = pg.time.get_ticks()
                                     bullet.death(mob)
@@ -2699,8 +2705,14 @@ class Game:
                 pg.draw.rect(self.screen, RED, self.camera.apply_rect(vehicle.hit_rect3), 1)
             for mob in self.mobs_on_screen:
                 pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(mob.hit_rect), 1)
+            #for npc in self.npcs_on_screen:
+            #    pg.draw.rect(self.screen, WHITE, self.camera.apply_rect(npc.temp_target.hit_rect), 1)
             for target in self.random_targets:
                 pg.draw.rect(self.screen, BLUE, self.camera.apply_rect(target.rect), 1)
+            pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.hit_rect), 1)
+            pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.mid_weapon_melee_rect), 1)
+            pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.weapon_melee_rect), 1)
+            pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.melee_rect), 1)
             #for elev in self.elevations_on_screen:
             #    pg.draw.rect(self.screen, BLUE, self.camera.apply_rect(elev.rect), 1)
 
@@ -2729,30 +2741,6 @@ class Game:
             self.draw_overmap()
 
         # HUD functions
-        now = pg.time.get_ticks() # Only updates HUD info every 10 cycles to help reduce lag.
-        if now - self.last_hud_update > FPS * 10:
-            if self.player.in_vehicle:
-                self.hud_health = self.player.vehicle.health / self.player.vehicle.max_health
-                self.hud_health_num = self.player.vehicle.health
-            elif self.player.possessing != None:
-                self.hud_health = self.player.possessing.health / self.player.possessing.max_health
-                self.hud_health_num = self.player.possessing.health
-            else:
-                self.hud_health = self.player.stats['health'] / self.player.stats['max health']
-                self.hud_health_num = self.player.stats['health']
-            self.hud_stamina = self.player.stats['stamina'] / self.player.stats['max stamina']
-            self.hud_magica = self.player.stats['magica'] / self.player.stats['max magica']
-            if self.player.hungers:
-                self.hud_hunger = self.player.stats['hunger'] / self.player.stats['max hunger']
-            if self.player.ammo_cap1 + self.player.mag1 != 0:
-                self.hud_ammo1 = "Right Ammo: " + str(self.player.mag1) + '/' + str(self.player.ammo_cap1)
-            else:
-                self.hud_ammo1 = ""
-            if self.player.ammo_cap2 + self.player.mag2 != 0:
-                self.hud_ammo2 = "Left Ammo: " + str(self.player.mag2) + '/' + str(self.player.ammo_cap2)
-            else:
-                self.hud_ammo2 = ""
-            self.last_hud_update = now
         draw_player_stats(self.screen, 10, 10, self.hud_health)
         draw_player_stats(self.screen, 10, 40, self.hud_stamina, BLUE)
         draw_player_stats(self.screen, 10, 70, self.hud_magica, CYAN)
@@ -2761,18 +2749,17 @@ class Game:
         if self.player.hungers:
             draw_player_stats(self.screen, 10, 100, self.hud_hunger, BROWN)
             self.draw_text("HGR {:.0f}".format(self.player.stats['hunger']), self.hud_font, 20, WHITE, 120, 100, align="topleft")
-        if not self.hud_ammo1 == "":
+        if self.hud_ammo1:
             self.draw_text(self.hud_ammo1, self.hud_font, 20, WHITE, 50, self.screen_height - 100, align="topleft")
-        if not self.hud_ammo2 == "":
+        if self.hud_ammo2:
             self.draw_text(self.hud_ammo2, self.hud_font, 20, WHITE, 50, self.screen_height - 50, align="topleft")
-        #self.draw_text('Zombies: {}'.format(len(self.mobs)), self.hud_font, 30, WHITE, self.screen_width - 10, 10, align="topright")
         if self.paused:
             self.screen.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.title_font, 105, RED, self.screen_width / 2, self.screen_height / 2, align="center")
         if self.message_text == True:
             self.draw_text(self.message, self.hud_font, 30, WHITE, self.screen_width / 2, self.screen_height / 2 + 100, align="center")
         self.draw_text("FPS {:.0f}".format(1/self.dt), self.hud_font, 20, WHITE, self.screen_width/2, 10, align="topleft")
-        self.draw_text("HP {:.0f}".format(self.hud_health_num), self.hud_font, 20, WHITE, 120, 10, align="topleft")
+        self.draw_text("HP {:.0f}".format(self.hud_health_stats['health']), self.hud_font, 20, WHITE, 120, 10, align="topleft")
         self.draw_text("ST {:.0f}".format(self.player.stats['stamina']), self.hud_font, 20, WHITE, 120, 40, align="topleft")
         self.draw_text("MP {:.0f}".format(self.player.stats['magica']), self.hud_font, 20, WHITE, 120, 70, align="topleft")
 
@@ -2781,6 +2768,8 @@ class Game:
         while (perf_counter() < self.wt):
             pass
         self.dt = perf_counter() - self.beg
+        if self.dt > 0.2: # Caps dt at 200 ms.
+            self.dt = 0.2
         self.beg = perf_counter()
         if self.in_inventory_menu:
             self.menu.update()
@@ -2851,9 +2840,10 @@ class Game:
                     self.draw_debug = not self.draw_debug
                 if event.key == pg.K_p:
                     trace_mem()
-                    if self.player.vehicle != None:
+                    if self.player.vehicle:
                         print(self.group.get_layer_of_sprite(self.player.vehicle))
                     self.paused = not self.paused
+                    self.beg = perf_counter() # resets dt.
                 if event.key == pg.K_EQUALS:
                     self.map.minimap.resize()
                 if event.key == pg.K_MINUS:

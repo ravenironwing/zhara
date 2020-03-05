@@ -10,10 +10,10 @@ SHOCK_BULLETS = ['2', '7', '8', '9']
 EXPLOSIVE_BULLETS = ['4', '5', '8', '10', '0']
 
 # Weapon settings
-WEAPON_SOUNDS = {'pistol': ['pistol.ogg'], 'laser': ['laser.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['mace_swipe.ogg'], 'axe': ['mace_swipe.ogg'],
+WEAPON_SOUNDS = {'pistol': ['pistol.ogg'], 'laser': ['laser.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['mace_swipe.ogg'], 'axe': ['mace_swipe.ogg'], 'plasma': ['plasma_swipe.ogg', 'plasma_swipe2.ogg'],
                  'shotgun': ['shotgun.ogg'], 'rifle': ['assault rifle.ogg'], 'turret': ['turret.ogg'], 'sword': ['sword_swipe.ogg'], 'mace': ['mace_swipe.ogg'], 'dagger': ['sword_swipe.ogg'], 'shield': ['mace_swipe.ogg'], 'bow': ['arrow.ogg']}
 WEAPON_HIT_SOUNDS = {'pistol': ['gun_hit1.ogg'], 'laser': ['gun_hit1.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['pickaxe.ogg'], 'axe': ['axe.ogg'],
-                 'shotgun': ['gun_hit1.ogg'], 'rifle': ['gun_hit1.ogg'], 'turret': ['turret_hit1.ogg'], 'sword': ['sword_hit1.ogg'], 'mace': ['mace_hit1.ogg', 'mace_hit2.ogg'], 'dagger': ['sword_hit1.ogg'], 'shield': ['punch1.ogg', 'punch2.ogg'], 'bow': ['punch1.ogg', 'punch2.ogg']}
+                 'shotgun': ['gun_hit1.ogg'], 'rifle': ['gun_hit1.ogg'], 'turret': ['turret_hit1.ogg'], 'sword': ['sword_hit1.ogg'], 'mace': ['mace_hit1.ogg', 'mace_hit2.ogg'], 'dagger': ['sword_hit1.ogg'], 'shield': ['punch1.ogg', 'punch2.ogg'], 'bow': ['punch1.ogg', 'punch2.ogg'], 'plasma': ['plasma_hit.ogg', 'plasma_hit2.ogg']}
 
 WEAPONS = {}
 for material in MATERIALS:
@@ -284,7 +284,7 @@ WEAPONS['mech peacekeeper'] = {'type': 'laser', 'value': 2500,
                       'melee animation': 'SWIPE',
                       'grip': 'CP_SWORD_GRIP',
                       'image': 38,
-                      'offset': vec(58, 0),
+                      'offset': vec(40, 0),
                       'armor': 0,
                       'weight': 10}
 
@@ -797,6 +797,29 @@ WEAPONS['garbage can lid'] = {'type': 'shield','gun': False, 'value': 10,
                       'offset': vec(0, 0),
                       'armor': 5,
                       'weight': 4}
+WEAPONS['blue plasma sword'] = {'type': 'plasma','gun': False, 'value': 100,
+                      'bullet_speed': 0,
+                      'bullet_lifetime': 0,
+                      'magazine size': 0,
+                      'reload speed': 1,
+                      'rate': 45,
+                      'auto': False,
+                      'kickback': 0,
+                      'knockback': 5,
+                      'spread': 0,
+                      'damage': 10,
+                      'melee damage': 100,
+                      'bullet_size': 'sm1',
+                      'bullet_count': 0,
+                      'walk': 'WALK',
+                      'brightness': 100, 'light mask': 0,
+                      'melee animation': 'SWIPE',
+                      'grip': 'CP_SWORD_GRIP',
+                      'image': 45,
+                      'offset': vec(0, 0),
+                      'armor': 0,
+                      'materials': {'aluminum ingot': 1, 'steel ingot': 1, 'blue crystal':1, 'large laser ammo module': 1}, 'upgrade': {'large laser ammo module': 1},
+                      'weight': 1, 'color': LIGHT_BLUE}
 WEAPONS['enchanted elven dagger'] = {'type': 'dagger','gun': False, 'value': 100,
                       'bullet_speed': 450,
                       'bullet_lifetime': 300,

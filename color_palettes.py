@@ -1,5 +1,22 @@
-PALETE_IMAGES = {'osidine': 1, 'shaktele': 1, 'elf': 1, 'immortui': 3, 'miewdra': 0, 'skeleton': 1, 'mechanima': 2, 'lacertolian': 2, 'blackwraith': 5, 'whitewraith': 4}
-HAIR_PALETE_IMAGES = {'osidine': 0, 'shaktele': 0, 'elf': 0, 'immortui': 0, 'miewdra': 0, 'skeleton': 0, 'mechanima': 2, 'lacertolian': 0, 'blackwraith': 0, 'whitewraith': 0}
+PALETE_IMAGES = {'osidine': 1, 'shaktele': 1, 'elf': 1, 'immortui': 3, 'miewdra': 0, 'skeleton': 1, 'mechanima': 6, 'lacertolian': 2, 'blackwraith': 5, 'whitewraith': 4}
+HAIR_PALETE_IMAGES = {'osidine': 0, 'shaktele': 0, 'elf': 0, 'immortui': 0, 'miewdra': 0, 'skeleton': 0, 'mechanima': 7, 'lacertolian': 0, 'blackwraith': 0, 'whitewraith': 0}
+
+# define some colors (R, G, B)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+DARKGREY = (40, 40, 40)
+LIGHTGREY = (100, 100, 100)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+BROWN = (106, 55, 5)
+CYAN = (0, 255, 255)
+TRANSPARENT = (255, 0, 255)
+SHADOW = (0, 0, 0, 150)
+DEFAULT_HAIR_COLOR = (138,54,15)
+DEFAULT_SKIN_COLOR = (255, 255, 255)
+LIGHT_BLUE = (148, 242, 255)
 
 CLOTHING_COLORS = {
     'red': (245, 96, 66),
