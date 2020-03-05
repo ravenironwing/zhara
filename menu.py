@@ -847,6 +847,8 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
             if self.character.race != "mechanima":
                 if self.character in self.game.lights:
                     self.game.lights.remove(self.character)
+        if 'plasma' in self.character.equipped[self.character.lamp_hand] or 'elven' in self.character.equipped[self.character.lamp_hand]:
+            self.character.light_on = True
         if 'Zhara Talisman' in self.game.player.inventory['items']: # Only lets you transform into a dragon if you have the Zhara Talisman
             self.game.player.transformable = True
         else:

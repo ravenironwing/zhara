@@ -144,7 +144,7 @@ START_WORLD = 'worldmap.tmx'
 UPGRADE_FACTOR = 1.2 # This number determines how much item value increases when upgrading armor and weapons. The higher the number the lower the value.
 
 # Day/Night
-DAY_LENGTH = 15 * 60 * 1000
+DAY_LENGTH = .15 * 60 * 1000
 NIGHT_LENGTH = 9 * 60 * 1000
 DAY_PERIOD = DAY_LENGTH + NIGHT_LENGTH
 NIGHTFALL_SPEED = 100 # The higher the slower. In ms.
