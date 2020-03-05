@@ -443,12 +443,17 @@ class Character_Design_Menu(Menu):
             self.character.immaterial = True
         if self.character.immaterial or 'skeleton' in self.character.equipped['race']:
             self.character.magical_being = True
-        if self.character.race == 'mechanima':
+        if 'mechanima' in self.character.race:
             self.character.brightness = 400
             self.game.lights.add(self.character)
             self.character.light_mask_orig = pg.transform.scale(self.game.light_mask_images[2], (self.character.brightness, self.character.brightness))
             self.character.light_mask = self.character.light_mask_orig.copy()
             self.character.light_mask_rect = self.character.light_mask.get_rect()
+        if self.character.equipped['race'] in ['skeleton', 'immortui', 'blackwraith', 'skeleton dragon', 'immortui dragon', 'blackwraith dragon']:
+            self.character.aggression = 'awd'
+        else:
+            self.character.aggression = 'awp'
+        self.game.beg = perf_counter()  # resets the counter so dt doesn't get messed up.
 
 class Npc_Design_Menu(Character_Design_Menu):
     def __init__(self, game, character = 'player'):
@@ -876,6 +881,10 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
             self.character.calculate_perks()
             # Reloads
             self.character.pre_reload()
+        if self.character.equipped['race'] in ['skeleton', 'immortui', 'blackwraith', 'skeleton dragon', 'immortui dragon', 'blackwraith dragon']:
+            self.character.aggression = 'awd'
+        else:
+            self.character.aggression = 'awp'
         self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
 
@@ -1162,7 +1171,7 @@ class Lock_Menu():
             self.keyway = Lock_Keyway(self.game, self, True)
             self.keyway.turn = True
             self.label_menu = Text(self, "It looks like you have the right key.", default_font, 30, WHITE, 30, 10, "topleft")
-        elif [s for s in self.game.player.inventory['items'] if 'lock pick' in s]: # sees if you have a lock pick of any type in your inventory.
+        elif self.game.player.inventory['items'] != [None] and [s for s in self.game.player.inventory['items'] if 'lock pick' in s]: # sees if you have a lock pick of any type in your inventory.
             self.keyway = Lock_Keyway(self.game, self)
             self.pick = Lock_Pick(self.game, self)
             self.label_menu = Text(self, "Pick Lock: Use W/S to move lock pick and SPACE to try to open the lock.", default_font, 30, WHITE, 30, 10, "topleft")
@@ -2570,6 +2579,7 @@ class Dialogue_Menu():
         if self.do_action:  # Only does the after quest action after you finish talking to them.
             self.action()
         self.game.in_dialogue_menu = False
+        self.game.dialogue_menu_npc = None
         self.game.in_menu = False
         self.game.last_dialogue = pg.time.get_ticks() # Gets the time you exited the menu. This is used so that the menu doesn't keep popping up.
         self.game.beg = perf_counter()  # Resets the counter so the dt doesn't get messed up.

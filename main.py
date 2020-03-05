@@ -950,6 +950,8 @@ class Game:
         self.in_station_menu = False
         self.in_quest_menu = False
         self.in_dialogue_menu = False
+        self.dialogue_menu = None
+        self.dialogue_menu_npc = None
         self.last_hud_update = 0
         self.last_fire = 0
         self.last_dialogue = 0
@@ -2068,9 +2070,11 @@ class Game:
                                 self.message = "E to talk"
                                 if self.e_down:
                                     hits[0].target = self.player
+                                    hits[0].talk_attempt = True
                                     self.message_text = False
-                                    self.dialogue_menu = Dialogue_Menu(self, hits[0])
                                     self.e_down = False
+            if self.dialogue_menu_npc:
+                self.dialogue_menu = Dialogue_Menu(self, self.dialogue_menu_npc)
 
             # player hits work station (forge, grinder, work bench, etc)
             hits = pg.sprite.spritecollide(self.player, self.work_stations, False)
@@ -2135,7 +2139,8 @@ class Game:
             for hit in hits:
                 if hit.name not in ['fire pit']:
                     self.message_text = True
-                    self.message = "E to pick up"
+                    if self.message != "You are carrying too much weight.":
+                        self.message = "E to pick up"
                     if self.e_down:
                         self.player.inventory[hit.item_type].append(hit.item)
                         self.player.calculate_weight()

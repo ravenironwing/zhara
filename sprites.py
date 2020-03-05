@@ -2827,6 +2827,7 @@ class Npc(pg.sprite.Sprite):
         self.last_melee_sound = 0
         self.last_climb = 0
         # State vars
+        self.talk_attempt = False
         self.running = False
         self.fleeing = False
         self.needs_move = False
@@ -3104,15 +3105,6 @@ class Npc(pg.sprite.Sprite):
             self.approach_vector = vec(0, 0)
             self.speed = 0
 
-        if self.equipped['race'] in self.game.player.equipped['race']:
-            #if self.aggression == 'fwd':
-            #    self.aggression = 'awd'
-            #    self.approach_vector = vec(1, 0)
-            if self.aggression == 'awd': # Makes it so NPCs that are your same race only attack you when you provoke them.
-                self.aggression = 'awp'
-                self.approach_vector = vec(1, 0)
-                self.offensive = False
-
     def equip_lamp(self):
         if self.race not in ['mechanima', 'mech_suit']:
             if self.game.night:
@@ -3152,7 +3144,7 @@ class Npc(pg.sprite.Sprite):
                 if mob != self:
                     if not mob.invisible:
                         if mob.aggression == 'awd':
-                            if mob.kind != self.kind:
+                            if mob.race != self.race:
                                 dist = self.pos - mob.pos
                                 dist = dist.length()
                                 if 0 < dist < self.detect_radius:
@@ -3175,7 +3167,7 @@ class Npc(pg.sprite.Sprite):
             for mob in self.game.moving_targets_on_screen: # Only looks at mobs that are on screen
                 if mob != self:
                     if not mob.invisible:
-                        if mob.kind != self.kind:
+                        if mob.race != self.race:
                             self.offensive = True
                             dist = self.pos - mob.pos
                             dist = dist.length()
@@ -3212,6 +3204,10 @@ class Npc(pg.sprite.Sprite):
         else:
             self.last_pos = self.rect.center
             return True
+
+    def turn(self):
+        self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+        self.direction = vec(1, 0).rotate(-self.rot)
 
     def accelerate(self):
         if self.in_player_vehicle:
@@ -3314,11 +3310,20 @@ class Npc(pg.sprite.Sprite):
         if hit:
             self.wall_hit_or = hit.orient
         else:
-            hit = in_wall(self.game, self.game.players, proj_vec) #makes Npc walk around player (hopefully)
+            hit = in_wall(self.game, self.game.players, proj_vec) #makes Npc walk around player
+            hit = in_wall(self.game, self.game.players, proj_vec) #makes Npc walk around player
             if hit:
                 self.target = self.game.player
                 return True
         return not hit
+
+    def check_target(self, target = 'player'): # Sees if the player or another target group is in front of it.
+        if target == 'player':
+            target = self.game.players
+        proj_vec = vec(self.direction.x, self.direction.y)
+        proj_vec.scale_to_length(WALL_DETECT_DIST)
+        proj_vec += self.pos
+        return in_wall(self.game, target, proj_vec)
 
     def target_forward(self):
         proj_vec = vec(self.direction.x, self.direction.y)
@@ -3347,25 +3352,6 @@ class Npc(pg.sprite.Sprite):
                 self.acc = vec(0, 0)
                 if not self.needs_move and (self.target in self.game.moving_targets) and (not self.target.living):  # Makes it so NPC switches target after it kills one.
                     self.seek_mobs()
-                #if not self.needs_move:
-                #    if self.target != self.game.player:
-                #        if not self.target.living:  # Makes it so NPC switches target after it kills one.
-                #            self.offensive = False
-                #            self.seek_mobs()
-                #        if self.aggression in ['awp', 'sap', 'fup']:
-                #            if self.provoked:
-                #                if not self.game.player.invisible:
-                #                    self.target = self.game.player
-                #                    self.offensive = True
-                #    elif self.aggression in ['awp', 'sap', 'fup']:
-                #        if not self.provoked:
-                #            self.offensive = False
-                #        if self.race in ['osidine', 'shaktele', 'elf']: # Makes it so humans and elves attack you if you are zombie or skeleton.
-                #            if self.target == self.game.player:
-                #                if self.game.player.race in ['immortui', 'skeleton']:
-                #                    self.provoked = True
-                #                    self.offensive = True
-                #                    self.approach_vector = vec(1, 0)
 
                 if self in self.game.companions:
                     if self.target == self.game.player:
@@ -3431,35 +3417,36 @@ class Npc(pg.sprite.Sprite):
                 if self.target in self.game.moving_targets_on_screen:
                     if True not in [self.melee_playing, self.animating_reload]:
                         if self.offensive:
-                            if self.aggression not in ['fwd', 'fwp']:
-                                if target_dist_lsquared < self.melee_range**2:
-                                    self.approach_vector = vec(1, 0)
-                                    now = pg.time.get_ticks()
-                                    if now - self.last_melee > randrange(1000, 3000):
-                                        self.last_melee = now
-                                        self.pre_melee()
-                                elif True not in [self.reloading, self.hit_wall, self.swimming]:
-                                    if self.gun:
-                                        if target_dist_lsquared < self.weapon_range ** 2:
-                                            if self.bow:
-                                                if self.arrow:
-                                                    self.shoot()
-                                                    self.arrow.kill()
-                                                    self.arrow = None
+                            if (self.aggression not in ['fwd', 'fwp']):
+                                if self.race != self.target.race or self.provoked: # Won't attack same race unless provoked.
+                                    if target_dist_lsquared < self.melee_range**2:
+                                        self.approach_vector = vec(1, 0)
+                                        now = pg.time.get_ticks()
+                                        if now - self.last_melee > randrange(1000, 3000):
+                                            self.last_melee = now
+                                            self.pre_melee()
+                                    elif True not in [self.reloading, self.hit_wall, self.swimming]:
+                                        if self.gun:
+                                            if target_dist_lsquared < self.weapon_range ** 2:
+                                                if self.bow:
+                                                    if self.arrow:
+                                                        self.shoot()
+                                                        self.arrow.kill()
+                                                        self.arrow = None
+                                                    else:
+                                                        self.reloading = True
+                                                        self.animating_reload = True
                                                 else:
+                                                    self.shoot()
+                                                if self.bullets_shot >= self.mag_size:
+                                                    self.bullets_shot = 0
                                                     self.reloading = True
                                                     self.animating_reload = True
-                                            else:
-                                                self.shoot()
-                                            if self.bullets_shot >= self.mag_size:
-                                                self.bullets_shot = 0
-                                                self.reloading = True
-                                                self.animating_reload = True
-                                    else:
-                                        if target_dist_lsquared < self.detect_radius ** 2:
-                                            magic_chance = randrange(0, 100)
-                                            if magic_chance == 1:
-                                                self.cast_spell()
+                                        else:
+                                            if target_dist_lsquared < self.detect_radius ** 2:
+                                                magic_chance = randrange(0, 100)
+                                                if magic_chance == 1:
+                                                    self.cast_spell()
                                 if self.game.player.in_vehicle:
                                     if target_dist_lsquared < 3*self.melee_range**2:
                                         now = pg.time.get_ticks()
@@ -3481,10 +3468,19 @@ class Npc(pg.sprite.Sprite):
 
                 target_angle = self.target_dist.angle_to(self.approach_vector)
                 if (target_dist_lsquared < self.melee_range**2) and (self.target in self.game.moving_targets_on_screen) and self.offensive and (not self.fleeing): # NPC stops in combat range if offensive
-                    self.animate()
+                    if self.race != self.target.race:
+                        self.animate()
+                    elif self.talk_attempt and self.check_target():
+                        self.game.dialogue_menu_npc = self
+                        self.talk_attempt = False
                     self.rotate_to(vec(1, 0).rotate(-target_angle))
+                    self.turn()
                 elif (target_dist_lsquared < TALK_RADIUS**2) and (self.target in self.game.moving_targets_on_screen) and (not self.offensive) and (not self.fleeing): # NPC stops in talking range if not offensive.
                     self.rotate_to(vec(1, 0).rotate(-target_angle))
+                    self.turn()
+                    if self.talk_attempt and self.check_target():
+                        self.game.dialogue_menu_npc = self
+                        self.talk_attempt = False
                 elif (target_dist_lsquared > 4) and self.check_walls() and True not in [self.melee_playing, self.animating_reload]:
                     self.move_forward(target_angle)
                 elif not self.check_walls():
@@ -3492,10 +3488,10 @@ class Npc(pg.sprite.Sprite):
                     self.move_forward(target_angle)
                 elif self.target not in self.game.entryways_on_screen:
                     self.target = self.goal_target
-                else:  # Makes NPCs keep moving after they open doors.... Hopefully
+                else:  # Makes NPCs keep moving after they open doors.
                     self.move_forward(target_angle)
                     self.target_forward()
-                if self.goal_target_dist.length_squared() < 10: # Seeks a new target once it has reached it's goal.
+                if self.goal_target_dist.length_squared() < 30: # Seeks a new target once it has reached it's goal.
                     self.seek_random_target()
 
                 # Used for lights NPCs are carrying.
@@ -4084,7 +4080,14 @@ class Animal(pg.sprite.Sprite):
         self.frame = 0 #used to keep track of what frame the animation is on.
         self.running = False
         self.jumping = False
-        self.climbing = False
+        if 'climbing' in self.kind.keys() and self.kind['climbing']:
+            self.climbing = True
+        else:
+            self.climbing = False
+        if 'aquatic' in self.kind.keys() and self.kind['aquatic']:
+            self.aquatic = True
+        else:
+            self.aquatic = False
         self.swimming = False
         self.falling = False
         self.invisible = False
@@ -4099,10 +4102,10 @@ class Animal(pg.sprite.Sprite):
             self.aggressive = self.offensive = False
         self.provoked = False
 
-        #Changes animals behavior to be more friendly towards elves.
+        #Changes animals behavior to be more friendly towards elves. I need to change this because it will make all animals friendly to everyone if you are an elf.
         if 'elf' in self.game.player.race:
-            if self.aggression == 'awd':
-                self.aggression = 'awp'
+            #if self.aggression == 'awd':
+            #    self.aggression = 'awp'
             if self.aggression == 'fwd':
                 self.aggression = 'fwp'
         if self.aggression == 'fwd':
@@ -4354,7 +4357,12 @@ class Animal(pg.sprite.Sprite):
                     self.seek_mobs()
                     self.last_target_seek = now0
                 target_dist = self.target.pos - self.pos
-                hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False) + pg.sprite.spritecollide(self, self.game.shallows_on_screen, False) # This part makes the animal avoid walls
+
+                # This part makes the animal avoid walls
+                if self.climbing:
+                    hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False) + pg.sprite.spritecollide(self, self.game.shallows_on_screen, False)
+                else:
+                    hits = pg.sprite.spritecollide(self, self.game.barriers_on_screen, False) + pg.sprite.spritecollide(self, self.game.shallows_on_screen, False) # This part makes the animal avoid walls
                 if hits:
                     self.hit_wall = True
                     now = pg.time.get_ticks()
