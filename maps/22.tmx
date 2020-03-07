@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="29" nextobjectid="187">
+<map version="1.2" tiledversion="1.3.1" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="64" height="64" tilewidth="128" tileheight="128" infinite="0" nextlayerid="29" nextobjectid="193">
  <tileset firstgid="1" name="buildings" tilewidth="128" tileheight="128" tilecount="100" columns="5">
   <image source="../img/map_textures/buildings.png" width="640" height="2560"/>
  </tileset>
@@ -1279,5 +1279,11 @@
   <object id="184" name="charger" x="5412" y="6438.67" width="54.6667" height="46.6667"/>
   <object id="185" name="charger" x="4644.67" y="6440.67" width="54.6667" height="46.6667"/>
   <object id="186" name="blue plasma sword" x="4154.67" y="6292" width="37.3333" height="26.6667"/>
+  <object id="187" name="electric entry" x="5644" y="6330" width="106" height="12"/>
+  <object id="188" name="electric entry" x="6537.67" y="6332" width="106" height="12"/>
+  <object id="189" name="electric entry" x="4873" y="6333.33" width="106" height="12"/>
+  <object id="190" name="electric entry" x="3209" y="6331.33" width="106" height="12"/>
+  <object id="191" name="electric entry" x="2441.67" y="6334.67" width="106" height="12"/>
+  <object id="192" name="electric entry" x="1545" y="6333.33" width="106" height="12"/>
  </objectgroup>
 </map>

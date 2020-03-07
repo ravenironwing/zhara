@@ -1506,7 +1506,6 @@
   <object id="470" name="shaktelevillager" x="3495.03" y="1033.88" width="60.6061" height="57.5758"/>
   <object id="471" name="shaktelevillager" x="3881.7" y="1411.21" width="60.6061" height="57.5758"/>
   <object id="472" name="cindy" x="3461.33" y="813.333" width="68" height="58.6667"/>
-  <object id="489" name="red plasma sword" x="4565.33" y="6674.67" width="37.3333" height="26.6667"/>
  </objectgroup>
  <objectgroup id="38" name="AIPATH">
   <object id="473" name="RL" x="2558.18" y="3068" width="4201.82" height="188"/>

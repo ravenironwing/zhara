@@ -633,6 +633,10 @@ class Game:
         for i, x in enumerate(SHOCK_IMAGES):
             img = pg.image.load(path.join(shock_folder, SHOCK_IMAGES[i])).convert_alpha()
             self.shock_images.append(img)
+        self.electric_door_images = []
+        for i, x in enumerate(ELECTRIC_DOOR_IMAGES):
+            img = pg.image.load(path.join(electric_door_folder, ELECTRIC_DOOR_IMAGES[i])).convert_alpha()
+            self.electric_door_images.append(img)
         self.loading_screen_images = []
         for i, screen in enumerate(LOADING_SCREEN_IMAGES):
             img = pg.image.load(path.join(loading_screen_folder, LOADING_SCREEN_IMAGES[i])).convert()
@@ -1499,8 +1503,7 @@ class Game:
                     number = tile_object.name[-1:]
                     FirePot(self, obj_center, number)
                 if tile_object.name == 'wall':
-                    Obstacle(self, tile_object.x, tile_object.y,
-                             tile_object.width, tile_object.height)
+                    Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
                 if tile_object.name == 'light':
                     LightSource(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
@@ -1557,6 +1560,8 @@ class Game:
                 if 'toilet' in tile_object.name:
                     Toilet(self, tile_object.x, tile_object.y,
                              tile_object.width, tile_object.height)
+                if tile_object.name == 'electric entry':
+                    ElectricDoor(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
                 if 'entryway' in tile_object.name:  # Used for animated doors that can be opened, closed or locked.
                     numvars = tile_object.name.count('_')
                     if numvars == 0:

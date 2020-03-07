@@ -729,7 +729,7 @@ class Vehicle(pg.sprite.Sprite):
         self.game.beg = perf_counter()  # resets dt
 
     def exit_vehicle(self):
-        if driver == self.game.player:
+        if self.driver == self.game.player:
             self.game.hud_health_stats = driver.stats
         self.game.channel6.stop()
         self.forward_sound_playing = False
@@ -3591,7 +3591,7 @@ class Npc(pg.sprite.Sprite):
 
     def depossess(self):
         if self.driver:
-            if driver == self.game.player:
+            if self.driver == self.game.player:
                 self.game.hud_health_stats = driver.stats
             self.driver.possessing = None
             self.knockback = self.kind['knockback']
@@ -4290,7 +4290,7 @@ class Animal(pg.sprite.Sprite):
         self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
 
     def unmount(self):
-        if driver == self.game.player:
+        if self.driver == self.game.player:
             self.game.hud_health_stats = driver.stats
         self.rot_speed = self.orig_rot_speed
         self.game.group.change_layer(self, self.original_layer)
@@ -5045,6 +5045,91 @@ class Entryway(pg.sprite.Sprite):
                 self.game.channel5.play(self.game.effects_sounds['rocks'])
                 self.animate_speed = 50
             self.living = False
+
+class ElectricDoor(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
+    def __init__(self, game, x, y, w, h, locked = False):
+        self._layer = WALL_LAYER
+        self.game = game
+        self.image_list = self.game.electric_door_images
+        self.groups = game.all_sprites, game.entryways, game.lights
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.animate_speed = 50
+        self.game.group.add(self)
+        if h > w:
+            self.orientation = 'v'
+            self.image = pg.transform.rotate(self.image_list[0], 90)
+        else:
+            self.orientation = 'h'
+            self.image = self.image_list[0]
+        self.rect = self.image.get_rect()
+        self.center = (x + w/2, y + h/2)
+        self.hit_rect = self.rect
+        self.hit_rect.center = self.rect.center = self.center
+        self.w = w
+        self.h = h
+        self.light_mask = pg.transform.scale(self.game.light_mask_images[4], (int(self.w + 90), int(self.h + 90)))
+        self.light_mask_rect = self.light_mask.get_rect()
+        self.light_mask_rect.center = self.rect.center
+        self.frame = 0
+        self.last_move = 0
+        self.locked = locked
+        self.combo = randrange(10, 350)
+        self.difficulty = randrange(0, 30)
+        self.length = 88
+        self.stats = {'health': 100, 'max health': 100}
+        self.protected = False
+        self.open = False
+        self.close = False
+        self.opened = False
+        self.inventory = {'locked': self.locked, 'combo': self.combo,'difficulty': self.difficulty}
+        self.last_hit = 0
+        self.living = True
+        self.pos = vec(self.rect.centerx, self.rect.centery)
+        self.vel = vec(0, 0)
+        self.acc = vec(0, 0)
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if now - self.last_move > self.animate_speed:
+            self.animate()
+            self.last_move = now
+            if self.orientation == 'v':
+                self.image = pg.transform.rotate(self.image_list[self.frames], 90)
+            else:
+                self.image = self.image_list[self.frame]
+            self.image = self.image_list[self.frame]
+            self.rect.center = self.center
+            self.light_mask_rect.center = self.rect.center
+
+        if self.open:
+            now = pg.time.get_ticks()
+            if now - self.last_move > self.animate_speed:
+                self.animate_open()
+                self.rotate_image()
+                self.last_move = now
+
+        if self.close:
+            now = pg.time.get_ticks()
+            if now - self.last_move > self.animate_speed:
+                self.animate_close()
+                self.rotate_image()
+                self.last_move = now
+
+    def animate(self):
+        self.frame += 1
+        if self.frame > len(self.image_list) - 1:
+            self.frame = 0
+
+    def animate_open(self):
+        pass
+
+    def animate_close(self):
+        pass
+        #self.game.effects_sounds['door close'].play()
+
+    def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
+        pass
+
 
 class Explosion(pg.sprite.Sprite):
     def __init__(self, game, target = None, knockback = 0, damage = 0, center = None, after_effect = None, sky = False):

@@ -72,6 +72,7 @@ bullets_folder = path.join(img_folder, 'bullets')
 fire_folder = path.join(img_folder, 'fire_animation')
 breakable_folder = path.join(img_folder, 'breakable')
 shock_folder = path.join(img_folder, 'shock_animation')
+electric_door_folder = path.join(img_folder, 'electric_door_animation')
 fireball_folder = path.join(img_folder, 'fireball')
 explosion_folder = path.join(img_folder, 'explosion')
 weapons_folder = path.join(img_folder, 'weapons')
@@ -248,6 +249,12 @@ number_of_files = len([name for name in os.listdir(shock_folder) if os.path.isfi
 for i in range(1, number_of_files + 1):
     filename = 'shock{}.png'.format(i)
     SHOCK_IMAGES.append(filename)
+
+ELECTRIC_DOOR_IMAGES = []
+number_of_files = len([name for name in os.listdir(electric_door_folder) if os.path.isfile(os.path.join(electric_door_folder, name))])
+for i in range(1, number_of_files + 1):
+    filename = 'electric{}.png'.format(i)
+    ELECTRIC_DOOR_IMAGES.append(filename)
 
 FIREBALL_IMAGES = []
 number_of_files = len([name for name in os.listdir(fireball_folder) if os.path.isfile(os.path.join(fireball_folder, name))])
