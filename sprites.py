@@ -730,7 +730,7 @@ class Vehicle(pg.sprite.Sprite):
 
     def exit_vehicle(self):
         if self.driver == self.game.player:
-            self.game.hud_health_stats = driver.stats
+            self.game.hud_health_stats = self.driver.stats
         self.game.channel6.stop()
         self.forward_sound_playing = False
         self.pos = vec(self.rect.center)
@@ -1256,6 +1256,7 @@ class Player(pg.sprite.Sprite):
         self.possessing = None
         self.transformable = False
         self.weapon_hand = 'weapons'
+        self.flying = False
         self.jumping = False
         self.jump_count = 0
         self._climbing = False
@@ -3592,7 +3593,7 @@ class Npc(pg.sprite.Sprite):
     def depossess(self):
         if self.driver:
             if self.driver == self.game.player:
-                self.game.hud_health_stats = driver.stats
+                self.game.hud_health_stats = self.driver.stats
             self.driver.possessing = None
             self.knockback = self.kind['knockback']
             if self.driver.swimming:
@@ -4291,7 +4292,7 @@ class Animal(pg.sprite.Sprite):
 
     def unmount(self):
         if self.driver == self.game.player:
-            self.game.hud_health_stats = driver.stats
+            self.game.hud_health_stats = self.driver.stats
         self.rot_speed = self.orig_rot_speed
         self.game.group.change_layer(self, self.original_layer)
         self.occupied = False
@@ -5048,10 +5049,10 @@ class Entryway(pg.sprite.Sprite):
 
 class ElectricDoor(pg.sprite.Sprite): # Used for fires and other stationary animated sprites
     def __init__(self, game, x, y, w, h, locked = False):
-        self._layer = WALL_LAYER
+        self._layer = BULLET_LAYER
         self.game = game
         self.image_list = self.game.electric_door_images
-        self.groups = game.all_sprites, game.entryways, game.lights
+        self.groups = game.all_sprites, game.entryways, game.lights, game.electric_doors
         pg.sprite.Sprite.__init__(self, self.groups)
         self.animate_speed = 50
         self.game.group.add(self)
@@ -5087,6 +5088,7 @@ class ElectricDoor(pg.sprite.Sprite): # Used for fires and other stationary anim
         self.pos = vec(self.rect.centerx, self.rect.centery)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
+        self.damage = 50
 
     def update(self):
         now = pg.time.get_ticks()
@@ -5094,10 +5096,10 @@ class ElectricDoor(pg.sprite.Sprite): # Used for fires and other stationary anim
             self.animate()
             self.last_move = now
             if self.orientation == 'v':
-                self.image = pg.transform.rotate(self.image_list[self.frames], 90)
+                self.image = pg.transform.rotate(self.image_list[self.frame], 90)
+                self.rect = self.image.get_rect()
             else:
                 self.image = self.image_list[self.frame]
-            self.image = self.image_list[self.frame]
             self.rect.center = self.center
             self.light_mask_rect.center = self.rect.center
 
@@ -5121,14 +5123,26 @@ class ElectricDoor(pg.sprite.Sprite): # Used for fires and other stationary anim
             self.frame = 0
 
     def animate_open(self):
-        pass
+        self.open = False
+        self.opened = True
 
     def animate_close(self):
-        pass
+        self.close = False
+        self.opened = False
         #self.game.effects_sounds['door close'].play()
 
-    def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE):
-        pass
+    def gets_hit(self, damage, knockback = 0, rot = 0, dam_rate = DAMAGE_RATE, player = None):
+        if not player:
+            return
+        elif 'plasma' in player.equipped[player.weapon_hand]:  #makes it so plasma weapons can kill electric doors.
+            now = pg.time.get_ticks()
+            if now - self.last_hit > dam_rate:
+                self.last_hit = now
+                self.stats['health'] -= damage
+                self.game.channel5.stop()
+                self.game.channel5.play(self.game.weapon_hit_sounds['plasma'][0])
+            if self.stats['health'] <= 0:
+                self.kill()
 
 
 class Explosion(pg.sprite.Sprite):

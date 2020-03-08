@@ -846,6 +846,8 @@ class Game:
         self.animals_on_screen = pg.sprite.Group()
         self.fires = pg.sprite.Group()
         self.fires_on_screen = pg.sprite.Group()
+        self.electric_doors = pg.sprite.Group()
+        self.electric_doors_on_screen = pg.sprite.Group()
         self.entryways = pg.sprite.Group()
         self.entryways_on_screen = pg.sprite.Group()
         self.breakable = pg.sprite.Group()
@@ -1864,6 +1866,7 @@ class Game:
         # dynamic sprites on screen
         self.vehicles_on_screen.empty()
         self.entryways_on_screen.empty()
+        self.electric_doors_on_screen.empty()
         self.breakable_on_screen.empty()
         self.corpses_on_screen.empty()
         self.dropped_items_on_screen.empty()
@@ -1879,6 +1882,8 @@ class Game:
                 self.sprites_on_screen.add(sprite)
                 if sprite in self.entryways:
                     self.entryways_on_screen.add(sprite)
+                    if sprite in self.electric_doors:
+                        self.electric_doors_on_screen.add(sprite)
                 elif sprite in self.vehicles:
                     self.vehicles_on_screen.add(sprite)
                     if sprite in self.walls:
@@ -2009,7 +2014,10 @@ class Game:
             if self.player.melee_playing:
                 hits = pg.sprite.spritecollide(self.player.body, self.entryways_on_screen, False, melee_hit_rect)
                 if hits:
-                    self.player.does_melee_damage(hits[0])
+                    if hits[0] in self.electric_doors_on_screen:
+                        hits[0].gets_hit(40, 0, 0, 100, self.player)
+                    else:
+                        self.player.does_melee_damage(hits[0])
 
             # player hits entryway (a door)
             hits = pg.sprite.spritecollide(self.player, self.entryways_on_screen, False, entryway_collide)
@@ -2170,18 +2178,36 @@ class Game:
                             weapon_type = None
                     bush.gets_hit(weapon_type)
 
-            # player hits lava
-            hits = pg.sprite.spritecollide(self.player, self.lava_on_screen, False)
-            if hits:
-                if not self.player.jumping:
-                    self.player.gets_hit(hits[0].damage, 0, 0)
-                    now = pg.time.get_ticks()
-                    if now - self.last_fire > 300:
-                        pos = self.player.pos + vec(-1, -1)
-                        self.effects_sounds['fire blast'].play()
-                        Stationary_Animated(self, self.player.pos, 'fire', 3000)
-                        Stationary_Animated(self, pos, 'fire', 1000)
-                        self.last_fire = now
+            # moving target hits lava
+            hits = pg.sprite.groupcollide(self.moving_targets_on_screen, self.lava_on_screen, False, False)
+            for hit in hits:
+                for lava in hits[hit]:
+                    if not (hit.jumping or hit.flying):
+                        hit.gets_hit(lava.damage, 0, 0)
+                        now = pg.time.get_ticks()
+                        if now - self.last_fire > 300:
+                            pos = hit.pos + vec(-1, -1)
+                            self.effects_sounds['fire blast'].play()
+                            Stationary_Animated(self, hit.pos, 'fire', 3000)
+                            Stationary_Animated(self, pos, 'fire', 1000)
+                            self.last_fire = now
+
+            # moving target hits electric door
+            hits = pg.sprite.groupcollide(self.moving_targets_on_screen, self.electric_doors_on_screen, False, False)
+            for hit in hits:
+                if hit.race not in ['mechanima', 'mechanima dragon', 'mech_suit']:
+                    for edoor in hits[hit]:
+                        if not (hit.jumping or hit.flying):
+                            hit.gets_hit(edoor.damage, 0, 50)
+                            now = pg.time.get_ticks()
+                            if now - self.last_fire > 300:
+                                pos = hit.pos + vec(-1, -1)
+                                self.effects_sounds['fire blast'].play()
+                                Stationary_Animated(self, hit.pos, 'fire', 3000)
+                                Stationary_Animated(self, pos, 'fire', 1000)
+                                self.last_fire = now
+                else:
+                    hit.add_health(0.02)
 
             # NPC hit player
             hits = pg.sprite.spritecollide(self.player, self.npcs_on_screen, False, pg.sprite.collide_circle_ratio(0.7))
