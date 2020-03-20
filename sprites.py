@@ -663,7 +663,7 @@ class Vehicle(pg.sprite.Sprite):
 
     def get_keys(self):
         keys = pg.key.get_pressed()
-        if keys[pg.K_x]:
+        if keys[KEY_MAP['exit']]:
             self.exit_vehicle()
 
     def reequip(self):
@@ -1368,43 +1368,43 @@ class Player(pg.sprite.Sprite):
                     self.dual_shoot(True)
 
         keys = pg.key.get_pressed()
-        if keys[pg.K_TAB]:
+        if keys[KEY_MAP['melee']]:
             self.pre_melee()
 
         # WASD keys for forward/rev and rotation
         if self.in_vehicle == False:
-            if keys[pg.K_z] and (keys[pg.K_w] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
+            if keys[KEY_MAP['strafe left']] and (keys[KEY_MAP['forward']] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
                 self.accelerate(0.8, "diagonal left")
-            elif keys[pg.K_c] and (keys[pg.K_w] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
+            elif keys[KEY_MAP['strafe right']] and (keys[KEY_MAP['forward']] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
                 self.accelerate(0.8, "diagonal right")
-            elif keys[pg.K_z]:
+            elif keys[KEY_MAP['strafe left']]:
                 self.accelerate(0.8, "left")
-            elif keys[pg.K_c]:
+            elif keys[KEY_MAP['strafe right']]:
                 self.accelerate(0.8, "right")
-            elif keys[pg.K_w] or (mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
+            elif keys[KEY_MAP['forward']] or (mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
                 self.accelerate()
-            elif keys[pg.K_s]:
+            elif keys[KEY_MAP['back']]:
                 self.accelerate(0.5, "rev")
-            if keys[pg.K_a]:
+            if keys[KEY_MAP['rot left']]:
                 self.rot_speed = PLAYER_ROT_SPEED
-            if keys[pg.K_d]:
+            if keys[KEY_MAP['rot right']]:
                 self.rot_speed = -PLAYER_ROT_SPEED
         else:
-            if keys[pg.K_a]:
+            if keys[KEY_MAP['rot left']]:
                 self.rot_speed = self.vehicle.rot_speed
-            if keys[pg.K_d]:
+            if keys[KEY_MAP['rot right']]:
                 self.rot_speed = -self.vehicle.rot_speed
-            if keys[pg.K_w] or (mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
+            if keys[KEY_MAP['forward']] or (mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0)):
                 self.accelerate()
                 self.vehicle.forward = True
             else:
                 self.vehicle.forward = False
-            if keys[pg.K_s]:
+            if keys[KEY_MAP['back']]:
                 self.accelerate(0.5, "rev")
         now = pg.time.get_ticks()
 
         # Running
-        if keys[pg.K_LSHIFT] and self.is_moving():
+        if keys[KEY_MAP['sprint']] and self.is_moving():
             if self.stats['stamina'] > 10 and not self.in_vehicle:
                 if self.arrow == None:
                     if now - self.last_shift > 100:
@@ -1511,7 +1511,7 @@ class Player(pg.sprite.Sprite):
                 animate_speed = 250
             elif self.is_reloading:
                 animate_speed = 120 # This animation is set up in the reload method
-            elif keys[pg.K_LSHIFT] and self.stats['stamina'] > 10:
+            elif keys[KEY_MAP['sprint']] and self.stats['stamina'] > 10:
                 if self.arrow == None:
                     self.animation_playing = self.body.run_anim
                     animate_speed = 80
@@ -1622,9 +1622,9 @@ class Player(pg.sprite.Sprite):
                 regen_delay = time_delay * time_reduction_factor + time_delay/6
                 if now - self.last_stam_regen > regen_delay:
                     keys = pg.key.get_pressed()
-                    if not (keys[pg.K_v] or self.is_attacking()):
-                        if not (keys[pg.K_LSHIFT] and self.is_moving()):
-                            self.add_stamina((6 + self.stats['stamina regen']/50) * self.stats['hunger']) # Stamina regenerates based off of your hunger level
+                    if not (keys[KEY_MAP['climb']] or self.is_attacking()):
+                        if not (keys[KEY_MAP['sprint']] and self.is_moving()):
+                            self.add_stamina((6 + self.stats['stamina regen']/50) * self.stats['hunger']/self.stats['max hunger']) # Stamina regenerates based off of your hunger level
                             if (self.stats['hunger'] > 75) or not self.hungers:  # You only heal when you're not too hungry.
                                 self.add_health(self.stats['healing'] / 150)
                             self.last_stam_regen = pg.time.get_ticks()
@@ -2551,7 +2551,7 @@ class Player(pg.sprite.Sprite):
     def is_moving(self):
         keys = pg.key.get_pressed()
         mouse_buttons_down = pg.mouse.get_pressed()
-        return (keys[pg.K_w] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0) or keys[pg.K_RIGHT] or keys[pg.K_LEFT] or keys[pg.K_UP] or keys[pg.K_DOWN])
+        return (keys[KEY_MAP['forward']] or mouse_buttons_down == (0, 1, 0) or mouse_buttons_down == (0, 1, 1) or mouse_buttons_down == (1, 1, 0))
     def is_attacking(selfself):
         mouse_buttons_down = pg.mouse.get_pressed()
         return (mouse_buttons_down == (1, 0, 0) or mouse_buttons_down == (0, 0, 1) or mouse_buttons_down == (1, 1, 0) or mouse_buttons_down == (0, 1, 1))
@@ -4255,13 +4255,13 @@ class Animal(pg.sprite.Sprite):
 
     def get_keys(self):
         keys = pg.key.get_pressed()
-        if keys[pg.K_LSHIFT]:
+        if keys[KEY_MAP['sprint']]:
             self.driver.acceleration = self.run_speed / 40
             self.running = True
         else:
             self.driver.acceleration = self.walk_speed / 14
             self.running = False
-        if keys[pg.K_x]:
+        if keys[KEY_MAP['exit']]:
             self.unmount()
 
     def mount(self, driver):

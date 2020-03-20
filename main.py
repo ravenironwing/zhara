@@ -963,8 +963,8 @@ class Game:
         self.last_dialogue = 0
         self.hud_health_stats = self.player.stats
         self.hud_health = self.hud_health_stats['health'] / self.hud_health_stats['max health']
-        self.hud_stamina = 0
-        self.hud_magica = 0
+        self.hud_stamina = self.hud_health_stats['stamina'] / self.hud_health_stats['max stamina']
+        self.hud_magica = self.hud_health_stats['magica'] / self.hud_health_stats['max magica']
         self.hud_mobhp = 0
         self.show_mobhp = False
         self.last_mobhp_update = 0
@@ -2130,7 +2130,7 @@ class Game:
             hits = pg.sprite.spritecollide(self.player, self.elevations_on_screen, False)
             if hits:
                 keys = pg.key.get_pressed()
-                if keys[pg.K_v]:
+                if keys[KEY_MAP['climb']]:
                     if self.player.stats['stamina'] > 10 and not self.player.in_vehicle:
                         self.player.climbing = True
                     else:
@@ -2855,26 +2855,26 @@ class Game:
                 else: # Prevents e_down from getting stuck on true
                     self.e_down = False
             if event.type == pg.KEYDOWN:
-                if event.key in  [pg.K_ESCAPE, pg.K_i]:
+                if event.key in  [pg.K_ESCAPE, KEY_MAP['inventory']]:
                     self.player.empty_mags() # This makes sure the bullets in your clip don't transfer to the wrong weapons if you switch weapons in your inventory
                     self.in_inventory_menu = True
                     self.in_menu = True
-                if event.key == pg.K_e:
+                if event.key == KEY_MAP['grab']:
                     self.e_down = True
                 else:
                     self.e_down = False
                 #if event.key == pg.K_BACKQUOTE:  # Switches to last weapon
                 #    self.player.toggle_previous_weapons()
-                if event.key == pg.K_k:
+                if event.key == KEY_MAP['skill']:
                     self.in_stats_menu = True
-                if event.key == pg.K_j:
+                if event.key == KEY_MAP['quest']:
                     self.in_quest_menu = self.in_menu = True
                     self.quest_menu = Quest_Menu(self)
-                if event.key == pg.K_r:
+                if event.key == KEY_MAP['reload']:
                     self.player.pre_reload()
-                if event.key == pg.K_h:
+                if event.key == KEY_MAP['hitbox']:
                     self.draw_debug = not self.draw_debug
-                if event.key == pg.K_p:
+                if event.key == KEY_MAP['pause']:
                     trace_mem()
                     if self.player.vehicle:
                         print(self.group.get_layer_of_sprite(self.player.vehicle))
@@ -2884,38 +2884,38 @@ class Game:
                     self.map.minimap.resize()
                 if event.key == pg.K_MINUS:
                     self.map.minimap.resize(False)
-                if event.key == pg.K_m: # Toggles hud mini map
+                if event.key == KEY_MAP['minimap']: # Toggles hud mini map
                     self.hud_map = not self.hud_map
-                if event.key == pg.K_o: # Toggles overworld map
+                if event.key == KEY_MAP['overmap']: # Toggles overworld map
                     self.hud_overmap = not self.hud_overmap
-                if event.key == pg.K_b:
+                if event.key == KEY_MAP['use']:
                     if not self.in_store_menu:
                         self.player.use_item()
-                if event.key == pg.K_y:
+                if event.key == KEY_MAP['place']:
                     self.player.place_item()
-                if event.key == pg.K_g:
+                if event.key == KEY_MAP['grenade']:
                     self.player.throw_grenade()
-                if event.key == pg.K_t:
+                if event.key == KEY_MAP['transform']:
                     if self.player.possessing == None:
                         self.player.transform()
                     else:
                         self.player.possessing.depossess()
 
-                if event.key == pg.K_f:
+                if event.key == KEY_MAP['fire']:
                     if self.player.dragon:
                         self.player.breathe_fire()
-                if event.key == pg.K_l:
+                if event.key == KEY_MAP['craft']:
                     self.in_station_menu = True
                     self.in_menu = True
                     self.station_menu = Work_Station_Menu(self, 'crafting')
-                if event.key == pg.K_n:
+                if event.key == KEY_MAP['lamp']:
                     self.player.light_on = not self.player.light_on
-                if event.key == pg.K_u:
+                if event.key == KEY_MAP['up']:
                     if self.player.in_vehicle:
                         if self.player.vehicle in self.flying_vehicles:
                             self.fly_menu = Fly_Menu(self)
 
-                if event.key == pg.K_q:
+                if event.key == KEY_MAP['cast']:
                     self.player.cast_spell()
                 if event.key == pg.K_RETURN:   # Toggles fullscreen mode when you press ALT+ENTER
                     if event.mod & pg.KMOD_ALT:
@@ -2929,10 +2929,10 @@ class Game:
                     if event.mod & pg.KMOD_CTRL:
                         self.screen.fill(BLACK)
                         self.save()
-                if event.key ==  pg.K_l: # Saves game
+                if event.key ==  pg.K_l: # loads game
                     if event.mod & pg.KMOD_CTRL:
                         self.in_load_menu = True
-                if event.key == pg.K_SPACE:
+                if event.key == KEY_MAP['jump']:
                     self.player.pre_jump()
 
     def show_go_screen(self):

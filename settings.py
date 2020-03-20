@@ -141,8 +141,9 @@ OVERWORLD_MAP_IMAGE = 'worldmap.png'
 #GRIDHEIGHT = HEIGHT / MAP_TILE_WIDTH
 #TILESIZE = 128 # 128 pixels by 128 pixels per tile
 START_WORLD = 'worldmap.tmx'
-
 UPGRADE_FACTOR = 1.2 # This number determines how much item value increases when upgrading armor and weapons. The higher the number the lower the value.
+
+KEY_MAP = {'jump': pg.K_SPACE, 'sprint': pg.K_LSHIFT, 'forward': pg.K_w, 'back': pg.K_s, 'rot left': pg.K_a, 'rot right': pg.K_d, 'strafe left': pg.K_z, 'strafe right': pg.K_c, 'exit': pg.K_x, 'cast': pg.K_q, 'grab': pg.K_e, 'reload': pg.K_r, 'fire': pg.K_f, 'climb': pg.K_v, 'use': pg.K_b, 'lamp': pg.K_n, 'transform': pg.K_t, 'grenade': pg.K_g, 'place': pg.K_y, 'overmap': pg.K_o, 'minimap': pg.K_m, 'pause': pg.K_p, 'skill': pg.K_k, 'quest': pg.K_j, 'craft': pg.K_l, 'up': pg.K_u, 'hitbox': pg.K_h, 'inventory': pg.K_i, 'melee': pg.K_TAB}
 
 # Day/Night
 DAY_LENGTH = 15 * 60 * 1000

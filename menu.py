@@ -974,7 +974,7 @@ class Loot_Menu(Inventory_Menu):
                     # Removes items from inventory if you don't have room for them
                     if self.game.player.stats['weight'] > self.game.player.stats['max weight']:
                         for item_type in range(0, 8):
-                            for i, item in enumerate(self.container.inventory[ITEM_TYPE_LIST[item_type]]):
+                            for item in self.container.inventory[ITEM_TYPE_LIST[item_type]].copy():
                                 if item:
                                     self.game.player.inventory[ITEM_TYPE_LIST[item_type]].remove(item)
                                     self.game.player.stats['looting'] -= 1
@@ -1505,7 +1505,7 @@ class Stats_Menu(Draw_Text):
 
         # Prints out player's stats
         for i, item in enumerate(self.game.player.stats):
-            self.draw_text(item + ": " + str(round(self.game.player.stats[item], 2)), default_font, 30, WHITE, 20, 60 + (30 * i), "topleft")
+            self.draw_text(item + ": " + str(round(self.game.player.stats[item], 2)), default_font, 20, WHITE, 20, 60 + (25 * i), "topleft")
         self.draw_text("Right Click to Select Menu  E or K to exit menu       ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 

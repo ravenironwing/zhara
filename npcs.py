@@ -136,13 +136,13 @@ PEOPLE['tamolin'] = {'name': 'Tamolin the Mage', 'dead': False, 'quest': 'Ant eg
     'colors':  {'hair': COLOR_PALETTE[20], 'skin': SHAKTELE_SKIN_TONES[8]}, 'dialogue': 'TAMOLIN_DLG', 'store': TAMOLIN_STORE,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['lantern', 'bronze mace'], 'hats': ['red cloak'], 'hair': ['short'], 'tops': ['blue mage robe top M'], 'bottoms': ['blue mage robe bottom'], 'shoes': ['brown boots'], 'gloves': [None], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
-PEOPLE['kimmy'] = {'name': 'Kimmy', 'dead': False, 'protected': True,'health': 1000, 'touch damage': False, 'damage': 15, 'knockback': 1, 'walk speed': (300, 400), 'run speed': 400, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': True, 'dual wield': False,
+PEOPLE['kimmy'] = {'name': 'Kimmy', 'dead': False, 'protected': True,'health': 1000, 'touch damage': False, 'damage': 15, 'knockback': 1, 'walk speed': (150, 200), 'run speed': 300, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': True, 'dual wield': False,
     'collide': ['walls'],
     'gender': 'female', 'race': 'elf',
     'colors':  {'hair': COLOR_PALETTE[3], 'skin': OSIDINE_SKIN_TONES[2]}, 'dialogue': 'KIMMY_DLG', 'store': None,
     'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['lantern'], 'hats': [None], 'hair': ['long straight'], 'tops': ['fuchsia tshirt F'], 'bottoms': ['red mini dress skirt'], 'shoes': [None], 'gloves': [None], 'gold': randrange(100, 200), 'items': ['random'], 'magic': [None]},
     'animations': {'walk': RUNNING}}
-PEOPLE['loella'] = {'name': 'Loella', 'dead': False, 'quest': 'A fish for Loella', 'protected': True,'health': 1000, 'touch damage': False, 'damage': 0, 'knockback': 1, 'walk speed': (200, 300), 'run speed': 400, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': True, 'dual wield': False,
+PEOPLE['loella'] = {'name': 'Loella', 'dead': False, 'quest': 'A fish for Loella', 'protected': True,'health': 1000, 'touch damage': False, 'damage': 0, 'knockback': 1, 'walk speed': (100, 150), 'run speed': 300, 'detect radius': 200, 'avoid radius': 100, 'aggression': 'fwp', 'armed': True, 'dual wield': False,
     'collide': ['walls', 'water'],
     'gender': 'female', 'race': 'elf',
     'colors':  {'hair': COLOR_PALETTE[15], 'skin': OSIDINE_SKIN_TONES[4]}, 'dialogue': 'LOELLA_DLG', 'store': None,
