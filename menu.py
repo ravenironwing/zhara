@@ -1974,7 +1974,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
             item_dict = eval(self.item_type.upper())
             for item in item_dict:
                 if item:
-                    if 'LV' not in item:    # no upgraded items show in forge
+                    if ('LV' not in item) and ('HP' not in item):    # no upgraded/damaged items show in forge
                         if ' M' in item:
                             if self.game.player.equipped['gender'] not in ['male']:
                                 continue
@@ -2726,17 +2726,18 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
 
         row = 0
         for item in self.store_inventory[self.item_type]:
-            if ' M' in item:
-                if self.game.player.equipped['gender'] not in ['male']:
-                    continue
-            elif ' F' in item:
-                if self.game.player.equipped['gender'] not in ['female', 'other']:
-                    continue
-            if item not in displayed_list:
-                item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
-                self.item_sprites.add(item_name)
-                displayed_list.append(item)
-                row += 1
+            if item:
+                if ' M' in item:
+                    if self.game.player.equipped['gender'] not in ['male']:
+                        continue
+                elif ' F' in item:
+                    if self.game.player.equipped['gender'] not in ['female', 'other']:
+                        continue
+                if item not in displayed_list:
+                    item_name = Text(self, item, default_font, 20, WHITE, 50, 30 * row + 75, "topleft")
+                    self.item_sprites.add(item_name)
+                    displayed_list.append(item)
+                    row += 1
         self.game.player.calculate_weight()
 
     def display_item_info(self, item):

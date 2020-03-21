@@ -4521,7 +4521,7 @@ class Animal(pg.sprite.Sprite):
             self.remove(self.game.animals)
             self.remove(self.game.moving_targets)
             self.add(self.game.corpses)
-            self.game.all_sprites.change_layer(self, ITEMS_LAYER) # Switches the corpse to items layer
+            self.game.group.change_layer(self, ITEMS_LAYER) # Switches the corpse to items layer
             self.image = pg.transform.rotate(self.game.corpse_images[self.kind['corpse']], self.rot)
             self.rect = self.image.get_rect()
             self.rect.center = self.pos
@@ -5107,14 +5107,12 @@ class ElectricDoor(pg.sprite.Sprite): # Used for fires and other stationary anim
             now = pg.time.get_ticks()
             if now - self.last_move > self.animate_speed:
                 self.animate_open()
-                self.rotate_image()
                 self.last_move = now
 
         if self.close:
             now = pg.time.get_ticks()
             if now - self.last_move > self.animate_speed:
                 self.animate_close()
-                self.rotate_image()
                 self.last_move = now
 
     def animate(self):

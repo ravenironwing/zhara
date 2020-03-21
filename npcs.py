@@ -19,7 +19,6 @@ LIZ_STORE = {'markup': 1.2, 'pvalue': 0.7, 'inventory': {'gender': list(GENDER.k
 MAX_STORE = {'markup': 1.1, 'pvalue': 0, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['potion of moderate healing', 'potion of major healing', 'potion of moderate stamina', 'potion of moderate magica', 'distilled alcohol', 'ale', 'bottled water', 'ale of the gods'], 'magic': [None]}}
 CINDY_STORE = {'markup': 1.2, 'pvalue': 0, 'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': [None], 'hats': [None], 'hair': [None], 'tops': [None], 'bottoms': [None], 'shoes': [None], 'gloves': [None], 'gold': 0, 'items': ['potion of moderate healing', 'potion of major healing', 'potion of moderate stamina', 'potion of moderate magica', 'distilled alcohol', 'ale', 'bottled water', 'ale of the gods', 'roasted chicken', 'roasted bluefish', 'french bread', 'baked potato', 'chicken soup'], 'magic': [None]}}
 
-
 NPC_TYPE_LIST = ['people', 'animals']
 # NPCs Settings
 PEOPLE = {}
@@ -299,7 +298,7 @@ PEOPLE['mechanima blacksmith'] = {'name': 'Minimus Prime the Blacksmith', 'dead'
     'collide': ['obstacles'],
     'gender': 'male', 'race': 'mechanima',
     'colors':  {'hair': MECHANIMA_SKIN_TONES[20], 'skin': MECHANIMA_SKIN_TONES[1]}, 'dialogue': 'BLACKSMITH_DLG', 'store': MECHANIMA_BLACKSMITH_STORE,
-    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': [None], 'hair': ['full LED skin'], 'tops': ['steel guard armor'], 'bottoms': ['steel chainmail leggings M'], 'shoes': ['black combat'], 'gloves': ['steel gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
+    'inventory': {'gender': list(GENDER.keys()), 'race': RACE_TYPE_LIST, 'weapons': ['smithing hammer'], 'hats': [None], 'hair': ['full LED skin'], 'tops': ['steel mechanima armor'], 'bottoms': ['steel mechanima plated leggings'], 'shoes': ['steel mechanima boots'], 'gloves': ['steel mechanima gauntlets'], 'gold': randrange(100, 1000), 'items': ['random'], 'magic': [None]},
     'animations': {None}}
 
 PEOPLE['mech suit'] = {'name': 'Mech Suit', 'protected': False, 'health': 600, 'touch damage': False, 'damage': 60, 'knockback': 20, 'walk speed': (100, 110), 'run speed': 480, 'detect radius': 50, 'avoid radius': 10, 'aggression': 'sap', 'armed': True, 'dual wield': False,

@@ -87,6 +87,7 @@ for item in HAIR:
 SHOES = {}
 for material in MATERIALS:
     SHOES[material + ' boots'] = {'armor': 15 * MATERIALS[material]['hardness'], 'weight': 5 * MATERIALS[material]['weight'], 'image': 0, 'materials': {material + ' ingot': 2, 'leather': 2},  'upgrade': {material + ' ingot': 1, 'leather': 1}, 'value': 120 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
+    SHOES[material + ' mechanima boots'] = {'armor': 35 * MATERIALS[material]['hardness'], 'weight': 5.2 * MATERIALS[material]['weight'], 'image': 6, 'materials': {material + ' ingot': 2, 'machine screws': 2},  'upgrade': {material + ' ingot': 1, 'machine screws': 1}, 'value': 120 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
 SHOES['black combat'] = {'armor': 2, 'weight': 0.8, 'image': 1, 'materials': {'steel ingot': 1, 'leather': 2}, 'upgrade': {'leather': 1}, 'value': 45}
 SHOES['green combat'] = {'armor': 2, 'weight': 0.8, 'image': 2, 'materials': {'steel ingot': 1, 'leather': 2}, 'upgrade': {'leather': 1}, 'value': 45}
 SHOES['brown boots'] = {'armor': 1, 'weight': 0.3, 'image': 3, 'materials': {'leather': 2}, 'upgrade': {'leather': 1}, 'value': 5}
@@ -99,6 +100,7 @@ for color in CLOTHING_COLORS:
     GLOVES[color + ' dress gloves'] = {'armor': 1, 'weight': 0.1, 'image': 3, 'color': CLOTHING_COLORS[color]}
 for material in MATERIALS:
     GLOVES[material + ' gauntlets'] = {'armor': 12 * MATERIALS[material]['hardness'], 'weight': 4 * MATERIALS[material]['weight'], 'image': 0, 'materials': {material + ' ingot': 2, 'leather': 1}, 'upgrade': {material + ' ingot': 1, 'leather': 1}, 'value': 110 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
+    GLOVES[material + ' mechanima gauntlets'] = {'armor': 34 * MATERIALS[material]['hardness'], 'weight': 4.2 * MATERIALS[material]['weight'], 'image': 5, 'materials': {material + ' ingot': 3, 'machine screws': 2}, 'upgrade': {material + ' ingot': 2, 'machine screws': 1}, 'value': 110 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
 GLOVES['demon gauntlets'] = {'armor': 45, 'weight': 2, 'value': 666, 'image': 1}
 GLOVES['leather gauntlets'] = {'armor': 5, 'weight': 0.4, 'image': 2, 'materials': {'leather': 2}, 'value': 55}
 GLOVES['aetherial gauntlets'] = {'armor': 15, 'reinforce magica': 15, 'reinforce stamina': 15, 'image': 4, 'gender': 'other', 'weight': 0, 'value': 900, 'materials': {'demon dust': 1, 'ectoplasm': 2, 'sage': 1, 'blue crystal': 1}, 'upgrade': {'demon dust': 1, 'ectoplasm': 1}}
@@ -126,6 +128,7 @@ for material in MATERIALS:
     TOPS[material + ' guard armor'] = {'armor': 30 * MATERIALS[material]['hardness'], 'image': 15, 'gender': 'other', 'weight': 10 * MATERIALS[material]['weight'], 'materials': {material + ' ingot': 4, 'leather': 2}, 'upgrade': {material + ' ingot': 2, 'leather strips': 1}, 'value': 220 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
     TOPS[material + ' plate armor'] = {'armor': 44 * MATERIALS[material]['hardness'], 'image': 0, 'gender': 'other', 'weight': 15 * MATERIALS[material]['weight'], 'materials': {material + ' ingot': 6, 'leather': 3}, 'upgrade': {material + ' ingot': 3, 'leather strips': 1}, 'value': 300 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
     TOPS[material + ' knight armor'] = {'armor': 50 * MATERIALS[material]['hardness'], 'image': 16, 'gender': 'other', 'weight': 15 * MATERIALS[material]['weight'], 'materials': {material + ' ingot': 7, 'leather': 3}, 'upgrade': {material + ' ingot': 4, 'leather strips': 1}, 'value': 400 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
+    TOPS[material + ' mechanima armor'] = {'armor': 55 * MATERIALS[material]['hardness'], 'image': 22, 'gender': 'other', 'weight': 15 * MATERIALS[material]['weight'], 'materials': {material + ' ingot': 8, 'machine screws': 3}, 'upgrade': {material + ' ingot': 4, 'machine screws': 1}, 'value': 400 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
 # These have unique images
 TOPS['aetherial armor'] = {'armor': 45, 'reinforce magica': 50, 'reinforce stamina': 50, 'image': 6, 'gender': 'other', 'weight': 0, 'value': 2100, 'materials': {'demon dust': 2, 'ectoplasm': 3, 'sage': 1, 'blue crystal': 2}, 'upgrade': {'blue crystal': 1, 'ectoplasm': 1}}
 TOPS['gold plated royal armor'] = {'armor': 42, 'image': 2, 'gender': 'other', 'weight': 10, 'materials': {'bronze ingot': 1, 'gold ingot':2, 'steel ingot': 3, 'leather': 3}, 'upgrade': {'steel ingot': 1, 'gold ingot': 1, 'leather strips': 1}, 'value': 250}
@@ -150,8 +153,10 @@ BOTTOMS['blue mage robe bottom'] = {'armor': 6, 'image': 0, 'gender': 'other', '
 BOTTOMS['red mage robe bottom'] = {'armor': 4, 'image': 0, 'gender': 'other', 'weight': 0.5, 'reinforce magica': 30, 'value': 30, 'color': CLOTHING_COLORS['red']}
 BOTTOMS['black mage robe bottom'] = {'armor': 24, 'image': 0, 'gender': 'other', 'weight': 0.5, 'reinforce magica': 100, 'value': 1000, 'color': CLOTHING_COLORS['black']}
 for material in MATERIALS:
-    BOTTOMS[material + ' chainmail leggings M'] = {'armor': 20 * MATERIALS[material]['hardness'], 'image': 9, 'gender': 'male', 'weight': 8 * MATERIALS[material]['weight'], 'materials': {'steel ingot': 4}, 'upgrade': {'steel ingot': 2}, 'value': 150 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
-    BOTTOMS[material + ' chainmail leggings F'] = {'armor': 20 * MATERIALS[material]['hardness'], 'image': 8, 'gender': 'female', 'weight': 8 * MATERIALS[material]['weight'], 'materials': {'steel ingot': 4}, 'upgrade': {'steel ingot': 2}, 'value': 150 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
+    BOTTOMS[material + ' chainmail leggings M'] = {'armor': 20 * MATERIALS[material]['hardness'], 'image': 9, 'gender': 'male', 'weight': 8 * MATERIALS[material]['weight'], 'materials': {material + ' ingot': 4}, 'upgrade': {material + ' ingot': 2}, 'value': 150 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
+    BOTTOMS[material + ' chainmail leggings F'] = {'armor': 20 * MATERIALS[material]['hardness'], 'image': 8, 'gender': 'female', 'weight': 8 * MATERIALS[material]['weight'], 'materials': {material + ' ingot': 4}, 'upgrade': {material + ' ingot': 2}, 'value': 150 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
+    BOTTOMS[material + ' mechanima plated leggings'] = {'armor': 42 * MATERIALS[material]['hardness'], 'image': 13, 'gender': 'other', 'weight': 10 * MATERIALS[material]['weight'], 'materials': {material + ' ingot': 5, 'machine screws': 3}, 'upgrade': {material + ' ingot': 2, 'machine screws': 1}, 'value': 150 * MATERIALS[material]['value'], 'color': MATERIALS[material]['color']}
+
 # Unique images per item
 BOTTOMS['jeans M'] = {'armor': 1, 'image': 3, 'gender': 'male', 'weight': 0.6, 'value': 12}
 BOTTOMS['jeans F'] = {'armor': 1, 'image': 2, 'gender': 'female', 'weight': 0.6, 'value': 12}
