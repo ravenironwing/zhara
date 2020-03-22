@@ -85,7 +85,7 @@ class Menu():  # used as the parent class for other menus.
         self.selected_item = None
         self.printable_stat_list = []
         # These items are changed for inherrited menus.
-        self.exit_keys = [pg.K_e]  # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_e, pg.K_ESCAPE]  # The keys used to enter/exit the menu.
         self.action_keys = [pg.K_b, pg.K_x, pg.K_y]
         self.spacing = 20  # Spacing between headings
         self.heading_list = ['Heading1', 'Heading2']  # This is the list of headings
@@ -115,8 +115,6 @@ class Menu():  # used as the parent class for other menus.
                     else:
                         self.clear_menu()
                         self.running = False
-                if event.key == pg.K_ESCAPE:
-                    self.game.quit()
                 if event.key == self.action_keys[0]: # use/buy
                     if self.selected_item:
                         self.use_item()
@@ -207,7 +205,7 @@ class Menu():  # used as the parent class for other menus.
                 self.draw_text(item_stat, default_font, 20, WHITE, self.game.screen_width / 2 + 50, self.game.screen_height / 3 + 30 * i, "topleft")
         self.draw_text(str(self.game.player.inventory['gold']) + " gold in inventory.", default_font, 25, WHITE, 20, self.game.screen_height - 120, "topleft")
         self.draw_text("Armor Rating: " + str(self.game.player.stats['armor']) + "   Carry Weight: " + str(self.game.player.stats['weight']) + "  Max Carry Weight: " + str(self.game.player.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
-        self.draw_text("Right Click: Equip/Unequip   Left Click: Equip second weapon/View Item    B: use Items    X: drop selected item    E: Exit Menu   ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Right Click: Equip/Unequip   Left Click: Equip second weapon/View Item    B: use Items    X: drop selected item    E: Exit Menu", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         if self.warning_message != "":
             self.draw_text(self.warning_message, default_font, 30, YELLOW, self.game.screen_width/2, self.game.screen_height/2, "topleft")
         pg.display.flip()
@@ -256,7 +254,7 @@ class Character_Design_Menu(Menu):
             self.character = self.game.player
         else:
             self.character = character
-        self.exit_keys = [pg.K_e]  # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_e, pg.K_ESCAPE]  # The keys used to enter/exit the menu.
         self.heading_list = ['Gender', 'Race', 'Hair']  # This is the list of headings
         self.palette = None
 
@@ -507,7 +505,7 @@ class Inventory_Menu(Menu): # Inventory Menu, also used as the parent class for 
         else:
             self.character = character
         # These items are changed for inherrited menus.
-        self.exit_keys = [pg.K_i, pg.K_e] # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_i, pg.K_e, pg.K_ESCAPE] # The keys used to enter/exit the menu.
         self.spacing = 20 # Spacing between headings
         self.heading_list = ['Weapons', 'Hats', 'Hair', 'Tops', 'Bottoms', 'Shoes', 'Gloves', 'Items', 'Magic'] # This is the list of headings
 
@@ -932,7 +930,7 @@ class Loot_Menu(Inventory_Menu):
         # These items are changed for inherrited menus.
         self.loot_sprites = pg.sprite.Group()
         self.action_keys = [pg.K_a, pg.K_s]
-        self.exit_keys = [pg.K_e]  # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_e, pg.K_ESCAPE]  # The keys used to enter/exit the menu.
         self.heading_list = ['Loot', 'Weapons', 'Hats', 'Hair', 'Tops', 'Bottoms', 'Shoes', 'Gloves', 'Items']  # This is the list of headings
         self.item_type = None
         self.container = container
@@ -958,8 +956,6 @@ class Loot_Menu(Inventory_Menu):
                     self.clear_menu()
                     self.game.e_down = False
                     self.running = False
-                if event.key == pg.K_ESCAPE:
-                    self.game.quit()
                 if event.key == self.action_keys[0]: # A key Takes all loot
                     for item_type in range(0, 8):
                         for item in self.container.inventory[ITEM_TYPE_LIST[item_type]]:
@@ -1145,7 +1141,7 @@ class Loot_Menu(Inventory_Menu):
         self.draw_text(str(self.container.inventory['gold']) + " gold added.", default_font, 25, WHITE, 20, self.game.screen_height - 160, "topleft")
         self.draw_text(str(self.game.player.inventory['gold']) + " gold in inventory.", default_font, 25, WHITE, 20, self.game.screen_height - 120, "topleft")
         self.draw_text("Armor Rating: " + str(self.game.player.stats['armor']) + "   Carry Weight: " + str(self.game.player.stats['weight']) + "  Max Carry Weight: " + str(self.game.player.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
-        self.draw_text("Right Click to Loot/Equip    A Take all   S: Store selected item   E: Exit menu    ESCAPE: Quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Right Click to Loot/Equip    A Take all   S: Store selected item   E: Exit menu", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 
 
@@ -1190,9 +1186,7 @@ class Lock_Menu():
             if event.type == pg.QUIT:
                 self.game.quit()
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    self.game.quit()
-                if event.key in [pg.K_e]:
+                if event.key in [pg.K_e, pg.K_ESCAPE]:
                     self.game.e_down = False
                     self.running = False
 
@@ -1228,7 +1222,7 @@ class Lock_Menu():
             self.draw_text("You successfully picked the lock!", default_font, 60, WHITE, 120, int(self.game.screen_height * 3/4), "topleft")
         if self.broken:
             self.draw_text("You broke your lock pick!", default_font, 60, WHITE, 120, int(self.game.screen_height * 3/4), "topleft")
-        self.draw_text("Right Click to Select Menu    E: Exit menu    ESCAPE: Quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Right Click to Select Menu    E: Exit menu", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 
     def draw_text(self, text, font_name, size, color, x, y, align="topleft"):
@@ -1388,7 +1382,7 @@ class Lock_Keyway(pg.sprite.Sprite):
 class Load_Menu(Menu):
     def __init__(self, game):
         super().__init__(game)
-        self.exit_keys = [pg.K_l, pg.K_e] # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_l, pg.K_e, pg.K_ESCAPE] # The keys used to enter/exit the menu.
         self.spacing = 40 # Spacing between headings
         self.heading_list = ['Saves'] # This is the list of headings
         self.previous_item = None
@@ -1457,7 +1451,7 @@ class Load_Menu(Menu):
         if self.item_selected:
             for i, item_stat in enumerate(self.printable_stat_list):
                 self.draw_text(item_stat, default_font, 20, WHITE, self.game.screen_width / 2 + 50, self.game.screen_height / 3 + 30 * i, "topleft")
-        self.draw_text("Left Click: Select Save    Right or Double Click: Load Save    ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Left Click: Select Save    Right or Double Click: Load Save", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 
 class Stats_Menu(Draw_Text):
@@ -1477,9 +1471,7 @@ class Stats_Menu(Draw_Text):
             if event.type == pg.QUIT:
                 self.game.quit()
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    self.game.quit()
-                if event.key in [pg.K_e, pg.K_k]:
+                if event.key in [pg.K_e, pg.K_k, pg.K_ESCAPE]:
                     self.running = False
 
     def update(self):
@@ -1506,14 +1498,14 @@ class Stats_Menu(Draw_Text):
         # Prints out player's stats
         for i, item in enumerate(self.game.player.stats):
             self.draw_text(item + ": " + str(round(self.game.player.stats[item], 2)), default_font, 20, WHITE, 20, 60 + (25 * i), "topleft")
-        self.draw_text("Right Click to Select Menu  E or K to exit menu       ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Right Click to Select Menu  E or K to exit menu", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 
 class Work_Station_Menu(Menu): # Used for upgrading weapons
     def __init__(self, game, kind):
         super().__init__(game)
         # These items are changed for inherrited menus.
-        self.exit_keys = [pg.K_i, pg.K_e]  # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_i, pg.K_e, pg.K_ESCAPE]  # The keys used to enter/exit the menu.
         self.action_keys = [pg.K_f]
         self.spacing = 20  # Spacing between headings
         self.kind = kind
@@ -1929,8 +1921,6 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
                 if event.key in self.exit_keys:
                     self.clear_menu()
                     self.running = False
-                if event.key == pg.K_ESCAPE:
-                    self.game.quit()
                 if event.key == self.action_keys[0]: # use/buy
                     if self.kind != 'enchanter':
                         if self.selected_item:
@@ -2207,7 +2197,7 @@ class Work_Station_Menu(Menu): # Used for upgrading weapons
         if self.kind == 'enchanter' and self.selected_enchantment:
             self.draw_text(self.selected_enchantment.capitalize() + ' enchantment selected.', default_font, 30, WHITE, 50, self.game.screen_height - 170, "topleft")
         self.draw_text("Armor Rating: " + str(self.game.player.stats['armor']) + "   Carry Weight: " + str(self.game.player.stats['weight']) + "  Max Carry Weight: " + str(self.game.player.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
-        self.draw_text("Left Click: Select Item    F: create item    E: Exit Menu   ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Left Click: Select Item    F: create item    E: Exit Menu", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         if self.not_enough_text:
             self.draw_text("Insufficient resources!", default_font, 40, YELLOW, self.game.screen_width/4, self.game.screen_height/2, "topleft")
         pg.display.flip()
@@ -2221,7 +2211,7 @@ class Dialogue_Menu():
         self.number_of_lines = int(ceil((self.game.screen_height * 1/7) / 35))
         self.item_selected = False
         self.selected_item = None
-        self.exit_keys = [pg.K_e, pg.K_i]  # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_e, pg.K_i, pg.K_ESCAPE]  # The keys used to enter/exit the menu.
         self.game.in_dialogue_menu = True
         self.game.in_menu = True
         self.hit = hit
@@ -2310,7 +2300,7 @@ class Dialogue_Menu():
                 if event.key == pg.K_n:
                     if self.YN:
                         self.deny_quest()
-                if event.key == pg.K_b:
+                if event.key in [pg.K_b, pg.K_ESCAPE]:
                     if self.store:
                         self.game.in_dialogue_menu = False
                         self.running = False
@@ -2596,7 +2586,7 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
         self.game.in_store_menu = True
         self.game.in_menu = True
         self.store = store
-        self.exit_keys = [pg.K_e] # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_e, pg.K_ESCAPE] # The keys used to enter/exit the menu.
         self.spacing = 20 # Spacing between headings
         self.heading_list = ['Weapons', 'Hats', 'Hair', 'Tops', 'Bottoms', 'Shoes', 'Gloves', 'Items'] # This is the list of headings
         self.store_inventory = self.store['inventory'].copy()
@@ -2616,8 +2606,6 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
                 if event.key in self.exit_keys:
                     self.clear_menu()
                     self.running = False
-                if event.key == pg.K_ESCAPE:
-                    self.game.quit()
                 if event.key == pg.K_TAB:
                     if self.display_inventory == 'store':
                         self.display_inventory = 'player'
@@ -2822,13 +2810,13 @@ class Store_Menu(Inventory_Menu): # Inventory Menu, also used as the parent clas
         self.draw_text(cost_text, default_font, 35, YELLOW, self.game.screen_width - 300, 50, "topright")
         self.draw_text(str(self.game.player.inventory['gold']) + " gold in inventory.", default_font, 25, WHITE, 20, self.game.screen_height - 120, "topleft")
         self.draw_text("Carry Weight: " + str(self.game.player.stats['weight']) + "  Max Carry Weight: " + str(self.game.player.stats['max weight']), default_font, 25, WHITE, 20, self.game.screen_height - 80, "topleft")
-        self.draw_text("Click: Select Item    B: Buy Item    S: Sell item    TAB: Toggle Store & Player inventory   E: Exit Menu   ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Click: Select Item    B: Buy Item    S: Sell item    TAB: Toggle Store & Player inventory   E: Exit Menu", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 
 class Quest_Menu(Menu):
     def __init__(self, game):
         super().__init__(game)
-        self.exit_keys = [pg.K_j, pg.K_e] # The keys used to enter/exit the menu.
+        self.exit_keys = [pg.K_j, pg.K_e, pg.K_ESCAPE] # The keys used to enter/exit the menu.
         self.spacing = 40 # Spacing between headings
         self.heading_list = ['Active Quests', 'Completed Quests'] # This is the list of headings
         self.previous_item = None
@@ -2898,7 +2886,7 @@ class Quest_Menu(Menu):
         if self.item_selected:
             for i, item_stat in enumerate(self.printable_stat_list):
                 self.draw_text(item_stat, default_font, 20, WHITE, self.game.screen_width / 2 + 50, self.game.screen_height / 3 + 30 * i, "topleft")
-        self.draw_text("Left Click: Select Quest    Right Click: Select Quest    E: Exit Menu   ESCAPE: quit game", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
+        self.draw_text("Left Click: Select Quest    Right Click: Select Quest    E: Exit Menu", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
 
 class Fly_Menu(Draw_Text):
@@ -2936,9 +2924,7 @@ class Fly_Menu(Draw_Text):
             if event.type == pg.QUIT:
                 self.game.quit()
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    self.game.quit()
-                if event.key in [pg.K_e, pg.K_u]:
+                if event.key in [pg.K_e, pg.K_u, pg.K_ESCAPE]:
                     self.running = False
 
         keys = pg.key.get_pressed()
@@ -2978,4 +2964,177 @@ class Fly_Menu(Draw_Text):
         pg.draw.rect(self.game.screen, YELLOW, self.currentmap_rect, 4)
         self.draw_text("Use WASD to move ship", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         self.draw_text("Fuel: " + str(self.game.player.vehicle.fuel), default_font, 40, WHITE, 10, 40, "topleft")
+        pg.display.flip()
+
+
+class Settings_Menu(Menu):
+    def __init__(self, game):
+        super().__init__(game)
+        self.width_orig = WIDTH
+        self.height_orig = HEIGHT
+        self.exit_keys = [pg.K_ESCAPE] # The keys used to enter/exit the menu.
+        self.spacing = 40 # Spacing between headings
+        self.heading_list = ['Game', 'Video', 'Controls'] # This is the list of headings
+        self.game_menu_list = ['Save Game', 'Load Game', 'Quit Game']
+        if self.width_orig < 1600:
+            self.video_menu_list = ['1024 by 768']
+        elif self.width_orig < 1920:
+            self.video_menu_list = ['1600 by 900', '1024 by 768']
+        else:
+            self.video_menu_list = ['1920 by 1080', '1600 by 900', '1024 by 768']
+        self.controls_menu_list = self.game.key_map.keys()
+        self.previous_item = None
+
+    def events(self):
+        # catch all events here
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.game.quit()
+            if event.type == pg.KEYDOWN:
+                if event.key in self.exit_keys:
+                    if self.game.in_load_menu:
+                        if not self.no_save_selected:
+                            self.clear_menu()
+                            self.running = False
+                    else:
+                        self.clear_menu()
+                        self.running = False
+                if self.selected_item and (self.selected_item.text in self.controls_menu_list) and event.key: # This part is used for remapping player controls.
+                    if event.key != pg.K_ESCAPE:
+                        old_key = self.game.key_map[self.selected_item.text]
+                        for key, value in self.game.key_map.items():
+                            if value == event.key:
+                                self.game.key_map[key] = old_key
+                        self.game.key_map[self.selected_item.text] = event.key
+                        self.clear_menu()
+                        self.list_items()
+
+            if event.type == pg.MOUSEBUTTONDOWN:  # Clears off pictures and stats from previously clicked item when new item is clicked.
+                self.warning_message = False
+                self.mouse_click = pg.mouse.get_pressed()
+                pos = pg.mouse.get_pos()
+                if [s for s in self.menu_sprites if s.rect.collidepoint(pos)]:
+                    self.game.effects_sounds['click'].play()
+                self.printable_stat_list = []
+                self.item_selected = False
+                for picture in self.item_pictures:
+                    picture.kill()
+            if event.type == pg.MOUSEBUTTONUP:
+                pos = pg.mouse.get_pos()
+                # get a list of all heading sprites that are under the mouse cursor
+                self.clicked_sprites = [s for s in self.menu_sprites if s.rect.collidepoint(pos)]
+                for heading in self.menu_heading_sprites:
+                    if heading in self.clicked_sprites:
+                        self.item_type = heading.text.lower()
+                        self.selected_heading = heading
+                        self.item_selected = False
+                        self.selected_item = None
+                        self.list_items()
+                # Equips items
+                for item in self.clicked_sprites:
+                    if item in self.item_sprites:
+                        self.selected_item = item
+                        self.item_selected = True
+                        self.display_item_info(item)
+                        if self.mouse_click == (0, 0, 1):
+                            self.right_equip(item)
+                        # Equipping weapon in left hand
+                        if self.mouse_click == (1, 0, 0):
+                            self.left_equip(item)
+                        self.list_items()
+
+
+    def use_item(self):
+        pass
+
+    def drop_item(self):
+        if not self.game.in_character_menu:
+            if self.selected_item:
+                pass
+
+    def right_equip(self, item):
+        pass
+
+    def left_equip(self, item):
+        global WIDTH
+        global HEIGHT
+        if item.text == 'Quit Game':
+            self.game.quit()
+        elif item.text == 'Save Game':
+            self.game.save()
+        elif item.text == 'Load Game':
+            self.game.in_load_menu = True
+            self.running = False
+        elif item.text == '1920 by 1080':
+            WIDTH = 1920
+            HEIGHT = 1080
+            self.update_display()
+        elif item.text == '1600 by 900':
+            WIDTH = 1600
+            HEIGHT = 900
+            self.update_display()
+        elif item.text == '1024 by 768':
+            WIDTH = 1024
+            HEIGHT = 768
+            self.update_display()
+
+    def update_display(self):
+        if self.game.flags & pg.FULLSCREEN:
+            self.game.screen_height = HEIGHT
+        else:
+            self.game.screen_height = int(HEIGHT * self.game.window_ratio)
+        self.game.screen_width = WIDTH
+        pg.display.set_mode((self.game.screen_width, self.game.screen_height), self.game.flags)
+
+    def list_items(self):
+        self.clear_menu()
+        if self.selected_heading.text == 'Video':
+            menu_list = self.video_menu_list
+        elif self.selected_heading.text == 'Controls':
+            menu_list = self.controls_menu_list
+        else:
+            menu_list = self.game_menu_list
+
+        for i, x in enumerate(menu_list):
+            if i < 25:
+                xpos = 50
+                ypos = 30 * i + 75
+            else:
+                xpos = self.game.screen_width/2 + 50
+                ypos = 30 * (i - 25) + 75
+            item_name = Text(self, x, default_font, 20, WHITE, xpos, ypos, "topleft")
+            self.item_sprites.add(item_name)
+            if menu_list == self.controls_menu_list:
+                item_name = Text(self, pg.key.name(self.game.key_map[x]), default_font, 20, WHITE, xpos + 120, ypos, "topleft")
+                self.item_sprites.add(item_name)
+
+    def display_item_info(self, item):
+        pass
+
+    def update_external_variables(self):
+        self.game.in_settings_menu = False
+        self.game.in_menu = False
+        self.game.beg = perf_counter() # resets the counter so dt doesn't get messed up.
+
+    def draw(self):
+        self.game.screen.fill(BLACK)
+        list_rect = pg.Rect(10, 50, self.game.screen_width / 2 - 10, self.game.screen_height - 100)
+        list_rect_fill = pg.Rect(20, 60, self.game.screen_width / 2 - 30, self.game.screen_height - 120)
+        description_rect = pg.Rect(self.game.screen_width / 2 + 10, 50, self.game.screen_width / 2 - 20, self.game.screen_height - 100)
+        description_rect_fill = pg.Rect(self.game.screen_width / 2 + 20, 60, self.game.screen_width / 2 - 40, self.game.screen_height - 120)
+        pg.draw.rect(self.game.screen, WHITE, list_rect, 2)
+        pg.draw.rect(self.game.screen, WHITE, description_rect, 2)
+        pg.draw.rect(self.game.screen, BLACK, list_rect_fill)
+        pg.draw.rect(self.game.screen, BLACK, description_rect_fill)
+        if not self.selected_item == None:
+            if self.item_selected:
+                selected_rect = pg.Rect(self.selected_item.rect.x - 4, self.selected_item.rect.y, self.selected_item.rect.width + 8, self.selected_item.size + 2)
+                pg.draw.rect(self.game.screen, YELLOW, selected_rect, 2)
+        selected_heading_rect = pg.Rect(self.selected_heading.rect.x - 4, self.selected_heading.rect.y, self.selected_heading.rect.width + 8, self.selected_heading.size + 2)
+        pg.draw.rect(self.game.screen, YELLOW, selected_heading_rect, 2)
+        self.menu_sprites.draw(self.game.screen)
+        if self.item_selected:
+            for i, item_stat in enumerate(self.printable_stat_list):
+                self.draw_text(item_stat, default_font, 20, WHITE, self.game.screen_width / 2 + 50, self.game.screen_height / 3 + 30 * i, "topleft")
+        self.draw_text("Left Click to select option, ESCAPE: Exit Menu", default_font, 20, WHITE, 10, self.game.screen_height - 40, "topleft")
         pg.display.flip()
