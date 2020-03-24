@@ -2970,18 +2970,10 @@ class Fly_Menu(Draw_Text):
 class Settings_Menu(Menu):
     def __init__(self, game):
         super().__init__(game)
-        self.width_orig = WIDTH
-        self.height_orig = HEIGHT
         self.exit_keys = [pg.K_ESCAPE] # The keys used to enter/exit the menu.
         self.spacing = 40 # Spacing between headings
-        self.heading_list = ['Game', 'Video', 'Controls'] # This is the list of headings
+        self.heading_list = ['Game', 'Controls'] # This is the list of headings
         self.game_menu_list = ['Save Game', 'Load Game', 'Quit Game']
-        if self.width_orig < 1600:
-            self.video_menu_list = ['1024 by 768']
-        elif self.width_orig < 1920:
-            self.video_menu_list = ['1600 by 900', '1024 by 768']
-        else:
-            self.video_menu_list = ['1920 by 1080', '1600 by 900', '1024 by 768']
         self.controls_menu_list = self.game.key_map.keys()
         self.previous_item = None
 
@@ -3065,47 +3057,29 @@ class Settings_Menu(Menu):
         elif item.text == 'Load Game':
             self.game.in_load_menu = True
             self.running = False
-        elif item.text == '1920 by 1080':
-            WIDTH = 1920
-            HEIGHT = 1080
-            self.update_display()
-        elif item.text == '1600 by 900':
-            WIDTH = 1600
-            HEIGHT = 900
-            self.update_display()
-        elif item.text == '1024 by 768':
-            WIDTH = 1024
-            HEIGHT = 768
-            self.update_display()
-
-    def update_display(self):
-        if self.game.flags & pg.FULLSCREEN:
-            self.game.screen_height = HEIGHT
-        else:
-            self.game.screen_height = int(HEIGHT * self.game.window_ratio)
-        self.game.screen_width = WIDTH
-        pg.display.set_mode((self.game.screen_width, self.game.screen_height), self.game.flags)
 
     def list_items(self):
         self.clear_menu()
-        if self.selected_heading.text == 'Video':
-            menu_list = self.video_menu_list
-        elif self.selected_heading.text == 'Controls':
+        if self.selected_heading.text == 'Controls':
             menu_list = self.controls_menu_list
+            font_size = 20
+            font_space = 30
         else:
             menu_list = self.game_menu_list
+            font_size = 30
+            font_space = 40
 
         for i, x in enumerate(menu_list):
             if i < 25:
                 xpos = 50
-                ypos = 30 * i + 75
+                ypos = font_space * i + 75
             else:
                 xpos = self.game.screen_width/2 + 50
-                ypos = 30 * (i - 25) + 75
-            item_name = Text(self, x, default_font, 20, WHITE, xpos, ypos, "topleft")
+                ypos = font_space * (i - 25) + 75
+            item_name = Text(self, x, default_font, font_size, WHITE, xpos, ypos, "topleft")
             self.item_sprites.add(item_name)
             if menu_list == self.controls_menu_list:
-                item_name = Text(self, pg.key.name(self.game.key_map[x]), default_font, 20, WHITE, xpos + 120, ypos, "topleft")
+                item_name = Text(self, pg.key.name(self.game.key_map[x]), default_font, font_size, WHITE, xpos + 120, ypos, "topleft")
                 self.item_sprites.add(item_name)
 
     def display_item_info(self, item):

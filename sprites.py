@@ -935,6 +935,10 @@ class Character(pg.sprite.Sprite):
         self.body_surface = self.stand_anim[0][0]
 
     def render_animation(self, animation_list, swimming = False):
+        if not self.mother.possessing:
+            self.colors = self.mother.colors
+        else:
+            self.colors = self.mother.possessing.colors
         if not self.dragon:
             self.race = self.mother.equipped['race'].replace('dragon', '')
         else:
@@ -963,19 +967,19 @@ class Character(pg.sprite.Sprite):
                 if i in range(0, 9):
                     if i == 0 and swimming: # draws swimming shadow (the part of the body that's under water).
                         temp_img = self.game.swim_shadow_image
-                        colored_img = color_image(temp_img, self.mother.colors['skin'])
+                        colored_img = color_image(temp_img, self.colors['skin'])
                         temp_rect = colored_img.get_rect()
                         body_surface.blit(colored_img, (rect.centerx - (temp_rect.centerx + 40), rect.centery - (temp_rect.centery)))
                     temp_img = self.game.humanoid_images[body_part_images_list][part_image_dict[i]]
                     if i in reverse_list:
                         temp_img = pg.transform.flip(temp_img, False, True)
-                    colored_img = color_image(temp_img, self.mother.colors['skin'])
+                    colored_img = color_image(temp_img, self.colors['skin'])
                     image = pg.transform.rotate(colored_img, part[2])
                     temp_rect = image.get_rect()
                     body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
                     if i == 7 and 'mechanima' in self.mother.equipped['race']: # draws back lights on mechs.
                         temp_img = self.game.mech_back_image
-                        colored_img = color_image(temp_img, self.mother.colors['hair'])
+                        colored_img = color_image(temp_img, self.colors['hair'])
                         temp_rect = colored_img.get_rect()
                         body_surface.blit(colored_img, (rect.centerx - (temp_rect.centerx - part[0]), rect.centery - (temp_rect.centery - part[1])))
 
@@ -1015,7 +1019,7 @@ class Character(pg.sprite.Sprite):
                     if 'dragon' not in self.race:
                         if self.mother.equipped['hair']:
                             temp_img = self.game.hair_images[HAIR[self.mother.equipped['hair']]['image']]
-                            colored_img = color_image(temp_img, self.mother.colors['hair'])
+                            colored_img = color_image(temp_img, self.colors['hair'])
                             image = pg.transform.rotate(colored_img, part_placement[8][2])
                             temp_rect = image.get_rect()
                             body_surface.blit(image, (rect.centerx - (temp_rect.centerx - part_placement[8][0]), rect.centery - (temp_rect.centery - part_placement[8][1])))
@@ -1031,12 +1035,12 @@ class Character(pg.sprite.Sprite):
                     wing1_pos = vec(WING1_OFFSET).rotate(-torso_pos[2])
                     wing2_pos = vec(WING2_OFFSET).rotate(-torso_pos[2])
                     temp_img = self.game.humanoid_images[body_part_images_list][6]
-                    colored_img = color_image(temp_img, self.mother.colors['skin'])
+                    colored_img = color_image(temp_img, self.colors['skin'])
                     image = pg.transform.rotate(colored_img, part[0] + torso_pos[2])
                     temp_rect = image.get_rect()
                     body_surface.blit(image, (rect.centerx - (temp_rect.centerx - (torso_pos[0] + wing1_pos.x)), rect.centery - (temp_rect.centery - (torso_pos[1] + wing1_pos.y))))
                     temp_img = self.game.humanoid_images[body_part_images_list][6]
-                    colored_img = color_image(temp_img, self.mother.colors['skin'])
+                    colored_img = color_image(temp_img, self.colors['skin'])
                     temp_img = pg.transform.flip(colored_img, False, True)
                     image = pg.transform.rotate(temp_img, part[1] + torso_pos[2])
                     temp_rect = image.get_rect()
@@ -3713,11 +3717,11 @@ class Npc(pg.sprite.Sprite):
         self.stats['health'] += amount
         if self.stats['health'] > self.stats['max health']:
             self.stats['health'] = self.stats['max health']
+        if self.game.hud_health_stats == self.stats:
+            self.game.hud_health = self.stats['health'] / self.stats['max health']
         if self.stats['health'] <= 0:
             self.living = False
             self.death()
-        if self.game.hud_health_stats == self.stats:
-            self.game.hud_health = self.stats['health'] / self.stats['max health']
 
     def use_item(self):
         if self.equipped['items']:
@@ -3794,6 +3798,7 @@ class Npc(pg.sprite.Sprite):
                         Animal(self.game, pos.x, pos.y, self.game.map, MAGIC[self.equipped['magic']]['summon'])
 
     def death(self):
+        self.depossess()
         if self in self.game.companions:
             self.unfollow()
         choice(self.game.zombie_hit_sounds).play()
