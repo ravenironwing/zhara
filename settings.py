@@ -195,6 +195,7 @@ FOREST_MAPS = []
 GRASSLAND_MAPS = []
 TUNDRA_MAPS = []
 DESERT_MAPS = []
+SWAMP_MAPS = []
 for file in os.listdir(map_folder):
     name = file.replace('.tmx', '')
     if file.startswith("MOUNTAIN"):
@@ -207,7 +208,9 @@ for file in os.listdir(map_folder):
         TUNDRA_MAPS.append(name)
     elif file.startswith("DESERT"):
         DESERT_MAPS.append(name)
-RANDOM_MAP_TILES = {'53': 'MOUNTAIN_MAPS', '27': 'FOREST_MAPS', '11': 'GRASSLAND_MAPS'}
+    elif file.startswith("SWAMP"):
+        SWAMP_MAPS.append(name)
+RANDOM_MAP_TILES = {'53': 'MOUNTAIN_MAPS', '27': 'FOREST_MAPS', '11': 'GRASSLAND_MAPS', '48': 'SWAMP_MAPS'}
 
 # Player body image settings
 gender_list = ['male', 'female']
@@ -464,6 +467,7 @@ ZOMBIELAND_MUSIC = 'DarkWinds.ogg'
 TUNDRA_MUSIC = 'Tales and Tidings.ogg'
 MOUNTAIN_MUSIC = 'Cloudforest_Awakening.ogg'
 DESERT_MUSIC = 'Eternal Renewal.ogg'
+SWAMP_MUSIC = 'Light from the Shadows.ogg'
 
 # Sounds
 LOCK_PICKING_SOUNDS = ['pick_lock1.ogg', 'pick_lock2.ogg', 'pick_lock3.ogg', 'pick_lock4.ogg']

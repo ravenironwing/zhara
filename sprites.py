@@ -688,7 +688,7 @@ class Vehicle(pg.sprite.Sprite):
             self.driver.last_weapon = self.driver.current_weapon
             self.driver.inventory['weapons'].append(self.data['weapons'])
             self.driver.equipped['weapons'] = self.driver.current_weapon = self.data['weapons']
-        if self.data['weapons2']:
+        if self.data['weapons2'] or self.cat == 'tank':
             self.driver.last_weapon2 = self.driver.current_weapon2
             self.driver.inventory['weapons'].append(self.data['weapons2'])
             self.driver.equipped['weapons2'] = self.driver.current_weapon2 = self.data['weapons2']
@@ -1750,8 +1750,12 @@ class Player(pg.sprite.Sprite):
                         self.last_shot = now
                         self.fire_bullets()
             else:
+                self.game.hud_ammo1 = ""
+                self.game.hud_ammo2 = ""
                 self.pre_melee()
         else:
+            self.game.hud_ammo1 = ""
+            self.game.hud_ammo2 = ""
             self.pre_melee()
 
     def dual_shoot(self, auto = False):
@@ -1830,6 +1834,17 @@ class Player(pg.sprite.Sprite):
             self.mag2 -= 1
             if self.mag2 < 0:
                 self.mag2 = 0
+        self.update_hud_amo()
+
+    def update_hud_amo(self):
+        if self.ammo_cap1 + self.mag1 != 0:
+            self.game.hud_ammo1 = "Right Ammo: " + str(self.mag1) + '/' + str(self.ammo_cap1)
+        else:
+            self.game.hud_ammo1 = ""
+        if self.ammo_cap2 + self.mag2 != 0:
+            self.game.hud_ammo2 = "Left Ammo: " + str(self.mag2) + '/' + str(self.ammo_cap2)
+        else:
+            self.game.hud_ammo2 = ""
 
     def out_of_ammo(self):
         now = pg.time.get_ticks()
@@ -1997,6 +2012,7 @@ class Player(pg.sprite.Sprite):
                         self.mag2 = self.ammo_cap2 = 0
                     self.is_reloading = False
                     self.last_shot = pg.time.get_ticks()
+        self.update_hud_amo()
 
     def empty_mags(self):
         # Empties previous weapon mags back into ammo inventory:
@@ -2016,6 +2032,7 @@ class Player(pg.sprite.Sprite):
         if self.equipped['weapons2'] and WEAPONS[self.equipped['weapons2']]['gun']:
                 self.ammo[WEAPONS[self.equipped['weapons2']]['type']] += self.mag2
                 self.mag2 = 0
+        self.update_hud_amo()
 
     def play_weapon_sound(self, default = None):
         if default == None:

@@ -2543,7 +2543,7 @@ class Game:
                                     if mob.aggression in ['awd', 'sap', 'fup']:
                                         mob.offensive = True
                                         mob.provoked = True
-                                        mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
+                                    mob.gets_hit(bullet.damage, bullet.knockback, bullet.rot)
                                     self.hud_mobhp = mob.stats['health'] / mob.stats['max health']
                                     self.show_mobhp = True
                                     self.last_mobhp_update = pg.time.get_ticks()
@@ -2791,9 +2791,9 @@ class Game:
         if self.player.hungers:
             draw_player_stats(self.screen, 10, 100, self.hud_hunger, BROWN)
             self.draw_text("HGR {:.0f}".format(self.player.stats['hunger']), self.hud_font, 20, WHITE, 120, 100, align="topleft")
-        if self.hud_ammo1:
+        if self.hud_ammo1 != '':
             self.draw_text(self.hud_ammo1, self.hud_font, 20, WHITE, 50, self.screen_height - 100, align="topleft")
-        if self.hud_ammo2:
+        if self.hud_ammo2 != '':
             self.draw_text(self.hud_ammo2, self.hud_font, 20, WHITE, 50, self.screen_height - 50, align="topleft")
         if self.paused:
             self.screen.blit(self.dim_screen, (0, 0))

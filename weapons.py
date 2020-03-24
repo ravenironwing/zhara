@@ -858,7 +858,7 @@ WEAPONS['enchanted elven dagger'] = {'type': 'dagger','gun': False, 'value': 100
                       'bullet_size': 'lg2',
                       'bullet_count': 1,
                       'walk': 'WALK',
-                      'brightness': 100, 'light mask': 0,
+                      'brightness': 300, 'light mask': 0,
                       'melee animation': 'PUNCH',
                       'grip': 'CP_SWORD_GRIP',
                       'image': 0,
