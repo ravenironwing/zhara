@@ -1,0 +1,7 @@
+so the saves folder won't be empty
+if a folder is empty, git will ignore it
+when you attempt to save a game, the save
+folder isn't there
+when path.join on line 350 of main.py is
+called, python throws a 'file not found'
+error
