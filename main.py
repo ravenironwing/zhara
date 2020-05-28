@@ -346,6 +346,7 @@ class Game:
         updated_equipment = [UPGRADED_WEAPONS, UPGRADED_HATS, UPGRADED_TOPS, UPGRADED_GLOVES, UPGRADED_BOTTOMS, UPGRADED_SHOES, UPGRADED_ITEMS]
         save_list = [self.player.inventory, self.player.equipped, self.player.stats, [self.player.pos.x, self.player.pos.y], self.previous_map, [self.world_location.x, self.world_location.y], self.chests, self.overworld_map, updated_equipment, self.people, self.quests, self.player.colors, vehicle_name, companion_list, self.map_sprite_data_list, self.underworld_sprite_data_dict, self.key_map]
         if not path.isdir(saves_folder): makedirs(saves_folder)
+
         with open(path.join(saves_folder, self.player.race + "_" + self.format_date() + ".sav"), "wb", -1) as FILE:
             pickle.dump(save_list, FILE)
         if possessing:
