@@ -24,8 +24,8 @@ def wall_check(sprite):  # Used for tile-based wall collisions
         y = int((sprite.pos.y + pdir.y) / sprite.game.map.tile_size)
         if x < 0: return
         if y < 0: return
-        if x > sprite.game.map.tiles_wide: return
-        if y > sprite.game.map.tiles_high: return
+        if x >= sprite.game.map.tiles_wide: return
+        if y >= sprite.game.map.tiles_high: return
         if sprite.game.map.tmxdata.get_tile_gid(x, y, sprite.game.wall_tile_layer) in sprite.game.wall_tiles:
             sprite.acc = sprite.acc.rotate(180)
             sprite.vel = sprite.vel.rotate(180)
@@ -43,8 +43,8 @@ def next_wall_check(sprite):  # Used for tile-based wall collisions
         y = int(sprite.pos.y / sprite.game.map.tile_size + pdir.y)
         if x < 0: return
         if y < 0: return
-        if x > sprite.game.map.tiles_wide: return
-        if y > sprite.game.map.tiles_high: return
+        if x >= sprite.game.map.tiles_wide: return
+        if y >= sprite.game.map.tiles_high: return
         if sprite.game.map.tmxdata.get_tile_gid(x, y, sprite.game.wall_tile_layer) in sprite.game.wall_tiles:
             return True
         else:
@@ -4144,6 +4144,10 @@ class Animal(pg.sprite.Sprite):
             self.run_image_list = self.game.animal_animations[self.name]['run']
         else:
             self.run_image_list = self.walk_image_list
+        if 'swim' in list(self.game.animal_animations[self.name].keys()):
+            self.swim_image_list = self.game.animal_animations[self.name]['swim']
+        else:
+            self.swim_image_list = self.walk_image_list
         self.old_run_image_list = None
         self.old_walk_image_list = None
         self.selected_image_list = self.walk_image_list
@@ -4460,6 +4464,11 @@ class Animal(pg.sprite.Sprite):
                     self.last_target_seek = now0
                 target_dist = self.target.pos - self.pos
 
+                if self.swimming:
+                    self.selected_image_list = self.swim_image_list
+                else:
+                    self.selected_image_list = self.run_image_list
+
                 # This part makes the animal avoid walls
                 if self.climbing:
                     hits = pg.sprite.spritecollide(self, self.game.walls_on_screen, False) + pg.sprite.spritecollide(self, self.game.shallows_on_screen, False)
@@ -4469,7 +4478,7 @@ class Animal(pg.sprite.Sprite):
                     self.hit_wall = True
                     now = pg.time.get_ticks()
                     if now - self.last_wall_hit > randrange(300, 1000):
-                        self.animate(self.run_image_list)
+                        self.animate(self.selected_image_list)
                         self.last_wall_hit = now
                         if random() < 0.5:
                             self.rotate_direction = choice([-1, 0, 1])
@@ -4492,30 +4501,34 @@ class Animal(pg.sprite.Sprite):
 
                     now = pg.time.get_ticks()
                     if now - self.last_move > self.run_animate_speed: # What animal does when you are close it.
-                        self.animate(self.run_image_list)
+                        self.animate(self.selected_image_list)
                         self.last_move = now
                     elif now - self.last_wall_hit > randrange(3000, 5000):
                         self.last_wall_hit = now
                         self.hit_wall = False
                     if not self.hit_wall:
                         self.rot = target_dist.angle_to(self.approach_vector)
-                    self.rotate_image(self.run_image_list)
+                    self.rotate_image(self.selected_image_list)
                     self.acc = vec(1, 0).rotate(-self.rot)
                     self.avoid_mobs()
                     self.accelerate(self.run_speed)
                     collide(self)
 
                 else:
+                    if self.swimming:
+                        self.selected_image_list = self.swim_image_list
+                    else:
+                        self.selected_image_list = self.walk_image_list
                     now = pg.time.get_ticks()
                     if now - self.last_move > self.walk_animate_speed:  # animates animal
-                        self.animate(self.walk_image_list)
+                        self.animate(self.selected_image_list)
                         self.last_move = now
                         if random() < 0.25:
                             self.rotate_direction = choice([-1, 0, 1])
                         self.rot += (self.rot_speed * self.rotate_direction) % 360
-                    if self.frame > len(self.walk_image_list) - 1:
+                    if self.frame > len(self.selected_image_list) - 1:
                         self.frame = 0
-                    self.rotate_image(self.walk_image_list)
+                    self.rotate_image(self.selected_image_list)
                     self.acc = vec(1, 0).rotate(-self.rot)
                     self.avoid_mobs()
                     self.accelerate(self.walk_speed)
@@ -4523,6 +4536,10 @@ class Animal(pg.sprite.Sprite):
 
             else: # This is what the animal does if you are riding it
                 # Increases animal friction when not accelerating
+                if self.driver.swimming:
+                    self.swimming = True
+                else:
+                    self.swimming = False
                 if self.driver.is_moving():
                     # Makes the friction greater when the vehicle is sliding in a direction that is not straight forward.
                     angle_difference = abs(fix_angle(self.driver.vel.angle_to(self.driver.direction)))
@@ -4533,7 +4550,10 @@ class Animal(pg.sprite.Sprite):
                     self.driver.friction = -(angle_difference / 1000 + .015)
                     # Animates the animal
                     now = pg.time.get_ticks()
-                    if self.running:
+                    if self.swimming:
+                        animate_speed = self.walk_animate_speed
+                        self.selected_image_list = self.swim_image_list
+                    elif self.running:
                         animate_speed = self.run_animate_speed
                         self.selected_image_list = self.run_image_list
                     else:

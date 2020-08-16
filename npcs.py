@@ -331,11 +331,11 @@ ANIMAL_ANIMATIONS['brown bird'] = {'walk':BASIC3}
 ANIMAL_ANIMATIONS['giant ant'] = {'walk':[1, 2, 3, 2, 1, 4, 5, 6, 5, 4]}
 ANIMAL_ANIMATIONS['queen ant'] = {'walk':[1, 2, 3, 2, 1, 4, 5, 6, 5, 4]}
 ANIMAL_ANIMATIONS['butterfly ideopsis'] = {'walk':BASIC3}
-ANIMAL_ANIMATIONS['sheep'] = {'walk':[1, 2, 3, 2, 1, 4, 5, 4]}
+ANIMAL_ANIMATIONS['domestic sheep'] = {'walk':[1, 2, 3, 2, 1, 4, 5, 4]}
 ANIMAL_ANIMATIONS['bighorn sheep'] = {'walk':[1, 2, 3, 2, 1, 4, 5, 4]}
 ANIMAL_ANIMATIONS['snake'] = {'walk':[1, 2, 3, 4, 5, 6, 7, 8]}
-ANIMAL_ANIMATIONS['horse'] = {'walk':[1, 2, 3, 2, 1, 5, 6, 5], 'run': [1, 2, 3, 4, 3, 2, 1, 5, 6, 7, 6, 5]}
-ANIMAL_ANIMATIONS['spider'] = {'walk':BASIC3}
+ANIMAL_ANIMATIONS['horse'] = {'walk':[1, 2, 3, 2, 1, 5, 6, 5], 'run': [1, 2, 3, 4, 3, 2, 1, 5, 6, 7, 6, 5], 'swim': [8, 12, 11, 8, 10, 9, 10]}
+ANIMAL_ANIMATIONS['giant spider'] = {'walk':BASIC3}
 ANIMAL_ANIMATIONS['squid'] = {'walk':BASIC3}
 ANIMAL_ANIMATIONS['flying goldfix'] = {'walk':BASIC3}
 ANIMAL_ANIMATIONS['marlin'] = {'walk':BASIC3}
@@ -344,7 +344,7 @@ ANIMAL_ANIMATIONS['sea turtle'] = {'walk':BASIC3}
 ANIMAL_ANIMATIONS['red wyvern'] = {'walk':FLY4}
 ANIMAL_ANIMATIONS['blue wyvern'] = {'walk':FLY4}
 ANIMAL_ANIMATIONS['dolphin'] = {'walk':[1, 2, 3, 4, 5, 6, 5, 4, 3, 2]}
-ANIMAL_ANIMATIONS['sfix'] = {'walk':[1, 2, 3, 4, 5, 6, 7]}
+ANIMAL_ANIMATIONS['sfix'] = {'walk':[1, 2, 3, 4, 5, 6, 7], 'swim': [8, 9, 10, 11, 12, 13]}
 ANIMAL_ANIMATIONS['pig'] = {'walk': BASIC3}
 
 ANIMALS = {}
@@ -352,7 +352,7 @@ ANIMALS['garden lizard'] = {'name': 'garden lizard', 'corpse': None, 'mountable'
 ANIMALS['rabbit'] = {'name': 'rabbit', 'corpse': None, 'mountable': False, 'touch damage': False, 'protected': False, 'hit rect': SMALL_HIT_RECT, 'grabable': True, 'run speed': 400, 'walk speed': 100, 'walk animate speed': 400, 'run animate speed': 240, 'detect radius': 400, 'avoid radius': 100,'aggression': 'fwd', 'health': 10, 'damage': 0, 'knockback': 0, 'item type': 'weapons', 'item': 'live rabbit', 'dropped items': ['dead rabbit'], 'collide': ['obstacles']}
 ANIMALS['chicken'] = {'name': 'chicken', 'corpse': None, 'mountable': False, 'touch damage': False, 'protected': True, 'hit rect': SMALL_HIT_RECT, 'grabable': True, 'run speed': 350, 'walk speed': 50, 'walk animate speed': 400, 'run animate speed': 200, 'detect radius': 300, 'avoid radius': 80, 'aggression': 'fwd', 'health': 20, 'damage': 0, 'knockback': 0, 'item type': 'weapons', 'item': 'live chicken', 'dropped items': ['dead chicken', 'feather', 'feather', 'feather'], 'collide': ['obstacles']}
 ANIMALS['bighorn sheep'] = {'name': 'bighorn sheep', 'corpse': 1, 'mountable': False, 'climbing': True, 'touch damage': True, 'protected': False, 'hit rect': LARGE_HIT_RECT, 'grabable': False, 'run speed': 480, 'walk speed': 100, 'walk animate speed': 300, 'run animate speed': 120, 'detect radius': 300, 'avoid radius': 300,'aggression': 'fup', 'health': 100, 'damage': 8, 'knockback': 25, 'item type': 'items', 'item': 'sheep meat', 'dropped items': ['sheep meat', 'sheep skin', 'sheep horn', 'sheep horn'], 'collide': ['walls', 'water']}
-ANIMALS['sheep'] = {'name': 'sheep', 'corpse': 3, 'mountable': True, 'touch damage': False, 'protected': True, 'hit rect': LARGE_HIT_RECT, 'grabable': False, 'run speed': 200, 'walk speed': 100, 'walk animate speed': 300, 'run animate speed': 200, 'detect radius': 300, 'avoid radius': 300,'aggression': 'fwd', 'health': 50, 'damage': 0, 'knockback': 0, 'item type': 'items', 'item': 'sheep meat', 'dropped items': ['sheep meat', 'sheep skin'], 'collide': ['obstacles']}
+ANIMALS['domestic sheep'] = {'name': 'domestic sheep', 'corpse': 3, 'mountable': True, 'touch damage': False, 'protected': True, 'hit rect': LARGE_HIT_RECT, 'grabable': False, 'run speed': 200, 'walk speed': 100, 'walk animate speed': 300, 'run animate speed': 200, 'detect radius': 300, 'avoid radius': 300,'aggression': 'fwd', 'health': 50, 'damage': 0, 'knockback': 0, 'item type': 'items', 'item': 'sheep meat', 'dropped items': ['sheep meat', 'sheep skin'], 'collide': ['obstacles']}
 ANIMALS['horse'] = {'name': 'horse', 'corpse': 4, 'mountable': True, 'touch damage': False, 'protected': False, 'hit rect': LARGE_HIT_RECT, 'grabable': False, 'run speed': 480, 'walk speed': 100, 'walk animate speed': 300, 'run animate speed': 100, 'detect radius': 300, 'avoid radius': 300,'aggression': 'fwp', 'health': 280, 'damage': 8, 'knockback': 25, 'item type': 'items', 'item': 'sheep meat', 'dropped items': ['horse skin', 'horse meat'], 'collide': ['walls', 'water']}
 ANIMALS['pig'] = {'name': 'pig', 'corpse': 20, 'mountable': True, 'touch damage': False, 'protected': True, 'hit rect': MEDIUM_HIT_RECT, 'grabable': False, 'run speed': 300, 'walk speed': 150, 'walk animate speed': 220, 'run animate speed': 200, 'detect radius': 300, 'avoid radius': 300,'aggression': 'fwd', 'health': 49, 'damage': 0, 'knockback': 0, 'item type': 'items', 'item': 'pig meat', 'dropped items': ['pig meat', 'pig skin'], 'collide': ['obstacles']}
 
@@ -372,7 +372,7 @@ ANIMALS['flying goldfix'] = {'name': 'flying goldfix', 'flying': True, 'corpse':
 ANIMALS['giant ant'] = {'name': 'giant ant', 'corpse': None, 'mountable': False, 'touch damage': True, 'protected': False, 'hit rect': SMALL_HIT_RECT, 'grabable': False, 'run speed': 400, 'walk speed': 100, 'walk animate speed': 150, 'run animate speed': 100, 'detect radius': 180, 'avoid radius': 60,'aggression': 'awd', 'health': 70, 'damage': 8, 'knockback': 2, 'item type': 'items', 'item': 'dead giant ant', 'dropped items': ['dead giant ant'], 'collide': ['obstacles']}
 ANIMALS['queen ant'] = {'name': 'queen ant', 'corpse': None, 'mountable': False, 'touch damage': True, 'protected': False, 'hit rect': MEDIUM_HIT_RECT, 'grabable': False, 'run speed': 600, 'walk speed': 200, 'walk animate speed': 150, 'run animate speed': 100, 'detect radius': 512, 'avoid radius': 150,'aggression': 'awd', 'health': 1500, 'damage': 25, 'knockback': 6, 'item type': 'items', 'item': 'dead giant ant', 'dropped items': ['ant exoskeleton shell','queen ant leg','queen ant leg','queen ant leg','queen ant leg','queen ant leg','queen ant leg', 'ant helmet', 'giant ant eggs'], 'collide': ['obstacles']}
 ANIMALS['snake'] = {'name': 'snake', 'corpse': None, 'mountable': False, 'climbing': True, 'touch damage': True, 'protected': False, 'hit rect': SMALL_HIT_RECT, 'grabable': False, 'run speed': 280, 'walk speed': 50, 'walk animate speed': 300, 'run animate speed': 90, 'detect radius': 140, 'avoid radius': 60,'aggression': 'fup', 'health': 12, 'damage': 10, 'knockback': 1, 'item type': 'items', 'item': 'dead snake', 'dropped items': ['dead snake'], 'collide': ['walls']}
-ANIMALS['spider'] = {'name': 'spider', 'corpse': 6, 'mountable': True, 'climbing': True, 'touch damage': True, 'protected': False, 'hit rect': MEDIUM_HIT_RECT, 'grabable': False, 'run speed': 300, 'walk speed': 150, 'walk animate speed': 150, 'run animate speed': 100, 'detect radius': 280, 'avoid radius': 80,'aggression': 'awp', 'health': 200, 'damage': 15, 'knockback': 10, 'item type': 'items', 'item': 'dead giant ant', 'dropped items': ['spider venom'], 'collide': ['walls', 'water']}
+ANIMALS['giant spider'] = {'name': 'giant spider', 'corpse': 6, 'mountable': True, 'climbing': True, 'touch damage': True, 'protected': False, 'hit rect': MEDIUM_HIT_RECT, 'grabable': False, 'run speed': 300, 'walk speed': 150, 'walk animate speed': 150, 'run animate speed': 100, 'detect radius': 280, 'avoid radius': 80,'aggression': 'awp', 'health': 200, 'damage': 15, 'knockback': 10, 'item type': 'items', 'item': 'dead giant ant', 'dropped items': ['spider venom'], 'collide': ['walls', 'water']}
 
 ANIMALS['goldfish'] = {'name': 'goldfish', 'corpse': None, 'aquatic': True, 'mountable': False, 'touch damage': False, 'protected': False, 'hit rect': SMALL_HIT_RECT,'grabable': True, 'run speed': 350, 'walk speed': 50, 'walk animate speed': 400, 'run animate speed': 180, 'detect radius': 400, 'avoid radius': 40, 'aggression': 'fwd', 'health': 10, 'damage': 0, 'knockback': 0, 'item type': 'weapons', 'item': 'live goldfish', 'dropped items': ['dead goldfish'], 'collide': ['walls', 'shallows', 'lava', 'long_grass']}
 ANIMALS['bluefish'] = {'name': 'bluefish', 'corpse': None, 'aquatic': True, 'mountable': False, 'touch damage': False, 'protected': False, 'hit rect': SMALL_HIT_RECT,'grabable': True, 'run speed': 400, 'walk speed': 60, 'walk animate speed': 400, 'run animate speed': 160, 'detect radius': 400, 'avoid radius': 40, 'aggression': 'fwd', 'health': 13, 'damage': 0, 'knockback': 0, 'item type': 'weapons', 'item': 'live bluefish', 'dropped items': ['dead bluefish'], 'collide': ['walls', 'shallows', 'lava', 'long_grass']}
@@ -384,18 +384,18 @@ ANIMALS['dolphin'] = {'name': 'dolphin', 'corpse': 14, 'aquatic': True, 'mountab
 
 
 MOUNTAIN_ANIMALS = ['blue wyvern', 'brown bird', 'goblin', 'rabbit', 'pink moth', 'green moth', 'butterfly ideopsis', 'giant ant', 'bighorn sheep', 'snake', 'garden lizard']
-FOREST_ANIMALS = ['blue wyvern', 'red wyvern', 'brown bird', 'goblin', 'rabbit', 'pink moth', 'green moth', 'butterfly ideopsis', 'giant ant', 'garden lizard', 'spider', 'hawk']
+FOREST_ANIMALS = ['blue wyvern', 'red wyvern', 'brown bird', 'goblin', 'rabbit', 'pink moth', 'green moth', 'butterfly ideopsis', 'giant ant', 'garden lizard', 'giant spider', 'hawk']
 GRASSLAND_ANIMALS = ['red wyvern', 'goblin', 'brown bird', 'rabbit', 'pink moth', 'green moth', 'butterfly ideopsis', 'giant ant', 'garden lizard', 'hawk']
 BEACH_ANIMALS = ['brown bird', 'vadashay', 'bluefish', 'butterfly ideopsis', 'leopard shark', 'pink moth', 'garden lizard', 'flying goldfix', 'sea turtle']
 OCEAN_ANIMALS = ['dolphin', 'vadashay', 'bluefish', 'leopard shark', 'squid', 'marlin', 'sea turtle']
 ZOMBIELAND_ANIMALS = ['brown bird', 'immortui', 'immortui', 'immortui', 'rabbit', 'pink moth', 'green moth', 'giant ant', 'chicken', 'garden lizard']
 TOWN_ANIMALS = ['brown bird', 'rabbit', 'pink moth', 'green moth', 'butterfly ideopsis', 'garden lizard']
-TUNDRA_ANIMALS = ['rabbit', 'ice golem', 'sheep', 'bighorn sheep', 'brown bird', 'hawk']
+TUNDRA_ANIMALS = ['rabbit', 'ice golem', 'domestic sheep', 'bighorn sheep', 'brown bird', 'hawk']
 ICEBEACH_ANIMALS = ['ice golem', 'bluefish', 'hawk']
-DESERT_ANIMALS = ['red wyvern', 'demon', 'giant ant', 'snake', 'garden lizard', 'spider', 'hawk']
+DESERT_ANIMALS = ['red wyvern', 'demon', 'giant ant', 'snake', 'garden lizard', 'giant spider', 'hawk']
 ANT_TUNNEL_ANIMALS = ['giant ant', 'rabbit']
-CAVE_ANIMALS = ['giant ant', 'rabbit', 'snake', 'spider', 'skeleton', 'immortui']
-MINE_ANIMALS = ['giant ant', 'rabbit', 'snake', 'spider', 'skeleton']
+CAVE_ANIMALS = ['giant ant', 'rabbit', 'snake', 'giant spider', 'skeleton', 'immortui']
+MINE_ANIMALS = ['giant ant', 'rabbit', 'snake', 'giant spider', 'skeleton']
 SWAMP_ANIMALS = ['sfix', 'snake', 'brown bird', 'garden lizard']
 
 # Created using the NPC designer

@@ -78,8 +78,8 @@ def get_tile_number(sprite, layer):  # Gets the type of tile a sprite is on.
     y = int(sprite.pos.y / sprite.game.map.tile_size)
     if x < 0: x = 0
     if y < 0: y = 0
-    if x > sprite.game.map.tiles_wide: x = sprite.game.map.tiles_wide
-    if y > sprite.game.map.tiles_high: y = sprite.game.map.tiles_high
+    if x >= sprite.game.map.tiles_wide: x = sprite.game.map.tiles_wide - 1
+    if y >= sprite.game.map.tiles_high: y = sprite.game.map.tiles_high - 1
     return sprite.game.map.tmxdata.get_tile_gid(x, y, layer)
 
 def trace_mem():
@@ -517,7 +517,7 @@ class Game:
         ANIMAL_IMAGES = {}
         for animal in ANIMAL_ANIMATIONS:
             temp_list = []
-            number_of_files = len([name for name in os.listdir(animals_folder) if animal == name[:-5] if os.path.isfile(os.path.join(animals_folder, name))])
+            number_of_files = len([name for name in os.listdir(animals_folder) if animal in name if os.path.isfile(os.path.join(animals_folder, name))])
             for i in range(1, number_of_files + 1):
                 filename = animal + '{}.png'.format(i)
                 temp_list.append(filename)
@@ -1292,15 +1292,16 @@ class Game:
         self.group._map_layer = self.map.map_layer # Sets the map as the Pyscroll group base layer.
         self.camera = Camera(self, self.map.width, self.map.height)
 
-        if self.sprite_data.tiledata:
-            for i, layer in enumerate(self.map.tmxdata.layers):
-                if isinstance(layer, pytmx.TiledTileLayer): # Excludes object layers
-                    self.map.tmxdata.layers[i].data = self.sprite_data.tiledata[i]
-        else:
-            self.sprite_data.tiledata = []
-            for i, layer in enumerate(self.map.tmxdata.layers):
-                if isinstance(layer, pytmx.TiledTileLayer):# Excludes object layersee
-                    self.sprite_data.tiledata.append(self.map.tmxdata.layers[i].data)
+        # This block of code is supposed to save edited tile maps, but it's all gooped up.
+        #if self.sprite_data.tiledata:
+        #    for i, layer in enumerate(self.map.tmxdata.layers):
+        #        if isinstance(layer, pytmx.TiledTileLayer): # Excludes object layers
+        #            self.map.tmxdata.layers[i].data = self.sprite_data.tiledata[i]
+        #else:
+        #    self.sprite_data.tiledata = []
+        #    for i, layer in enumerate(self.map.tmxdata.layers):
+        #        if isinstance(layer, pytmx.TiledTileLayer):# Excludes object layersee
+        #            self.sprite_data.tiledata.append(self.map.tmxdata.layers[i].data)
 
         for i in range(0, 10): # Creates random targets for Npcs
             target = Target(self)
@@ -2689,8 +2690,23 @@ class Game:
                         npc.swimming = True
                     else:
                         npc.swimming = False
+            elif get_tile_number(npc, self.water_tile_layer) in self.water_tiles:
+                npc.swimming = True
             else:
                 npc.swimming = False
+
+        # animal hit water
+        hits = pg.sprite.groupcollide(self.animals_on_screen, self.water_on_screen, False, False)
+        for animal in self.animals_on_screen:
+            if animal in hits:
+                if not pg.sprite.spritecollide(animal, self.long_grass_on_screen, False):
+                    animal.swimming = True
+                else:
+                    animal.swimming = False
+            elif get_tile_number(animal, self.water_tile_layer) in self.water_tiles:
+                animal.swimming = True
+            else:
+                animal.swimming = False
 
         # npc hits doors and opens them
         hits = pg.sprite.groupcollide(self.npcs_on_screen, self.entryways_on_screen, False, False, entryway_collide)
