@@ -1,4 +1,4 @@
-# The Legend of Sky Realm by Raven Dewey (aka Ravenwing)
+# The Legend of Sky Realm by Raven Ironwing
 
 import tracemalloc
 import gc
@@ -73,6 +73,15 @@ def group_draw(self, surface, game = None): # This is a modded version of the py
 
 PyscrollGroup.draw = group_draw # Replaces the default PyscrollGroup.draw method
 
+def get_tile_number(sprite, layer):  # Gets the type of tile a sprite is on.
+    x = int(sprite.pos.x / sprite.game.map.tile_size)
+    y = int(sprite.pos.y / sprite.game.map.tile_size)
+    if x < 0: x = 0
+    if y < 0: y = 0
+    if x > sprite.game.map.tiles_wide: x = sprite.game.map.tiles_wide
+    if y > sprite.game.map.tiles_high: y = sprite.game.map.tiles_high
+    return sprite.game.map.tmxdata.get_tile_gid(x, y, layer)
+
 def trace_mem():
     snapshot = tracemalloc.take_snapshot()
     top_stats = snapshot.statistics('lineno')
@@ -134,53 +143,43 @@ def mob_hit_rect(one, two):
 
 # Used to define hits from melee attacks
 def melee_hit_rect(one, two):
-    if one.mid_weapon_melee_rect.colliderect(two.hit_rect) or one.weapon_melee_rect.colliderect(two.hit_rect) or one.melee_rect.colliderect(two.hit_rect): #checks for either the fist hitting a mob or the cente or tip of weapon.
-        if one.mother.weapon_hand == 'weapons':
+    if one.mother.weapon_hand == 'weapons':
+        if True in (one.mid_weapon_melee_rect.colliderect(two.hit_rect), one.weapon_melee_rect.colliderect(two.hit_rect), one.melee_rect.colliderect(two.hit_rect)): #checks for either the fist hitting a mob or the cente or tip of weapon.
             if one.swing_weapon1: # This differentiates between weapons that are being swung and those that are thrusted.
                 if one.frame > 3:
                     return True
-            else:
-                if one.frame < 3:
-                    return True
+            elif one.frame < 3:
+                return True
         else:
             return False
-    elif one.mid_weapon2_melee_rect.colliderect(two.hit_rect) or one.weapon2_melee_rect.colliderect(two.hit_rect) or one.melee2_rect.colliderect(two.hit_rect): #checks for either the fist hitting a mob or the cente or tip of weapon.
-        if one.mother.weapon_hand == 'weapons2':
+    elif one.mother.weapon_hand == 'weapons2':
+        if True in (one.mid_weapon2_melee_rect.colliderect(two.hit_rect), one.weapon2_melee_rect.colliderect(two.hit_rect), one.melee2_rect.colliderect(two.hit_rect)): #checks for either the fist hitting a mob or the center or tip of weapon.
             if one.swing_weapon2:
                 if one.frame > 3:
                     return True
-            else:
-                if one.frame < 3:
-                    return True
-        else:
-            return False
-    else:
-        return False
+            elif one.frame < 3:
+                return True
+    return False
 
 def breakable_melee_hit_rect(one, two):
-    if one.mid_weapon_melee_rect.colliderect(two.trunk.hit_rect) or one.weapon_melee_rect.colliderect(two.trunk.hit_rect) or one.melee_rect.colliderect(two.trunk.hit_rect):
-        if one.mother.weapon_hand == 'weapons':
+    if one.mother.weapon_hand == 'weapons':
+        if True in (one.mid_weapon_melee_rect.colliderect(two.trunk.hit_rect), one.weapon_melee_rect.colliderect(two.trunk.hit_rect), one.melee_rect.colliderect(two.trunk.hit_rect)):
             if one.swing_weapon1: # This differentiates between weapons that are being swung and those that are thrusted.
-                if one.frame > 3:
+                if one.frame > 6:
                     return True
-            else:
-                if one.frame < 6:
-                    return True
+            elif one.frame < 6:
+                return True
         else:
             return False
 
-    elif one.mid_weapon2_melee_rect.colliderect(two.trunk.hit_rect) or one.weapon2_melee_rect.colliderect(two.trunk.hit_rect) or one.melee2_rect.colliderect(two.trunk.hit_rect):
-        if one.mother.weapon_hand == 'weapons2':
+    elif one.mother.weapon_hand == 'weapons2':
+        if True in (one.mid_weapon2_melee_rect.colliderect(two.trunk.hit_rect), one.weapon2_melee_rect.colliderect(two.trunk.hit_rect), one.melee2_rect.colliderect(two.trunk.hit_rect)):
             if one.swing_weapon2:
-                if one.frame > 3:
+                if one.frame > 6:
                     return True
-            else:
-                if one.frame < 6:
-                    return True
-        else:
-            return False
-    else:
-        return False
+            elif one.frame < 6:
+                return True
+    return False
 
 # Used to define fireball hits
 def fire_collide(one, two):
@@ -394,6 +393,12 @@ class Game:
         self.player.calculate_fire_power()
         self.player.calculate_perks()
         self.overworld_map = load_file[7]
+        #Update hud stats
+        self.hud_health_stats = self.player.stats
+        self.hud_health = self.hud_health_stats['health'] / self.hud_health_stats['max health']
+        self.hud_stamina = self.hud_health_stats['stamina'] / self.hud_health_stats['max stamina']
+        self.hud_magica = self.hud_health_stats['magica'] / self.hud_health_stats['max magica']
+        self.hud_hunger = self.hud_health_stats['hunger'] / self.hud_health_stats['max hunger']
         # Loads saved companions
         for companion in self.saved_companions:
             for npc_type in NPC_TYPE_LIST:
@@ -471,6 +476,17 @@ class Game:
 
 
     def load_data(self):
+        self.wall_tiles = []
+        self.ore_tiles = []
+        self.empty_tiles = []
+        self.water_tiles = []
+        self.shallows_tiles = []
+        self.lava_tiles = []
+        self.long_grass_tiles = []
+        self.wall_tile_layer = 0
+        self.water_tile_layer = 0
+        self.long_grass_layer = 0
+        self.lava_layer = 0
         self.title_font = HEADING_FONT
         self.hud_font = HUD_FONT
         self.script_font = SCRIPT_FONT
@@ -761,6 +777,7 @@ class Game:
         pg.mixer.music.play(loops=-1)
         title_image = pg.image.load(path.join(img_folder, TITLE_IMAGE)).convert()
         title_image = pg.transform.scale(title_image, (self.screen_width, self.screen_height))
+        self.map = None
         self.continued_game = False
         self.in_load_menu = False
         self.in_npc_menu = False
@@ -1275,12 +1292,21 @@ class Game:
         self.group._map_layer = self.map.map_layer # Sets the map as the Pyscroll group base layer.
         self.camera = Camera(self, self.map.width, self.map.height)
 
+        if self.sprite_data.tiledata:
+            for i, layer in enumerate(self.map.tmxdata.layers):
+                if isinstance(layer, pytmx.TiledTileLayer): # Excludes object layers
+                    self.map.tmxdata.layers[i].data = self.sprite_data.tiledata[i]
+        else:
+            self.sprite_data.tiledata = []
+            for i, layer in enumerate(self.map.tmxdata.layers):
+                if isinstance(layer, pytmx.TiledTileLayer):# Excludes object layersee
+                    self.sprite_data.tiledata.append(self.map.tmxdata.layers[i].data)
+
         for i in range(0, 10): # Creates random targets for Npcs
             target = Target(self)
             hits = pg.sprite.spritecollide(target, self.walls, False)  # Kills targets that appear in walls.
             if hits:
                 target.kill()
-
 
         if self.sprite_data.visited: # Loads stored map data for sprites if you have visited before.
             companion_names = []
@@ -1311,7 +1337,7 @@ class Game:
                 Animal(self, animal['location'].x, animal['location'].y, map, animal['name'], animal['health'])
             self.sprite_data.moved_animals = []
 
-        # Creates elevation objects if layers have EL in their names.
+        # Creates elevation objects if layers have EL in their names. I realize this is inefficient, and hopefully I can find a way to minimize the number of elevation objects created.
         for i, layer in enumerate(self.map.tmxdata.visible_layers):
             if 'EL' in layer.name:
                 EL = layer.name
@@ -1328,7 +1354,12 @@ class Game:
                                     hit.kill()
 
         # Creates wall and ore block objects if layers have WALLS in their names.
-        exception_tile = 0
+        #exception_tile = 0
+        #experimenting with changing tiles
+        #print(self.map.tmxdata.tiledgidmap)
+        #layer = self.map.tmxdata.layers[2].data
+        #layer[0][0] = 2
+        """
         if self.map.tmxdata.get_tile_gid(0, 0, 0) != self.map.tmxdata.get_tile_gid(0, 1, 0): # Sees if there is a different tile in the upper left corner to use as a zero tile where no walls will spawn.
             exception_tile = self.map.tmxdata.get_tile_gid(0, 0, 0)  # Tile type to ignore and treat as a zero.
         if self.map.tmxdata.get_tile_gid(1, 0, 0) != self.map.tmxdata.get_tile_gid(0, 1, 0): # Sees if there is a different tile in the upper corner (2nd x pos) to use as an ore tile.
@@ -1355,6 +1386,7 @@ class Game:
                                 for hit in hits:
                                     if hit != wall:
                                         hit.kill()
+        """
 
         # This section creates ores based off of which tile is used in the map rather than having to create ore objects
         #if self.map_type:
@@ -1614,6 +1646,57 @@ class Game:
                 except:
                     pass
 
+        # Sets up tile based walls and tile based objects.
+        self.wall_tiles = []
+        self.ore_tiles = []
+        self.empty_tiles = []
+        self.water_tiles = []
+        self.shallows_tiles = []
+        self.long_grass_tiles = []
+        self.lava_tiles = []
+        key = False
+        for i, layer in enumerate(self.map.tmxdata.layers):
+            if layer.name == 'KEY': # Assigns blocks in the KEY layer (if there) to what types of blocks they are based on the row they appear in.
+                key = True
+                for y, row in enumerate(layer.data):
+                    for x, col in enumerate(row):
+                        tileid = self.map.tmxdata.get_tile_gid(x, y, i)
+                        if tileid != 0:
+                            if y == 0:
+                                self.ore_tiles.append(tileid)
+
+                            if y in (0, 1):
+                                self.wall_tiles.append(tileid)
+                            elif y == 2:
+                                self.empty_tiles.append(tileid)
+                            elif y == 3:
+                                self.water_tiles.append(tileid)
+                            elif y == 4:
+                                self.shallows_tiles.append(tileid)
+                            elif y == 5:
+                                self.long_grass_tiles.append(tileid)
+                            elif y == 6:
+                                self.lava_tiles.append(tileid)
+                break
+
+        if key:
+            for i, layer in enumerate(self.map.tmxdata.layers): # Sets up ore blocks and water tile layers
+                if layer.name == 'WALLS':
+                    self.wall_tile_layer = i
+                    if self.map_type == 'mine':
+                        # The following replaces regular stone blocks with ore blocks according to their probability distribution given in interactables.py if you haven't visited the map before.
+                        if not self.sprite_data.visited:
+                            for y, row in enumerate(self.map.tmxdata.layers[self.wall_tile_layer].data):
+                                for x, col in enumerate(row):
+                                    if self.map.tmxdata.get_tile_gid(x, y, self.wall_tile_layer) == self.ore_tiles[0]:
+                                        self.map.tmxdata.layers[self.wall_tile_layer].data[y][x] = choice(choices(self.ore_tiles, BLOCK_PROB, k = 10))
+                if 'water' in layer.name:
+                    self.water_tile_layer = i
+                if 'lava' in layer.name:
+                    self.lava_layer = i
+                if 'long grass' in layer.name:
+                    self.long_grass_layer = i
+
         # Generates random drop items
         if self.map_type in ['mountain', 'forest', 'grassland', 'desert', 'beach']:
             for i in range(0, randrange(1, 15)):
@@ -1818,7 +1901,6 @@ class Game:
 
     def update(self):
         # update portion of the game loop
-
         # Controls the day turning to night and vice versa
         now = pg.time.get_ticks()
         if self.night:
@@ -2117,6 +2199,8 @@ class Game:
                     self.player.swimming = True
                 else:
                     self.player.swimming = False
+            elif get_tile_number(self.player, self.water_tile_layer) in self.water_tiles:
+                self.player.swimming = True
             else:
                 self.player.swimming = False
 
@@ -2124,12 +2208,16 @@ class Game:
             hits = pg.sprite.spritecollide(self.player, self.shallows_on_screen, False)
             if hits:
                 self.player.in_shallows = True
+            elif get_tile_number(self.player, self.water_tile_layer) in self.shallows_tiles:
+                self.player.in_shallows = True
             else:
                 self.player.in_shallows = False
 
             # player hits long grass
             hits = pg.sprite.spritecollide(self.player, self.long_grass_on_screen, False)
             if hits:
+                self.player.in_grass = True
+            elif get_tile_number(self.player, self.long_grass_layer) in self.long_grass_tiles:
                 self.player.in_grass = True
             else:
                 self.player.in_grass = False
@@ -2626,6 +2714,8 @@ class Game:
         for npc in self.npcs_on_screen:
             if npc in hits:
                 npc.in_shallows = True
+            elif get_tile_number(npc, self.water_tile_layer) in self.shallows_tiles:
+                npc.in_shallows = True
             else:
                 npc.in_shallows = False
 
@@ -2633,6 +2723,8 @@ class Game:
         hits = pg.sprite.groupcollide(self.npcs_on_screen, self.long_grass_on_screen, False, False)
         for npc in self.npcs_on_screen:
             if npc in hits:
+                npc.in_grass = True
+            elif get_tile_number(npc, self.long_grass_layer) in self.long_grass_tiles:
                 npc.in_grass = True
             else:
                 npc.in_grass = False
@@ -2651,6 +2743,8 @@ class Game:
         hits = pg.sprite.groupcollide(self.animals_on_screen, self.long_grass_on_screen, False, False)
         for animal in self.animals_on_screen:
             if animal in hits:
+                animal.in_grass = True
+            elif get_tile_number(animal, self.long_grass_layer) in self.long_grass_tiles:
                 animal.in_grass = True
             else:
                 animal.in_grass = False
@@ -2757,6 +2851,9 @@ class Game:
             pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.mid_weapon_melee_rect), 1)
             pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.weapon_melee_rect), 1)
             pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.melee_rect), 1)
+            pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.mid_weapon2_melee_rect), 1)
+            pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.weapon2_melee_rect), 1)
+            pg.draw.rect(self.screen, YELLOW, self.camera.apply_rect(self.player.body.melee2_rect), 1)
             #for elev in self.elevations_on_screen:
             #    pg.draw.rect(self.screen, BLUE, self.camera.apply_rect(elev.rect), 1)
 

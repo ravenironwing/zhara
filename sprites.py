@@ -13,6 +13,43 @@ from time import perf_counter
 
 vec = pg.math.Vector2
 
+def wall_check(sprite):  # Used for tile-based wall collisions
+    if len(sprite.game.wall_tiles) > 0:
+        proximity = sprite.game.map.tile_size / 3
+        try:
+            pdir = sprite.acc.normalize() * proximity
+        except:
+            pdir = vec(1, 0).rotate(-sprite.rot) * proximity
+        x = int((sprite.pos.x + pdir.x) / sprite.game.map.tile_size)
+        y = int((sprite.pos.y + pdir.y) / sprite.game.map.tile_size)
+        if x < 0: return
+        if y < 0: return
+        if x > sprite.game.map.tiles_wide: return
+        if y > sprite.game.map.tiles_high: return
+        if sprite.game.map.tmxdata.get_tile_gid(x, y, sprite.game.wall_tile_layer) in sprite.game.wall_tiles:
+            sprite.acc = sprite.acc.rotate(180)
+            sprite.vel = sprite.vel.rotate(180)
+            return True
+        else:
+            return False
+
+def next_wall_check(sprite):  # Used for tile-based wall collisions
+    if len(sprite.game.wall_tiles) > 0:
+        try:
+            pdir = sprite.acc.normalize()
+        except:
+            pdir = vec(1, 0).rotate(-sprite.rot)
+        x = int(sprite.pos.x / sprite.game.map.tile_size + pdir.x)
+        y = int(sprite.pos.y / sprite.game.map.tile_size + pdir.y)
+        if x < 0: return
+        if y < 0: return
+        if x > sprite.game.map.tiles_wide: return
+        if y > sprite.game.map.tiles_high: return
+        if sprite.game.map.tmxdata.get_tile_gid(x, y, sprite.game.wall_tile_layer) in sprite.game.wall_tiles:
+            return True
+        else:
+            return False
+
 def in_wall(game, group, pos):
     for wall in group:
         if wall not in game.door_walls:
@@ -1192,11 +1229,15 @@ class Character(pg.sprite.Sprite):
             self.mid_weapon_melee_rect.center = self.mother.pos + self.weapon_offset_temp
             self.weapon_offset_temp = (self.weapon_pos + vec(self.weapon_width, 0)).rotate(-(self.mother.rot + self.weapon_angle))
             self.weapon_melee_rect.center = self.mother.pos + self.weapon_offset_temp
+        else:
+            self.mid_weapon_melee_rect.center = self.weapon_melee_rect.center = self.melee_rect.center
         if self.mother.equipped['weapons2']:
             self.weapon2_offset_temp = (self.weapon2_pos + vec(self.weapon2_width/2, 0)).rotate(-(self.mother.rot + self.weapon2_angle))
             self.mid_weapon2_melee_rect.center = self.mother.pos + self.weapon2_offset_temp
             self.weapon2_offset_temp = (self.weapon2_pos + vec(self.weapon2_width, 0)).rotate(-(self.mother.rot + self.weapon2_angle))
             self.weapon2_melee_rect.center = self.mother.pos + self.weapon2_offset_temp
+        else:
+            self.mid_weapon2_melee_rect.center = self.weapon2_melee_rect.center = self.melee2_rect.center
 
         if not self.mother.alive():
             self.kill()
@@ -1576,6 +1617,7 @@ class Player(pg.sprite.Sprite):
                 speed = self.acceleration
                 perp = -self.acceleration
             self.acc = vec(speed * power, perp * power).rotate(-self.rot)
+        wall_check(self)
 
     def update(self):
         # This parts synchs the body sprite with the player's soul.
@@ -2143,6 +2185,35 @@ class Player(pg.sprite.Sprite):
                     self.melee_playing = False
                     self.dual_melee = False
                     self.last_shot = pg.time.get_ticks()
+
+                    #Spawns breakable ore blocks when you hit the tiles.
+                    if len(self.game.wall_tiles) > 0:
+                        if self.weapon_hand == 'weapons':
+                            melee_rect = self.body.weapon_melee_rect
+                        else:
+                            melee_rect = self.body.weapon2_melee_rect
+                        x = int(melee_rect.centerx / self.game.map.tile_size)
+                        y = int(melee_rect.centery / self.game.map.tile_size)
+                        if x < 0: return
+                        if y < 0: return
+                        if x > self.game.map.tiles_wide: return
+                        if y > self.game.map.tiles_high: return
+                        tile = self.game.map.tmxdata.get_tile_gid(x, y, self.game.wall_tile_layer)
+                        if tile in self.game.ore_tiles:
+                            center = vec(x * self.game.map.tile_size + self.game.map.tile_size/2, y * self.game.map.tile_size + self.game.map.tile_size/2)
+                            self.game.effects_sounds['rock_hit'].play()
+                            breakable = Breakable(self.game, center, self.game.map.tile_size, self.game.map.tile_size, BLOCK_DICT[self.game.ore_tiles.index(tile)], self.game.previous_map)
+                            # Checks to make sure you don't double spawn a breakable block.
+                            self.game.breakable.remove(breakable)
+                            hits = pg.sprite.spritecollide(breakable, self.game.breakable, False)
+                            if hits:
+                                breakable.kill()
+                            else:
+                                self.game.breakable.add(breakable)
+                            self.game.map.tmxdata.layers[self.game.wall_tile_layer].data[y][x] = choice(self.game.empty_tiles)
+                            self.game.map.redraw()
+
+
 
     def pre_jump(self):
         if not (self.melee_playing or self.in_vehicle or self.is_reloading):
@@ -3007,6 +3078,10 @@ class Npc(pg.sprite.Sprite):
 
         # Sets elevation to the highest elevation you hit.
         set_elevation(self)
+        # kills Npcs that spawn in wall tiles
+        if wall_check(self):
+            self.body.kill()
+            self.kill()
 
     @property
     def aipath(self):
@@ -3331,8 +3406,10 @@ class Npc(pg.sprite.Sprite):
             hit = in_wall(self.game, self.game.barriers_on_screen, proj_vec)
         if hit:
             self.wall_hit_or = hit.orient
+        elif next_wall_check(self):
+            self.wall_hit_or = choice(('v', 'h'))
+            return False
         else:
-            hit = in_wall(self.game, self.game.players, proj_vec) #makes Npc walk around player
             hit = in_wall(self.game, self.game.players, proj_vec) #makes Npc walk around player
             if hit:
                 self.target = self.game.player
@@ -4143,6 +4220,8 @@ class Animal(pg.sprite.Sprite):
             self.approach_vector = vec(0, -1)
 
         set_elevation(self)
+        if wall_check(self): # Kills animals that spawn in wall tiles.
+            self.kill()
 
     @property
     def in_grass(self):
@@ -5455,7 +5534,7 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
             self._layer = EFFECTS_LAYER
         elif 'tree' in name:
             self._layer = ROOF_LAYER
-        elif 'block' in name:
+        elif 'block' in name or name == 'dirt':
             for i in UNDERWORLD:
                 if i in map:
                     under = True
@@ -5479,6 +5558,21 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
             if self.size == None:
                 self.size = choice(['sm', 'md', 'lg'])
             self.image_list = self.game.tree_images[self.size + self.name]
+        elif 'block' in self.name:
+            if len(self.game.breakable_images[self.name]) > 1:
+                self.image_list = self.game.breakable_images[self.name]
+            else:
+                self.image_list = []
+                self.image_list.append(self.game.breakable_images[self.name][0])
+                for i in range(0, 10):
+                    # superimposes the crack images over the ore images.
+                    if i < 5:
+                        temp_image = self.game.breakable_images[self.name][0].copy()
+                        temp_image.blit(self.game.breakable_images['crack'][i], (0, 0))
+                        self.image_list.append(temp_image)
+                    else:
+                        self.image_list.append(self.game.breakable_images['crack'][i])
+                self.game.breakable_images[self.name] = self.image_list
         else:
             self.image_list = self.game.breakable_images[self.name]
         self.scale_factor = 1
@@ -5488,6 +5582,8 @@ class Breakable(pg.sprite.Sprite): # Used for fires and other stationary animate
         self.game.group.add(self)
         # Image vars
         if 'block' in self.name:
+            self.rot = 0
+        elif self.name == 'dirt':
             self.rot = 0
         elif fixed_rot == None:
             self.rot = randrange(0, 360)

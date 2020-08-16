@@ -21,6 +21,7 @@ class MapData: #Used to keep track of what NPCs, animals and objects move to wha
         self.vehicles = []
         self.breakable = []
         self.visited = False
+        self.tiledata = None
 
 class TiledMap:
     def __init__(self, game, filename):
@@ -56,6 +57,9 @@ class TiledMap:
                     if ('roof' in layer.name or 'tree' in layer.name):
                         if isinstance(layer, pytmx.TiledTileLayer):
                             layer.visible = True
+        self.map_layer.redraw_tiles(self.map_layer._buffer)
+
+    def redraw(self): # Redraws the map for tile updates
         self.map_layer.redraw_tiles(self.map_layer._buffer)
 
     #def generate_under_layer(self):

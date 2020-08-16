@@ -216,6 +216,8 @@ ITEMS['green crystal'] = {'image': 69, 'weight': 0.5, 'ammo': 70, 'type': 'cryst
 ITEMS['yellow crystal'] = {'image': 70, 'weight': 0.5, 'ammo': 50, 'type': 'crystals', 'value': 135}
 ITEMS['red crystal'] = {'image': 67, 'weight': 0.5, 'ammo': 25, 'type': 'crystals', 'value': 100}
 
+ITEMS['diamond'] = {'image': 152, 'weight': 0.5, 'value': 300}
+
 # Books
 ITEMS['old book'] = {'image': 117, 'weight': 1, 'value': 0, 'author': '', 'heading': '', 'spell words': '', 'font': 'SCRIPT_FONT'}
 ITEMS['book: War of the Worlds'] = {'image': 117, 'weight': 0.2, 'value': 5, 'author': 'H. G. Wells', 'heading': 'War of the Worlds', 'spell words': '', 'font': 'SCRIPT_FONT'}

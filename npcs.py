@@ -395,6 +395,7 @@ ICEBEACH_ANIMALS = ['ice golem', 'bluefish', 'hawk']
 DESERT_ANIMALS = ['red wyvern', 'demon', 'giant ant', 'snake', 'garden lizard', 'spider', 'hawk']
 ANT_TUNNEL_ANIMALS = ['giant ant', 'rabbit']
 CAVE_ANIMALS = ['giant ant', 'rabbit', 'snake', 'spider', 'skeleton', 'immortui']
+MINE_ANIMALS = ['giant ant', 'rabbit', 'snake', 'spider', 'skeleton']
 SWAMP_ANIMALS = ['sfix', 'snake', 'brown bird', 'garden lizard']
 
 # Created using the NPC designer

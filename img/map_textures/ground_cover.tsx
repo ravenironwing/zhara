@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.2" tiledversion="1.3.1" name="ground_cover" tilewidth="128" tileheight="128" tilecount="225" columns="15">
+<tileset version="1.4" tiledversion="1.4.1" name="ground_cover" tilewidth="128" tileheight="128" tilecount="225" columns="15">
  <image source="ground_cover.png" width="1920" height="1920"/>
  <tile id="96">
   <animation>

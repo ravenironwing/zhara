@@ -10,9 +10,9 @@ SHOCK_BULLETS = ['2', '7', '8', '9']
 EXPLOSIVE_BULLETS = ['4', '5', '8', '10', '0']
 
 # Weapon settings
-WEAPON_SOUNDS = {'pistol': ['pistol.ogg'], 'laser': ['laser.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['mace_swipe.ogg'], 'axe': ['mace_swipe.ogg'], 'plasma': ['plasma_swipe.ogg', 'plasma_swipe2.ogg'],
+WEAPON_SOUNDS = {'shovel': ['mace_swipe.ogg'], 'pistol': ['pistol.ogg'], 'laser': ['laser.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['mace_swipe.ogg'], 'axe': ['mace_swipe.ogg'], 'plasma': ['plasma_swipe.ogg', 'plasma_swipe2.ogg'],
                  'shotgun': ['shotgun.ogg'], 'rifle': ['assault rifle.ogg'], 'turret': ['turret.ogg'], 'sword': ['sword_swipe.ogg'], 'mace': ['mace_swipe.ogg'], 'dagger': ['sword_swipe.ogg'], 'shield': ['mace_swipe.ogg'], 'bow': ['arrow.ogg']}
-WEAPON_HIT_SOUNDS = {'pistol': ['gun_hit1.ogg'], 'laser': ['gun_hit1.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['pickaxe.ogg'], 'axe': ['axe.ogg'],
+WEAPON_HIT_SOUNDS = {'pistol': ['gun_hit1.ogg'], 'laser': ['gun_hit1.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['pickaxe.ogg'], 'axe': ['axe.ogg'], 'shovel': ['rock_hit.ogg'],
                  'shotgun': ['gun_hit1.ogg'], 'rifle': ['gun_hit1.ogg'], 'turret': ['turret_hit1.ogg'], 'sword': ['sword_hit1.ogg'], 'mace': ['mace_hit1.ogg', 'mace_hit2.ogg'], 'dagger': ['sword_hit1.ogg'], 'shield': ['punch1.ogg', 'punch2.ogg'], 'bow': ['punch1.ogg', 'punch2.ogg'], 'plasma': ['plasma_hit.ogg', 'plasma_hit2.ogg']}
 
 WEAPONS = {}
@@ -582,7 +582,7 @@ WEAPONS['damascus steel sword'] = {'type': 'sword','gun': False, 'value': 400,
                       'materials': {'steel ingot': 3, 'iron ingot': 1, 'cole': 2}, 'upgrade': {'steel ingot': 2},
                       'weight': 3.5}
 
-WEAPONS['shovel'] = {'type': 'sword','gun': False, 'value': 20,
+WEAPONS['shovel'] = {'type': 'shovel','gun': False, 'value': 20,
                       'bullet_speed': 0,
                       'bullet_lifetime': 0,
                       'magazine size': 0,
