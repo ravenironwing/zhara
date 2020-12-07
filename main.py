@@ -2250,7 +2250,7 @@ class Game:
                 if hit.name not in ['fire pit']:
                     self.message_text = True
                     if self.message != "You are carrying too much weight.":
-                        self.message = pg.key.name(self.key_map['interact']).upper() + 'to pick up'
+                        self.message = pg.key.name(self.key_map['interact']).upper() + ' to pick up'
                     if self.e_down:
                         self.player.inventory[hit.item_type].append(hit.item)
                         self.player.calculate_weight()
