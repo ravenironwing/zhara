@@ -1,21 +1,21 @@
 import pygame as pg
 from color_palettes import *
-vec = pg.math.Vector2
+vec = pg.math.Vector2()
 
-BULLET_SIZES = ['sm', 'md', 'lg', 'xl', 'ar']
-ENCHANTED_BULLETS = ['2', '3', '5', '6', '7', '8', '9', '12']
-ROB_HEALTH_BULLETS = ['12']
-FIRE_BULLETS = ['3', '5', '6', '9']
-SHOCK_BULLETS = ['2', '7', '8', '9']
-EXPLOSIVE_BULLETS = ['4', '5', '8', '10', '0']
+BULLET_SIZES: list = ['sm', 'md', 'lg', 'xl', 'ar']
+ENCHANTED_BULLETS: list = ['2', '3', '5', '6', '7', '8', '9', '12']
+ROB_HEALTH_BULLETS: list = ['12']
+FIRE_BULLETS: list = ['3', '5', '6', '9']
+SHOCK_BULLETS: list = ['2', '7', '8', '9']
+EXPLOSIVE_BULLETS: list = ['4', '5', '8', '10', '0']
 
 # Weapon settings
-WEAPON_SOUNDS = {'shovel': ['mace_swipe.ogg'], 'pistol': ['pistol.ogg'], 'laser': ['laser.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['mace_swipe.ogg'], 'axe': ['mace_swipe.ogg'], 'plasma': ['plasma_swipe.ogg', 'plasma_swipe2.ogg'],
+WEAPON_SOUNDS: dict = {'shovel': ['mace_swipe.ogg'], 'pistol': ['pistol.ogg'], 'laser': ['laser.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['mace_swipe.ogg'], 'axe': ['mace_swipe.ogg'], 'plasma': ['plasma_swipe.ogg', 'plasma_swipe2.ogg'],
                  'shotgun': ['shotgun.ogg'], 'rifle': ['assault rifle.ogg'], 'turret': ['turret.ogg'], 'sword': ['sword_swipe.ogg'], 'mace': ['mace_swipe.ogg'], 'dagger': ['sword_swipe.ogg'], 'shield': ['mace_swipe.ogg'], 'bow': ['arrow.ogg']}
-WEAPON_HIT_SOUNDS = {'pistol': ['gun_hit1.ogg'], 'laser': ['gun_hit1.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['pickaxe.ogg'], 'axe': ['axe.ogg'], 'shovel': ['rock_hit.ogg'],
+WEAPON_HIT_SOUNDS: dict = {'pistol': ['gun_hit1.ogg'], 'laser': ['gun_hit1.ogg'], 'grenades': ['shotgun.ogg'], 'pickaxe': ['pickaxe.ogg'], 'axe': ['axe.ogg'], 'shovel': ['rock_hit.ogg'],
                  'shotgun': ['gun_hit1.ogg'], 'rifle': ['gun_hit1.ogg'], 'turret': ['turret_hit1.ogg'], 'sword': ['sword_hit1.ogg'], 'mace': ['mace_hit1.ogg', 'mace_hit2.ogg'], 'dagger': ['sword_hit1.ogg'], 'shield': ['punch1.ogg', 'punch2.ogg'], 'bow': ['punch1.ogg', 'punch2.ogg'], 'plasma': ['plasma_hit.ogg', 'plasma_hit2.ogg']}
 
-WEAPONS = {}
+WEAPONS: dict = {}
 for material in MATERIALS:
     WEAPONS[material + ' broadsword'] = {'type': 'sword', 'gun': False, 'value': 200 * MATERIALS[material]['value'],
                               'bullet_speed': 0,
@@ -1180,6 +1180,6 @@ WEAPONS['flashlight'] = {'type': 'mace','gun': False, 'value': 190,
                       'armor': 0, 'brightness': 600, 'light mask': 3, 'light reach': 2.8,
                       'weight': 1}
 
-UPGRADED_WEAPONS = {}
+UPGRADED_WEAPONS: dict = {}
 
 
