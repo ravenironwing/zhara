@@ -1,3 +1,8 @@
+UPDATE:
+This project has been discontinued do to performance issues with some of the underlying code, which made it impossible to get the level of performance out of the game
+that I desired. So, I have been busy reworking the code for better performance. In many aspects it will be like a very different and better game, but with reduced tile
+and sprite size for faster rendering. The new project is called Sky Real - Legends of Arroshay.... People didn't seem to know how to pronouce Zhara- Sky Realm is the English translation of the same name.
+
 Intro:
 Legends of Zhara is a 2D open world action RPG that utilizes many game play aspects of modern 3D RPGs.
 The world is about 12 kilometers accross if it were to scale. It is made from over 17000 64 by 64 tile maps. 
